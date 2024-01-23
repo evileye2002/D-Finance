@@ -25,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-m8@!!7si+j2124jak2e_%rhan14(n&9(6&469^00**d(^b!_di"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = config("DEBUG", default=False, cast=bool)
 
-ALLOWED_HOSTS = [".vercel.app", "localhost"]
+ALLOWED_HOSTS = [config("ALLOWED_HOSTS", default=".vercel.app")]
 
 
 # Application definition
@@ -84,9 +84,8 @@ DATABASES = {
     }
 }
 
-DATABASE_URL = config("DATABASE_URL")
 
-DATABASES["default"] = dj_database_url.config(default=DATABASE_URL)
+DATABASES["default"] = dj_database_url.config(default=config("DATABASE_URL"))
 
 
 # Password validation
@@ -125,8 +124,8 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-# STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
+STATICFILES_DIRS = [BASE_DIR / "static"]
+# STATIC_ROOT = BASE_DIR / "staticfiles_build" / "static"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
