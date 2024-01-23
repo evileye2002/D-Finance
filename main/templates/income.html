@@ -1,0 +1,22 @@
+{% extends "base/main.html" %}
+{% load static %}
+
+{% block title %}
+<title>Thu Nhập</title>
+{% endblock  %}
+
+{% block stylesheet %}
+
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <button id="btnAddNewIncome" class="btn btn-primary" type="button">Toggle bottom offcanvas</button>
+
+    {% include "post-income.html" %}
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{% static "js/income.js" %}"></script>
+{% endblock  %}

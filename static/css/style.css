@@ -1,0 +1,17 @@
+ul.errorlist {
+  margin-bottom: 0;
+}
+
+ul.navbar-nav li.nav-item a.active {
+  color: rgba(var(--bs-primary-rgb), 1);
+  font-weight: bold;
+}
+
+ul.navbar-nav li.nav-item a:hover {
+  background: rgba(var(--bs-primary-rgb), 1);
+  color: rgba(var(--bs-white-rgb), 1);
+}
+
+#offcanvasExample {
+  transition: ease 0.4s;
+}

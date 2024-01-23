@@ -1,0 +1,83 @@
+{% extends "base/main.html" %}
+{% load static %}
+
+{% block title %}
+<title>Đăng Ký</title>
+{% endblock  %}
+
+{% block stylesheet %}
+<link rel="stylesheet" href="{% static "css/style.css" %}">
+{% endblock %}
+
+{% block content %}
+<div class="container vh-100">
+    <div class="d-flex justify-content-center align-items-center h-100">
+        <div class=" bg-white rounded-4 shadow" style="width: 400px;">
+            <div class="border-bottom px-4 py-3">
+                <span class="fw-bold fs-3">Đăng Ký</span>
+            </div>
+
+            <form id="signUpForm" class="p-4 mb-0 w-100" method="post" autocomplete="off" action="{% url "sign-up" %}">
+                {% csrf_token %}
+
+                <div class="mb-2">
+                    <div class="input-group has-validation">
+                        <div class="input-group-text text-primary">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        {{signUpForm.username}}
+                        <div class="invalid-feedback">
+                            {{ signUpForm.username.errors }}
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <div class="input-group has-validation">
+                        <div class="input-group-text text-primary">
+                            <i class="fa-solid fa-envelope"></i>
+                        </div>
+                        {{signUpForm.email}}
+                        <div class="invalid-feedback">
+                            {{ signUpForm.email.errors }}
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <div class="input-group has-validation">
+                        <div class="input-group-text text-primary">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        {{signUpForm.password1}}
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <div class="input-group has-validation">
+                        <div class="input-group-text text-primary">
+                            <i class="fa-solid fa-lock"></i>
+                        </div>
+                        {{signUpForm.password2}}
+                        <div class="invalid-feedback">
+                            {{ signUpForm.password2.errors }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-center mt-3">
+                    <button class="btn btn-primary w-100 py-2 fw-bold" type="submit">Đăng Ký</button>
+                </div>
+
+            </form>
+
+            <div class="text-center border-top mx-3">
+                <p class="my-3 ">Đã có tài khoản?
+                    <a class="ms-1 text-decoration-none fw-bold" href="{% url "sign-in" %}">Đăng nhập</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{% static "js/sign-up.js" %} "></script>
+{% endblock  %}

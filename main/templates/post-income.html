@@ -1,0 +1,53 @@
+{% extends "base/form-dialog.html" %}
+
+{% block formDialogBody %}
+<div id="form-dialog-body" class="bg-white rounded-4 shadow" style="width: 400px;">
+    <div class="border-bottom px-4 py-3">
+        <span class="fw-bold fs-3">Thêm Khoản Thu</span>
+    </div>
+
+    <form id="postIncomeForm" class="p-4 mb-0 w-100" method="post" autocomplete="off" action="{% url "income" %}">
+        {% csrf_token %}
+
+        <div class="mb-2">
+            <div class="input-group has-validation">
+                {{postIncomeDialog.name}}
+                <div class="invalid-feedback">
+                    {{ postIncomeDialog.name.errors }}
+                </div>
+            </div>
+        </div>
+        <div class="mb-2">
+            <div class="input-group has-validation">
+                {{postIncomeDialog.money}}
+                <div class="invalid-feedback">
+                    {{ postIncomeDialog.money.errors }}
+                </div>
+            </div>
+        </div>
+        <div class="mb-2">
+            <div class="input-group">
+                {{postIncomeDialog.date}}
+                {{postIncomeDialog.time}}
+            </div>
+        </div>
+        <div class="mb-2">
+            <div class="input-group has-validation">
+                <div class="form-floating">
+                    {{postIncomeDialog.description}}
+                    <label for="income-description">Mô tả, chú thích,...</label>
+                    <div class="invalid-feedback">
+                        {{ postIncomeDialog.description.errors }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Lưu</button>
+        </div>
+    </form>
+
+</div>
+{% endblock  %}

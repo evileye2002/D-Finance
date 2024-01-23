@@ -1,0 +1,47 @@
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel">
+    <div class="offcanvas-header border-bottom">
+        <a class="navbar-brand fw-bold" href="{% url "index" %}">
+            <i class="fa-solid fa-money-bill-transfer fa-xl "></i>
+            <span>Navbar</span>
+        </a>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+
+    <div class="offcanvas-body">
+        {% include "base/navbar-nav.html" %}
+    </div>
+
+    {% if user.is_authenticated %}
+    <div class="offcanvas-bottom border-top">
+        <div class="p-3">
+            <a class="nav-link" href="{% url "sign-out" %}">
+                <i class="fa-solid fa-right-from-bracket fa-lg"></i>
+                <span>Đăng Xuất</span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<nav class="navbar navbar-expand-md navbar-light bg-white sticky-top">
+    <div class="container-fluid">
+        <a class="navbar-brand fw-bold" href="{% url "index" %}">
+            <i class="fa-solid fa-money-bill-transfer fa-xl "></i>
+            <span>Navbar</span>
+        </a>
+        <button class="navbar-toggler shadow-none" type="button" data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasExample" aria-controls="offcanvasExample" aria-expanded="false">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            {% include "base/navbar-nav.html" %}
+
+            <div class="sign-out">
+                <a class="nav-link rounded-2 p-3" href="{% url "sign-out" %}">
+                    <i class="fa-solid fa-right-from-bracket fa-lg"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
