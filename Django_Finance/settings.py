@@ -84,9 +84,8 @@ DATABASES = {
     }
 }
 
-DATABASE_URL = config("DATABASE_URL")
 
-DATABASES["default"] = dj_database_url.config(default=DATABASE_URL)
+DATABASES["default"] = dj_database_url.config(default=config("DATABASE_URL"))
 
 
 # Password validation
