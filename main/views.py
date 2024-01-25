@@ -56,7 +56,7 @@ def sign_up(req):
             form.save()
             return redirect("sign-in")
 
-    print(form.__getitem__("password2").errors.as_data())
+    print(form.__getitem__("password2").errors.as_json())
     ctx = {"signUpForm": form}
 
     return render(req, "sign-up.html", ctx)

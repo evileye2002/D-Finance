@@ -12,7 +12,7 @@ class SignUpForm(UserCreationForm):
         max_length=150,
         required=True,
         widget=widgets.TextInput(
-            attrs={"id": "username", "placeholder": "Tên tài khoản"}
+            attrs={"id": "username", "placeholder": "Tên đăng nhập"}
         ),
     )
 
@@ -34,7 +34,7 @@ class SignUpForm(UserCreationForm):
         min_length=8,
         required=True,
         widget=widgets.PasswordInput(
-            attrs={"id": "password2", "placeholder": "Xác nhận lại mật khẩu"}
+            attrs={"id": "password2", "placeholder": "Nhập lại mật khẩu"}
         ),
     )
 
@@ -60,8 +60,6 @@ class SignUpForm(UserCreationForm):
         if password2.errors:
             errors += "password1;password2;"
 
-        # print(password2.errors.as_json())
-
         for visible in self.visible_fields():
             if visible.field.widget.attrs["id"] in errors:
                 visible.field.widget.attrs["class"] = "form-control is-invalid"
@@ -77,7 +75,7 @@ class SignInForm(AuthenticationForm):
             attrs={
                 "id": "username",
                 "class": "form-control",
-                "placeholder": "Tài khoản",
+                "placeholder": "Tên đăng nhập",
             }
         ),
     )
@@ -166,10 +164,12 @@ class PostIncomeForm(forms.ModelForm):
                 "id": "income-time",
                 "type": "time",
                 "class": "form-control",
-                "style": "max-width: 100px;",
+                "style": "max-width: 120px;",
                 "value": str(datetime.now().time().hour).zfill(2)
                 + ":"
-                + str(datetime.now().time().minute).zfill(2),
+                + str(datetime.now().time().minute).zfill(2)
+                + ":"
+                + str(datetime.now().time().second).zfill(2),
             }
         ),
     )

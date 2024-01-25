@@ -84,8 +84,8 @@ DATABASES = {
     }
 }
 
-
-DATABASES["default"] = dj_database_url.config(default=config("DATABASE_URL"))
+if not DEBUG:
+    DATABASES["default"] = dj_database_url.config(default=config("DATABASE_URL"))
 
 
 # Password validation
@@ -110,9 +110,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "vi-vn"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Asia/Bangkok"
 
 USE_I18N = True
 
@@ -139,4 +139,4 @@ PWA_APP_THEME_COLOR = "#FFF"
 PWA_APP_THEME_BACKGROUND_COLOR = "#CFE2FF"
 
 PWA_APP_ICONS = [{"src": "static/imgs/avatar.jpg", "size": "160x160"}]
-PWA_SERVICE_WORKER_PATH = "static/js/serviceworker.js"
+PWA_SERVICE_WORKER_PATH = BASE_DIR / "serviceworker.js"
