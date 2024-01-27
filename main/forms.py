@@ -127,7 +127,7 @@ class PostIncomeForm(forms.ModelForm):
         widget=widgets.Textarea(
             attrs={
                 "id": "income-description",
-                "placeholder": "Mô tả, chú thích,...",
+                "placeholder": "Mô tả",
                 "style": "height: 100px",
                 "class": "form-control",
             }
@@ -152,7 +152,7 @@ class PostIncomeForm(forms.ModelForm):
                 "id": "income-date",
                 "type": "date",
                 "class": "form-control",
-                "value": datetime.now().date(),
+                # "value": datetime.now().date(),
             }
         ),
     )
@@ -165,11 +165,11 @@ class PostIncomeForm(forms.ModelForm):
                 "type": "time",
                 "class": "form-control",
                 "style": "max-width: 120px;",
-                "value": str(datetime.now().time().hour).zfill(2)
-                + ":"
-                + str(datetime.now().time().minute).zfill(2)
-                + ":"
-                + str(datetime.now().time().second).zfill(2),
+                # "value": str(datetime.now().time().hour).zfill(2)
+                # + ":"
+                # + str(datetime.now().time().minute).zfill(2)
+                # + ":"
+                # + str(datetime.now().time().second).zfill(2),
             }
         ),
     )

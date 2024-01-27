@@ -1,12 +1,13 @@
-{% extends "base/form-dialog.html" %}
+{% extends "base/modal.html" %}
 
-{% block formDialogBody %}
-<div id="form-dialog-body" class="bg-white rounded-4 shadow" style="width: 400px;">
-    <div class="border-bottom px-4 py-3">
-        <span class="fw-bold fs-3">Thêm Khoản Thu</span>
-    </div>
+{% block modalContent %}
+<div class="modal-header">
+    <h1 class="modal-title fs-5" id="mainModal">Thêm Khoản Thu</h1>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
 
-    <form id="postIncomeForm" class="p-4 mb-0 w-100" method="post" autocomplete="off" action="{% url "income" %}">
+<div class="modal-body">
+    <form id="postIncomeForm" class="mb-0 w-100" method="post" autocomplete="off" action="{% url "income" %}">
         {% csrf_token %}
 
         <div class="mb-2">
@@ -35,7 +36,7 @@
             <div class="input-group has-validation">
                 <div class="form-floating">
                     {{postIncomeDialog.description}}
-                    <label for="income-description">Mô tả, chú thích,...</label>
+                    <label for="income-description">Mô tả</label>
                     <div class="invalid-feedback">
                         {{ postIncomeDialog.description.errors }}
                     </div>
@@ -48,6 +49,5 @@
             <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Lưu</button>
         </div>
     </form>
-
 </div>
 {% endblock  %}
