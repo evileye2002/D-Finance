@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
-from .forms import SignUpForm, SignInForm, PostIncomeForm
+from .forms import SignUpForm, SignInForm, PostIncomeForm, WalletForm
+from .models import Wallet, Income
 
 
 # Create your views here.
@@ -70,6 +71,8 @@ def sign_out(req):
 @login_required(login_url="sign-in")
 def income(req):
     form = PostIncomeForm()
+    wallet = Wallet.objects.filter(author=req.user)
+    income = Income.objects.filter(wallet__in=Wallet.objects.filter(author=req.user))
 
     if req.method == "POST":
         reqPost = req.POST.copy()
@@ -88,6 +91,49 @@ def income(req):
 
     print(req.POST)
     print(form.errors)
-    ctx = {"postIncomeDialog": form}
+    ctx = {"postIncomeDialog": form, "wallet": wallet, "income": income}
 
-    return render(req, "income.html", ctx)
+    return render(req, "income/income.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def spending(req):
+
+    return render(req, "spending/spending.html")
+
+
+@login_required(login_url="sign-in")
+def loan(req):
+
+    return render(req, "loan/loan.html")
+
+
+@login_required(login_url="sign-in")
+def wallet(req):
+    wallets = Wallet.objects.filter(author=req.user)
+
+    ctx = {"wallets": wallets}
+
+    return render(req, "wallet/wallet.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def wallet_change(req, wallet_id):
+    wallet = Wallet.objects.get(id=wallet_id, author=req.user)
+    form = WalletForm(instance=wallet)
+
+    if req.method == "POST":
+        form = WalletForm(req.POST, instance=wallet)
+        if form.is_valid():
+            form.save()
+            return redirect("wallet")
+
+    ctx = {"form": form, "wallet": wallet}
+    return render(req, "wallet/wallet_change.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def wallet_delete(req, wallet_id):
+    wallet = Wallet.objects.get(id=wallet_id, author=req.user)
+    wallet.delete()
+    return redirect("wallet")

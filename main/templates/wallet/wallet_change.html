@@ -1,0 +1,24 @@
+{% extends "base/main.html" %}
+{% load static %}
+
+{% block title %}
+<title>Ví của bạn</title>
+{% endblock  %}
+
+{% block stylesheet %}
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Lưu thay đổi</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{% static "js/income.js" %}"></script>
+{% endblock  %}

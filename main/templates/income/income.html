@@ -1,0 +1,27 @@
+{% extends "base/main.html" %}
+{% load static %}
+
+{% block title %}
+<title>Thu Nhập</title>
+{% endblock  %}
+
+{% block stylesheet %}
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mainModal">
+        Launch demo modal
+    </button>
+    <p>User: {{ user }}</p>
+    <p>Wallet: {{ wallet }}</p>
+    <p>Income: {{ income }}</p>
+
+    {% include "income/income-modal.html" %}
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{% static "js/income.js" %}"></script>
+{% endblock  %}

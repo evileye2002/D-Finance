@@ -1,0 +1,61 @@
+{% extends "base/main.html" %}
+{% load static %}
+
+{% block title %}
+<title>Ví của bạn</title>
+{% endblock  %}
+
+{% block stylesheet %}
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <table class="table">
+        <thead>
+            <tr class="text-center">
+                <th scope="col">#</th>
+                <th scope="col">Tên</th>
+                <th scope="col">Tổng tiền</th>
+                <th scope="col">Trạng thái</th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for wallet in wallets %}
+            <tr>
+                <td class="text-center">{{ wallet.id }}</td>
+                <td>{{ wallet.name }}</td>
+                <td>{{ wallet.money }}</td>
+
+                {% if wallet.is_calculate %}
+                <td class="text-center">
+                    <input class="form-check-input" type="checkbox" value="" id="wallet.id" checked>
+                </td>
+                {% else %}
+                <td class="text-center">
+                    <input class="form-check-input" type="checkbox" value="" id="wallet.id">
+                </td>
+                {% endif %}
+
+                <td class="text-center" style="width: 50px;">
+                    <a href="wallet/{{wallet.id}}/change">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                </td>
+                <td class="text-center" style="width: 50px;">
+                    <a href="wallet/{{wallet.id}}/delete" class="text-danger">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{% static "js/income.js" %}"></script>
+{% endblock  %}

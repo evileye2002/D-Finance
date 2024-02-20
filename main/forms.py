@@ -2,7 +2,7 @@ from django import forms
 from django.forms import widgets
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import Income
+from .models import Income, Wallet
 from datetime import datetime
 
 
@@ -207,3 +207,13 @@ class PostIncomeForm(forms.ModelForm):
                 visible.field.widget.attrs["class"] = "form-control is-invalid"
             else:
                 visible.field.widget.attrs["class"] = "form-control"
+
+
+class PostSpendingForm(forms.ModelForm):
+    pass
+
+
+class WalletForm(forms.ModelForm):
+    class Meta:
+        model = Wallet
+        fields = ["name", "money", "is_calculate"]
