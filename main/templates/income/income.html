@@ -11,12 +11,61 @@
 
 {% block content %}
 <div class="container mt-3">
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mainModal">
-        Launch demo modal
-    </button>
-    <p>User: {{ user }}</p>
-    <p>Wallet: {{ wallet }}</p>
-    <p>Income: {{ income }}</p>
+    <div class="d-flex justify-content-center align-items-center rounded-3 bg-white">
+        <table class="table m-3">
+            <thead>
+                <tr>
+                    <th class="text-center">#</th>
+                    <th class="text-center">Ví</th>
+                    <th class="text-center">Hạng mục</th>
+                    <th class="text-center">Tên khoản thu</th>
+                    <th class="text-center">Số Tiền</th>
+                    <th class="text-center">Thời gian</th>
+                    <th class="text-center"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td class="text-center">
+                        <div class="py-2">{{ record.id }}</div>
+                    </td>
+                    <td class="text-center">
+                        <div class="py-2">{{ record.wallet }}</div>
+                    </td>
+                    <td class="text-center">
+                        <div class="py-2">{{ record.category }}</div>
+                    </td>
+                    <td class="text-center">
+                        <div class="py-2">{{ record.name }}</div>
+                    </td>
+                    <td class="text-center">
+                        <div class="py-2">{{ record.formatted_money }}</div>
+                    </td>
+                    <td class="text-center">
+                        <div class="py-2">{{ record.timestamp }}</div>
+                    </td>
+                    <td class="text-center" style="width: 80px;">
+                        <div class="d-flex gap-4 py-2">
+                            <a href="record/{{record.id}}/change">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+
+                            <a href="record/{{record.id}}/delete" class="text-danger">
+                                <i class="fa-solid fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    <div class="d-flex justify-content-end gap-3">
+        <a class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#mainModal">Thêm</a>
+    </div>
 
     {% include "income/income-modal.html" %}
 </div>
