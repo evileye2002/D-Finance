@@ -32,7 +32,7 @@
 
 
 <body>
-    <div class="bg-primary-subtle overflow-hidden vh-100">
+    <div class="bg-primary-subtle overflow-hidden">
         {% comment %} Side Bar {% endcomment %}
         {% if user.is_authenticated %}
         {% include "base/navbar.html" %}
@@ -40,7 +40,7 @@
 
 
         {% comment %} Content {% endcomment %}
-        <div class="container-fluid">
+        <div class="container-fluid vh-100">
             {% block content %}
 
 

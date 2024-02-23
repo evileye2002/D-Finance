@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-<title>Thu Nhập</title>
+<title>Vay nợ</title>
 {% endblock  %}
 
 {% block stylesheet %}
@@ -10,10 +10,12 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <button id="btnAddNewIncome" class="btn btn-primary" type="button">Toggle bottom offcanvas</button>
+<div class="container mt-3">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mainModal">
+        Launch demo modal
+    </button>
 
-    {% include "post-income.html" %}
+    {% include "income-modal.html" %}
 </div>
 {% endblock %}
 

@@ -2,8 +2,8 @@ from django import forms
 from django.forms import widgets
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import Income
-from datetime import datetime
+from .models import Record, Wallet, Category
+from django.utils import timezone
 
 
 class SignUpForm(UserCreationForm):
@@ -107,103 +107,39 @@ class SignInForm(AuthenticationForm):
                     visible.field.widget.attrs["class"] = "form-control is-invalid"
 
 
-class PostIncomeForm(forms.ModelForm):
-    name = forms.CharField(
-        min_length=3,
-        max_length=100,
-        required=True,
-        widget=widgets.TextInput(
-            attrs={
-                "id": "income-name",
-                "placeholder": "Tên khoản thu",
-                "class": "form-control",
-            }
-        ),
+class RecordForm(forms.ModelForm):
+    datetime_format = "%d/%m/%Y - %H:%M:%S"
+    initial_datetime = timezone.now().strftime(datetime_format)
+    timestamp = forms.DateTimeField(
+        label="Tại thời điểm", initial=initial_datetime, input_formats=[datetime_format]
     )
 
     description = forms.CharField(
-        max_length=250,
+        widget=forms.Textarea(attrs={"style": "height: 100px;"}),
+        label="Mô tả",
         required=False,
-        widget=widgets.Textarea(
-            attrs={
-                "id": "income-description",
-                "placeholder": "Mô tả, chú thích,...",
-                "style": "height: 100px",
-                "class": "form-control",
-            }
-        ),
-    )
-
-    money = forms.IntegerField(
-        required=True,
-        widget=widgets.NumberInput(
-            attrs={
-                "id": "income-money",
-                "placeholder": "Số tiền",
-                "class": "form-control",
-            }
-        ),
-    )
-
-    date = forms.DateField(
-        required=True,
-        widget=widgets.DateInput(
-            attrs={
-                "id": "income-date",
-                "type": "date",
-                "class": "form-control",
-                "value": datetime.now().date(),
-            }
-        ),
-    )
-
-    time = forms.TimeField(
-        required=True,
-        widget=widgets.TimeInput(
-            attrs={
-                "id": "income-time",
-                "type": "time",
-                "class": "form-control",
-                "style": "max-width: 120px;",
-                "value": str(datetime.now().time().hour).zfill(2)
-                + ":"
-                + str(datetime.now().time().minute).zfill(2)
-                + ":"
-                + str(datetime.now().time().second).zfill(2),
-            }
-        ),
-    )
-
-    datetime = forms.DateTimeField(
-        required=True,
-        widget=widgets.DateTimeInput(
-            attrs={
-                "id": "income-datetime",
-            }
-        ),
     )
 
     class Meta:
-        model = Income
-        fields = ["name", "description", "money", "datetime"]
+        model = Record
+        fields = ["name", "wallet", "category", "money", "timestamp", "description"]
+        labels = {
+            "name": "Tên",
+            "wallet": "Ví",
+            "category": "Hạng mục",
+            "money": "Số tiền",
+        }
+
+
+class WalletForm(forms.ModelForm):
+    name = forms.CharField(label="Tên ví")
+    money = forms.IntegerField(label="Số dư")
+    is_calculate = forms.BooleanField(label="Tính vào báo cáo", required=False)
+
+    class Meta:
+        model = Wallet
+        fields = ["name", "money", "is_calculate"]
 
     def __init__(self, *args, **kwargs):
-        super(PostIncomeForm, self).__init__(*args, **kwargs)
-
-        name = self.__getitem__("name")
-        description = self.__getitem__("description")
-        money = self.__getitem__("money")
-
-        errors = ""
-        if name.errors:
-            errors += "name;"
-        if description.errors:
-            errors += "description;"
-        if money.errors:
-            errors += "money"
-
-        for visible in self.visible_fields():
-            if visible.field.widget.attrs["id"] in errors:
-                visible.field.widget.attrs["class"] = "form-control is-invalid"
-            else:
-                visible.field.widget.attrs["class"] = "form-control"
+        super(WalletForm, self).__init__(*args, **kwargs)
+        self.initial["is_calculate"] = True

@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
-from .forms import SignUpForm, SignInForm, PostIncomeForm
+from .forms import SignUpForm, SignInForm, RecordForm, WalletForm
+from .models import Wallet, Record, Category
 
 
 # Create your views here.
@@ -69,25 +70,97 @@ def sign_out(req):
 
 @login_required(login_url="sign-in")
 def income(req):
-    form = PostIncomeForm()
+    records = Record.objects.filter(wallet__in=Wallet.objects.filter(author=req.user))
+    form = RecordForm()
 
     if req.method == "POST":
-        reqPost = req.POST.copy()
-        date = req.POST.get("date")
-        time = req.POST.get("time")
-        if date and time:
-            combined_datetime = datetime.fromisoformat(date + ":" + time)
-            reqPost.update({"datetime": combined_datetime})
-
-        form = PostIncomeForm(reqPost)
+        form = RecordForm(req.POST)
         if form.is_valid():
-            post = form.save(commit=False)
-            post.author = req.user
-            post.save()
+            income = form.save(commit=False)
+            income.author = req.user
+            income.save()
             return redirect("income")
 
-    print(req.POST)
-    print(form.errors)
-    ctx = {"postIncomeDialog": form}
+    ctx = {"form": form, "records": records}
 
-    return render(req, "income.html", ctx)
+    return render(req, "income/income.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def record_change(req, record_id):
+    record = Record.objects.get(
+        id=record_id, wallet__in=Wallet.objects.filter(author=req.user)
+    )
+    form = RecordForm(instance=record)
+
+    if req.method == "POST":
+        form = RecordForm(req.POST, instance=record)
+
+        if form.is_valid():
+            form.save()
+            return redirect("index")
+
+    ctx = {"form": form, "record": record}
+    return render(req, "record/record-change.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def record_delete(req, record_id):
+    record = Record.objects.get(
+        id=record_id, wallet__in=Wallet.objects.filter(author=req.user)
+    )
+    record.delete()
+    return redirect("income")
+
+
+@login_required(login_url="sign-in")
+def spending(req):
+
+    return render(req, "spending/spending.html")
+
+
+@login_required(login_url="sign-in")
+def loan(req):
+
+    return render(req, "loan/loan.html")
+
+
+@login_required(login_url="sign-in")
+def wallet(req):
+    wallets = Wallet.objects.filter(author=req.user)
+    form = WalletForm()
+
+    if req.method == "POST":
+        form = WalletForm(req.POST)
+        if form.is_valid():
+            wallet = form.save(commit=False)
+            wallet.author = req.user
+            wallet.save()
+            return redirect("wallet")
+
+    ctx = {"wallets": wallets, "form": form}
+
+    return render(req, "wallet/wallet.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def wallet_change(req, wallet_id):
+    wallet = Wallet.objects.get(id=wallet_id, author=req.user)
+    form = WalletForm(instance=wallet)
+
+    if req.method == "POST":
+        form = WalletForm(req.POST, instance=wallet)
+
+        if form.is_valid():
+            form.save()
+            return redirect("wallet")
+
+    ctx = {"form": form, "wallet": wallet}
+    return render(req, "wallet/wallet-change.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def wallet_delete(req, wallet_id):
+    wallet = Wallet.objects.get(id=wallet_id, author=req.user)
+    wallet.delete()
+    return redirect("wallet")

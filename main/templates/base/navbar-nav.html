@@ -14,21 +14,23 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link px-2 rounded-2 {% if request.path == '/save' %} active {% endif %}" href="{% url "save" %}">
-            <i class="fa-solid fa-piggy-bank fa-lg"></i>
-            <span>Tiết Kiệm</span>
+        <a class="nav-link px-2 rounded-2 {% if request.path == '/spending' %} active {% endif %}"
+            href="{% url "spending" %}">
+            <i class="fa-solid fa-comments-dollar"></i>
+            <span>Chi tiêu</span>
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link px-2 rounded-2 {% if request.path == '/rent' %} active {% endif %}" href="{% url "rent" %}">
+        <a class="nav-link px-2 rounded-2 {% if request.path == '/loan' %} active {% endif %}" href="{% url "loan" %}">
             <i class="fa-solid fa-hand-holding-dollar fa-lg"></i>
-            <span>Vay</span>
+            <span>Vay nợ</span>
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link px-2 rounded-2 " href="#">
-            <i class="fa-solid fa-sack-dollar fa-lg"></i>
-            <span>Nợ</span>
+        <a class="nav-link px-2 rounded-2 {% if request.path == '/wallet' %} active {% endif %}"
+            href="{% url "wallet" %}">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Ví của bạn</span>
         </a>
     </li>
 </ul>

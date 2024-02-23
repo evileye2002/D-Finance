@@ -1,8 +1,11 @@
 from django.contrib import admin
-from .models import *
+from django.apps import apps
 
 # Register your models here.
-admin.site.register(RecordType)
-admin.site.register(CategoryGroup)
-admin.site.register(Category)
-admin.site.register(Income)
+models = apps.get_containing_app_config("main").get_models()
+
+for model in models:
+    try:
+        admin.site.register(model)
+    except admin.sites.AlreadyRegistered:
+        pass

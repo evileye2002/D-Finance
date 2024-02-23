@@ -3,11 +3,15 @@ from . import views
 
 urlpatterns = [
     path("", views.index, name="index"),
-    path("test-up", views.test, name="test-up"),
     path("sign-in", views.sign_in, name="sign-in"),
     path("sign-up", views.sign_up, name="sign-up"),
     path("sign-out", views.sign_out, name="sign-out"),
     path("income", views.income, name="income"),
-    path("save", views.sign_out, name="save"),
-    path("rent", views.sign_out, name="rent"),
+    path("record/<int:record_id>/change", views.record_change, name="record_change"),
+    path("record/<int:record_id>/delete", views.record_delete, name="record_delete"),
+    path("spending", views.spending, name="spending"),
+    path("loan", views.loan, name="loan"),
+    path("wallet", views.wallet, name="wallet"),
+    path("wallet/<int:wallet_id>/change", views.wallet_change, name="wallet_change"),
+    path("wallet/<int:wallet_id>/delete", views.wallet_delete, name="wallet_delete"),
 ]
