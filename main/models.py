@@ -26,7 +26,6 @@ class Category(models.Model):
 class Wallet(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
-    money = models.IntegerField()
     is_calculate = models.BooleanField()
 
     def __str__(self):

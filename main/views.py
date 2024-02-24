@@ -70,11 +70,15 @@ def sign_out(req):
 
 @login_required(login_url="sign-in")
 def income(req):
-    records = Record.objects.filter(wallet__in=Wallet.objects.filter(author=req.user))
-    form = RecordForm()
+    records = Record.objects.filter(
+        wallet__in=Wallet.objects.filter(author=req.user),
+        category__category_group__name="Thu tiền",
+        category__author=req.user,
+    )
+    form = RecordForm(type="income", user=req.user)
 
     if req.method == "POST":
-        form = RecordForm(req.POST)
+        form = RecordForm(req.POST, user=req.user, type="income")
         if form.is_valid():
             income = form.save(commit=False)
             income.author = req.user

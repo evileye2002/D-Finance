@@ -53,9 +53,8 @@
                             <a href="wallet/{{wallet.id}}/change">
                                 <i class="fa-solid fa-pen"></i>
                             </a>
-
-                            <a href="wallet/{{wallet.id}}/delete" class="text-danger">
-                                <i class="fa-solid fa-trash"></i>
+                            <a href="wallet/{{wallet.id}}/delete" class="text-danger" onclick="DeleteDialog(e)">
+                                <i class=" fa-solid fa-trash"></i>
                             </a>
                         </div>
                     </td>
@@ -75,5 +74,5 @@
 {% endblock %}
 
 {% block script %}
-<script src="{% static "js/income.js" %}"></script>
+<script src="{% static "js/wallet.js" %}"></script>
 {% endblock  %}

@@ -2,8 +2,8 @@ from django import forms
 from django.forms import widgets
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import Record, Wallet, Category
-from django.utils import timezone
+from .models import Record, Wallet, Category, CategoryGroup
+from django.db import models
 
 
 class SignUpForm(UserCreationForm):
@@ -108,10 +108,13 @@ class SignInForm(AuthenticationForm):
 
 
 class RecordForm(forms.ModelForm):
-    datetime_format = "%d/%m/%Y - %H:%M:%S"
-    initial_datetime = timezone.now().strftime(datetime_format)
+    # datetime_format = "%d/%m/%Y - %H:%M:%S"
+    # initial_datetime = timezone.now().strftime(datetime_format)
     timestamp = forms.DateTimeField(
-        label="Tại thời điểm", initial=initial_datetime, input_formats=[datetime_format]
+        widget=forms.DateInput(attrs={"type": "datetime-local"}),
+        label="Tại thời điểm",
+        # initial=initial_datetime,
+        # input_formats=[datetime_format],
     )
 
     description = forms.CharField(
@@ -124,22 +127,49 @@ class RecordForm(forms.ModelForm):
         model = Record
         fields = ["name", "wallet", "category", "money", "timestamp", "description"]
         labels = {
-            "name": "Tên",
-            "wallet": "Ví",
-            "category": "Hạng mục",
+            "wallet": "Ví của bạn",
             "money": "Số tiền",
         }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        type = kwargs.pop("type", None)
+        super(RecordForm, self).__init__(*args, **kwargs)
+
+        if user:
+            self.fields["wallet"].queryset = Wallet.objects.filter(author=user)
+
+            if type == "income":
+                self.fields["name"].label = "Tên khoản thu"
+                self.fields["category"].label = "Hạng mục thu"
+                self.fields["category"].queryset = Category.objects.filter(
+                    models.Q(is_default=True) | models.Q(author=user),
+                    category_group__name="Thu tiền",
+                )
+
+            if type == "spending":
+                self.fields["name"].label = "Tên khoản chi"
+                self.fields["category"].label = "Hạng mục chi"
+                self.fields["category"].queryset = Category.objects.filter(
+                    models.Q(is_default=True) | models.Q(author=user),
+                    category_group__name="Chi tiền",
+                )
+
+            if type == "loan":
+                self.fields["name"].label = "Tên khoản vay"
+                self.fields["category"].label = "Hạng mục vay"
+                self.fields["category"].queryset = Category.objects.filter(
+                    models.Q(is_default=True) | models.Q(author=user),
+                    category_group__name="Vay nợ",
+                )
 
 
 class WalletForm(forms.ModelForm):
     name = forms.CharField(label="Tên ví")
-    money = forms.IntegerField(label="Số dư")
-    is_calculate = forms.BooleanField(label="Tính vào báo cáo", required=False)
+    is_calculate = forms.BooleanField(
+        label="Tính vào báo cáo", required=False, initial=True
+    )
 
     class Meta:
         model = Wallet
-        fields = ["name", "money", "is_calculate"]
-
-    def __init__(self, *args, **kwargs):
-        super(WalletForm, self).__init__(*args, **kwargs)
-        self.initial["is_calculate"] = True
+        fields = ["name", "is_calculate"]
