@@ -12,14 +12,13 @@
 
 {% block content %}
 <div class="container mt-3">
-    <div class="d-flex justify-content-center">
-        <div class="bg-white rounded-3">
-            <form method="post" class="p-3" style="width: 400px;">
-                {% csrf_token %}
-                {{ form|crispy }}
-                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Lưu thay đổi</button>
-            </form>
-        </div>
+    <div class="bg-white rounded-3">
+        <form method="post" class="p-3">
+            {% csrf_token %}
+            {{ form|crispy }}
+
+            <button type=" submit" class="btn btn-primary w-100 py-2 fw-bold">Lưu thay đổi</button>
+        </form>
     </div>
 </div>
 {% endblock %}

@@ -1,9 +1,8 @@
 {% extends "base/main.html" %}
 {% load static %}
-{% load humanize %}
 
 {% block title %}
-<title>Ví của bạn</title>
+<title>Thu Nhập</title>
 {% endblock  %}
 
 {% block stylesheet %}
@@ -17,47 +16,43 @@
             <thead>
                 <tr>
                     <th class="text-center">#</th>
-                    <th class="text-center">Tên ví</th>
-                    <th class="text-center">Số dư hiện tại</th>
-                    <th class="text-center">Trạng thái</th>
+                    <th class="text-center">Ví</th>
+                    <th class="text-center">Hạng mục</th>
+                    <th class="text-center">Tên khoản thu</th>
+                    <th class="text-center">Số Tiền</th>
+                    <th class="text-center">Thời gian</th>
                     <th class="text-center"></th>
                 </tr>
             </thead>
             <tbody>
-                {% for wallet in wallets %}
+                {% for record in records %}
                 <tr>
                     <td class="text-center">
-                        <div class="py-2">{{ wallet.id }}</div>
+                        <div class="py-2">{{ record.id }}</div>
                     </td>
                     <td class="text-center">
-                        <div class="py-2">{{ wallet.name }}
-                        </div>
+                        <div class="py-2">{{ record.wallet }}</div>
                     </td>
                     <td class="text-center">
-                        {% if wallet.total.as_number < 0 %}
-                        <div class="py-2 fw-bold text-danger">{{ wallet.total.as_formatted_number }} VNĐ</div>
-                        {% else %}
-                        <div class="py-2 fw-bold text-success">{{ wallet.total.as_formatted_number }} VNĐ</div>
-                        {% endif %}
+                        <div class="py-2">{{ record.category }}</div>
                     </td>
-
-                    {% if wallet.is_calculate %}
                     <td class="text-center">
-                        <i class="fa-solid fa-circle-check text-success py-2"></i>
+                        <div class="py-2">{{ record.name }}</div>
                     </td>
-                    {% else %}
                     <td class="text-center">
-                        <i class="fa-regular fa-circle-xmark text-danger py-2"></i>
+                        <div class="py-2 text-success fw-bold">{{ record.formatted_money }}</div>
                     </td>
-                    {% endif %}
-
+                    <td class="text-center">
+                        <div class="py-2">{{ record.timestamp }}</div>
+                    </td>
                     <td class="text-center" style="width: 80px;">
                         <div class="d-flex gap-4 py-2">
-                            <a href="wallet/{{wallet.id}}/change">
+                            <a href="record/{{record.id}}/change">
                                 <i class="fa-solid fa-pen"></i>
                             </a>
-                            <a href="wallet/{{wallet.id}}/delete" class="text-danger" onclick="DeleteDialog(event)">
-                                <i class=" fa-solid fa-trash"></i>
+
+                            <a href="record/{{record.id}}/delete" class="text-danger">
+                                <i class="fa-solid fa-trash"></i>
                             </a>
                         </div>
                     </td>
@@ -71,11 +66,11 @@
     <div class="d-flex justify-content-end gap-3">
         <a class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#mainModal">Thêm</a>
     </div>
-</div>
 
-{% include "wallet/wallet-modal.html" %}
+    {% include "record/income/income-modal.html" %}
+</div>
 {% endblock %}
 
 {% block script %}
-<script src="{% static "js/wallet.js" %}"></script>
+
 {% endblock  %}

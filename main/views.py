@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from datetime import datetime
+from django.db import models
 from .forms import SignUpForm, SignInForm, RecordForm, WalletForm
 from .models import Wallet, Record, Category
 
@@ -72,8 +72,10 @@ def sign_out(req):
 def income(req):
     records = Record.objects.filter(
         wallet__in=Wallet.objects.filter(author=req.user),
-        category__category_group__name="Thu tiền",
-        category__author=req.user,
+        category__in=Category.objects.filter(
+            models.Q(is_default=True) | models.Q(author=req.user),
+            category_group__name="Thu tiền",
+        ),
     )
     form = RecordForm(type="income", user=req.user)
 
@@ -87,7 +89,7 @@ def income(req):
 
     ctx = {"form": form, "records": records}
 
-    return render(req, "income/income.html", ctx)
+    return render(req, "record/income/income.html", ctx)
 
 
 @login_required(login_url="sign-in")
@@ -119,8 +121,26 @@ def record_delete(req, record_id):
 
 @login_required(login_url="sign-in")
 def spending(req):
+    records = Record.objects.filter(
+        wallet__in=Wallet.objects.filter(author=req.user),
+        category__in=Category.objects.filter(
+            models.Q(is_default=True) | models.Q(author=req.user),
+            category_group__name="Chi tiền",
+        ),
+    )
+    form = RecordForm(type="spending", user=req.user)
 
-    return render(req, "spending/spending.html")
+    if req.method == "POST":
+        form = RecordForm(req.POST, user=req.user, type="spending")
+        if form.is_valid():
+            spending = form.save(commit=False)
+            spending.author = req.user
+            spending.save()
+            return redirect("spending")
+
+    ctx = {"form": form, "records": records}
+
+    return render(req, "record/spending/spending.html", ctx)
 
 
 @login_required(login_url="sign-in")

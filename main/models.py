@@ -31,15 +31,25 @@ class Wallet(models.Model):
     def __str__(self):
         return self.name
 
-    def formatted_money(self):
-        total_money = Record.objects.filter(wallet_id=self.id).aggregate(
-            total_money=Sum("money")
-        )["total_money"]
+    def total(self):
+        income = (
+            Record.objects.filter(
+                wallet_id=self.id, category__category_group__name="Thu tiền"
+            ).aggregate(total_money=Sum("money"))["total_money"]
+            or 0
+        )
 
-        if total_money is not None:
-            return "{:,}".format(total_money)
-        else:
-            return 0
+        spending = (
+            Record.objects.filter(
+                wallet_id=self.id, category__category_group__name="Chi tiền"
+            ).aggregate(total_money=Sum("money"))["total_money"]
+            or 0
+        )
+
+        total = income - spending
+        formatted_total = "{:,}".format(total)
+
+        return {"as_number": total, "as_formatted_number": formatted_total}
 
 
 class Record(models.Model):

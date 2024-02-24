@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-<title>Thu Nhập</title>
+<title>Chi Tiêu</title>
 {% endblock  %}
 
 {% block stylesheet %}
@@ -40,7 +40,7 @@
                         <div class="py-2">{{ record.name }}</div>
                     </td>
                     <td class="text-center">
-                        <div class="py-2">{{ record.formatted_money }}</div>
+                        <div class="py-2 text-danger fw-bold">{{ record.formatted_money }}</div>
                     </td>
                     <td class="text-center">
                         <div class="py-2">{{ record.timestamp }}</div>
@@ -67,10 +67,10 @@
         <a class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#mainModal">Thêm</a>
     </div>
 
-    {% include "income/income-modal.html" %}
+    {% include "record/spending/spending-modal.html" %}
 </div>
 {% endblock %}
 
 {% block script %}
-<script src="{% static "js/income.js" %}"></script>
+
 {% endblock  %}
