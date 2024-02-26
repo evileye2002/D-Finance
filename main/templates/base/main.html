@@ -31,8 +31,8 @@
 </head>
 
 
-<body>
-    <div class="bg-primary-subtle overflow-hidden">
+<body class="bg-primary-subtle">
+    <div class="overflow-hidden">
         {% comment %} Side Bar {% endcomment %}
         {% if user.is_authenticated %}
         {% include "base/navbar.html" %}
@@ -40,12 +40,10 @@
 
 
         {% comment %} Content {% endcomment %}
-        <div class="container-fluid vh-100">
-            {% block content %}
+        {% block content %}
 
 
-            {% endblock %}
-        </div>
+        {% endblock %}
     </div>
 
     {% comment %} Script {% endcomment %}

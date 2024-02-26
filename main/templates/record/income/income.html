@@ -1,18 +1,19 @@
 {% extends "base/main.html" %}
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}
 <title>Thu Nhập</title>
 {% endblock  %}
 
 {% block stylesheet %}
-
+<link rel="stylesheet" href="{% static "css/record.css" %}">
 {% endblock %}
 
 {% block content %}
 <div class="container mt-3">
-    <div class="d-flex justify-content-center align-items-center rounded-3 bg-white">
-        <table class="table m-3">
+    <div class="rounded-3 bg-white">
+        {% comment %} <table class="table m-3">
             <thead>
                 <tr>
                     <th class="text-center">#</th>
@@ -59,7 +60,31 @@
                 </tr>
                 {% endfor %}
             </tbody>
-        </table>
+        </table> {% endcomment %}
+
+        <div class="p-3 pb-1">
+            {% for date, records in daily_records %}
+            <div class="border border-primary rounded-3 mb-3">
+                <div class="d-flex align-items-center fw-bold rounded-top-3 m-2">
+                    <div class="ps-2 fw-bold text-primary fs-4">{{ date }}</div>
+                    <div class="text-success ms-auto pe-2 fs-4">{{ records|sum_money }} VNĐ</div>
+                </div>
+                <div>
+                    {% for record in records %}
+                    <div class="d-flex align-items-center rounded-3 m-3 record"
+                        onclick="location.href='record/{{record.id}}/change';" style="cursor: pointer;">
+                        <div class="ps-3 pe-4">{{ record.timestamp|time:"H:i" }}</div>
+                        <div class="fw-bold">{{ record.category }}</div>
+                        <div class="ms-auto pe-3">
+                            <div class="fw-bold text-success">{{ record.formatted_money }} VNĐ</div>
+                            <div class="text-end">{{ record.wallet }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
 
 

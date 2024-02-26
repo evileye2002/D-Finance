@@ -2,8 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import models
+from django.db.models import Sum
+from django.db.models.functions import TruncDate
 from .forms import SignUpForm, SignInForm, RecordForm, WalletForm
 from .models import Wallet, Record, Category
+from .utils import getIncome
 
 
 # Create your views here.
@@ -77,6 +80,10 @@ def income(req):
             category_group__name="Thu tiền",
         ),
     )
+
+    sorted_records = records.order_by("timestamp")
+    daily_records = getIncome(sorted_records=sorted_records)
+
     form = RecordForm(type="income", user=req.user)
 
     if req.method == "POST":
@@ -87,7 +94,7 @@ def income(req):
             income.save()
             return redirect("income")
 
-    ctx = {"form": form, "records": records}
+    ctx = {"form": form, "daily_records": daily_records}
 
     return render(req, "record/income/income.html", ctx)
 
