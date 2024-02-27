@@ -33,4 +33,18 @@
             <span>Ví của bạn</span>
         </a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link px-2 rounded-2 {% if request.path == '/directory' %} active {% endif %}"
+            href="{% url "directory" %}">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Danh bạ</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link px-2 rounded-2 {% if request.path == '/category' %} active {% endif %}"
+            href="{% url "category" %}">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Danh mục</span>
+        </a>
+    </li>
 </ul>

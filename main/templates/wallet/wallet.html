@@ -3,7 +3,7 @@
 {% load humanize %}
 
 {% block title %}
-<title>Ví của bạn</title>
+<title>Ví Của Bạn</title>
 {% endblock  %}
 
 {% block stylesheet %}
@@ -16,7 +16,6 @@
         <table class="table m-3">
             <thead>
                 <tr>
-                    <th class="text-center">#</th>
                     <th class="text-center">Tên ví</th>
                     <th class="text-center">Số dư hiện tại</th>
                     <th class="text-center">Trạng thái</th>
@@ -26,9 +25,6 @@
             <tbody>
                 {% for wallet in wallets %}
                 <tr>
-                    <td class="text-center">
-                        <div class="py-2">{{ wallet.id }}</div>
-                    </td>
                     <td class="text-center">
                         <div class="py-2">{{ wallet.name }}
                         </div>
@@ -56,7 +52,8 @@
                             <a href="wallet/{{wallet.id}}/change">
                                 <i class="fa-solid fa-pen"></i>
                             </a>
-                            <a href="wallet/{{wallet.id}}/delete" class="text-danger" onclick="DeleteDialog(event)">
+                            <a href="wallet/{{wallet.id}}/delete" class="text-danger"
+                                onclick="DeleteWalletDialog(event)">
                                 <i class=" fa-solid fa-trash"></i>
                             </a>
                         </div>
@@ -77,5 +74,5 @@
 {% endblock %}
 
 {% block script %}
-<script src="{% static "js/wallet.js" %}"></script>
+<script src="{% static "js/delete.js" %}"></script>
 {% endblock  %}

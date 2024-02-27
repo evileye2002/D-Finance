@@ -11,14 +11,14 @@
 
 {% block content %}
 <div class="container mt-3">
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mainModal">
-        Launch demo modal
-    </button>
+    <div class="d-flex justify-content-end gap-3">
+        <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mainModal">Thêm</a>
+    </div>
 
-    {% include "income-modal.html" %}
+    {% include "loan/loan-modal.html" %}
 </div>
 {% endblock %}
 
 {% block script %}
-<script src="{% static "js/income.js" %}"></script>
+
 {% endblock  %}

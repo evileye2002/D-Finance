@@ -2,7 +2,7 @@ from django import forms
 from django.forms import widgets
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import Record, Wallet, Category, CategoryGroup
+from .models import Record, Wallet, Category, Loan, PeopleDirectory, CategoryGroup
 from django.db import models
 
 
@@ -108,13 +108,13 @@ class SignInForm(AuthenticationForm):
 
 
 class RecordForm(forms.ModelForm):
-    # datetime_format = "%d/%m/%Y - %H:%M:%S"
-    # initial_datetime = timezone.now().strftime(datetime_format)
+    datetime_format = "%Y-%m-%dT%H:%M"
     timestamp = forms.DateTimeField(
-        widget=forms.DateInput(attrs={"type": "datetime-local"}),
+        widget=forms.DateTimeInput(
+            attrs={"type": "datetime-local"},
+            format=datetime_format,
+        ),
         label="Tại thời điểm",
-        # initial=initial_datetime,
-        # input_formats=[datetime_format],
     )
 
     description = forms.CharField(
@@ -173,3 +173,102 @@ class WalletForm(forms.ModelForm):
     class Meta:
         model = Wallet
         fields = ["name", "is_calculate"]
+
+
+class LoanForm(forms.ModelForm):
+    datetime_format = "%Y-%m-%dT%H:%M"
+    timestamp = forms.DateTimeField(
+        widget=forms.DateTimeInput(
+            attrs={"type": "datetime-local"},
+            format=datetime_format,
+        ),
+        label="Tại thời điểm",
+    )
+    loan_end = forms.DateTimeField(
+        widget=forms.DateTimeInput(
+            attrs={"type": "datetime-local"},
+            format=datetime_format,
+        ),
+        label="Thời hạn",
+    )
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={"style": "height: 100px;"}),
+        label="Mô tả",
+        required=False,
+    )
+
+    class Meta:
+        model = Loan
+        fields = [
+            "name",
+            "wallet",
+            "category",
+            "lender_borrower",
+            "money",
+            "timestamp",
+            "loan_end",
+            "description",
+        ]
+        labels = {
+            "name": "Tên khoản vay",
+            "wallet": "Ví của bạn",
+            "money": "Số tiền",
+            "category": "Hạng mục vay",
+            "lender_borrower": "Người cho vay/ đi vay",
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super(LoanForm, self).__init__(*args, **kwargs)
+
+        if user:
+            self.fields["wallet"].queryset = Wallet.objects.filter(author=user)
+            self.fields["lender_borrower"].queryset = PeopleDirectory.objects.filter(
+                author=user
+            )
+            self.fields["category"].queryset = Category.objects.filter(
+                category_group__name="Vay nợ",
+            )
+
+
+class DirectoryForm(forms.ModelForm):
+    class Meta:
+        model = PeopleDirectory
+        fields = [
+            "last_name",
+            "first_name",
+            "phone",
+            "address",
+        ]
+        labels = {
+            "first_name": "Tên",
+            "last_name": "Họ",
+            "phone": "Số điện thoại",
+            "address": "Địa chỉ",
+        }
+
+
+class CategoryForm(forms.ModelForm):
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={"style": "height: 100px;"}),
+        label="Mô tả",
+        required=False,
+    )
+
+    class Meta:
+        model = Category
+        fields = [
+            "name",
+            "category_group",
+        ]
+        labels = {
+            "name": "Tên",
+            "category_group": "Nhóm",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(CategoryForm, self).__init__(*args, **kwargs)
+
+        self.fields["category_group"].queryset = CategoryGroup.objects.filter(
+            models.Q(name="Thu tiền") | models.Q(name="Chi tiền"),
+        )

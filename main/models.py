@@ -71,10 +71,13 @@ class Record(models.Model):
 
 class PeopleDirectory(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50, null=True, blank=True)
+    phone = models.CharField(max_length=12, null=True, blank=True, unique=True)
+    address = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return self.last_name + " " + self.first_name
 
 
 class Loan(models.Model):

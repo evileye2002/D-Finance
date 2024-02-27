@@ -2,11 +2,17 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import models
-from django.db.models import Sum
-from django.db.models.functions import TruncDate
-from .forms import SignUpForm, SignInForm, RecordForm, WalletForm
-from .models import Wallet, Record, Category
-from .utils import getIncome
+from .forms import (
+    SignUpForm,
+    SignInForm,
+    RecordForm,
+    WalletForm,
+    LoanForm,
+    DirectoryForm,
+    CategoryForm,
+)
+from .models import Wallet, Record, Category, PeopleDirectory, Loan
+from .utils import getDailyRecord, getTotalByMonth, changeForm
 
 
 # Create your views here.
@@ -82,8 +88,7 @@ def income(req):
     )
 
     sorted_records = records.order_by("timestamp")
-    daily_records = getIncome(sorted_records=sorted_records)
-
+    daily_records = getDailyRecord(sorted_records)
     form = RecordForm(type="income", user=req.user)
 
     if req.method == "POST":
@@ -104,16 +109,8 @@ def record_change(req, record_id):
     record = Record.objects.get(
         id=record_id, wallet__in=Wallet.objects.filter(author=req.user)
     )
-    form = RecordForm(instance=record)
+    ctx = changeForm("record", req, RecordForm, record)
 
-    if req.method == "POST":
-        form = RecordForm(req.POST, instance=record)
-
-        if form.is_valid():
-            form.save()
-            return redirect("index")
-
-    ctx = {"form": form, "record": record}
     return render(req, "record/record-change.html", ctx)
 
 
@@ -123,7 +120,7 @@ def record_delete(req, record_id):
         id=record_id, wallet__in=Wallet.objects.filter(author=req.user)
     )
     record.delete()
-    return redirect("income")
+    return redirect("/")
 
 
 @login_required(login_url="sign-in")
@@ -135,6 +132,8 @@ def spending(req):
             category_group__name="Chi tiền",
         ),
     )
+    sorted_records = records.order_by("timestamp")
+    daily_records = getDailyRecord(sorted_records=sorted_records)
     form = RecordForm(type="spending", user=req.user)
 
     if req.method == "POST":
@@ -145,15 +144,28 @@ def spending(req):
             spending.save()
             return redirect("spending")
 
-    ctx = {"form": form, "records": records}
+    ctx = {"form": form, "daily_records": daily_records}
 
     return render(req, "record/spending/spending.html", ctx)
 
 
 @login_required(login_url="sign-in")
 def loan(req):
+    loans = Loan.objects.filter(
+        wallet__in=Wallet.objects.filter(author=req.user),
+        category__in=Category.objects.filter(category_group__name="Vay nợ"),
+    )
+    form = LoanForm(user=req.user)
 
-    return render(req, "loan/loan.html")
+    if req.method == "POST":
+        form = LoanForm(req.POST, user=req.user)
+        if form.is_valid():
+            form.save()
+            return redirect("loan")
+
+    ctx = {"form": form, "loans": loans}
+
+    return render(req, "loan/loan.html", ctx)
 
 
 @login_required(login_url="sign-in")
@@ -177,16 +189,8 @@ def wallet(req):
 @login_required(login_url="sign-in")
 def wallet_change(req, wallet_id):
     wallet = Wallet.objects.get(id=wallet_id, author=req.user)
-    form = WalletForm(instance=wallet)
+    ctx = changeForm("wallet", req, WalletForm, wallet)
 
-    if req.method == "POST":
-        form = WalletForm(req.POST, instance=wallet)
-
-        if form.is_valid():
-            form.save()
-            return redirect("wallet")
-
-    ctx = {"form": form, "wallet": wallet}
     return render(req, "wallet/wallet-change.html", ctx)
 
 
@@ -194,4 +198,90 @@ def wallet_change(req, wallet_id):
 def wallet_delete(req, wallet_id):
     wallet = Wallet.objects.get(id=wallet_id, author=req.user)
     wallet.delete()
+
     return redirect("wallet")
+
+
+@login_required(login_url="sign-in")
+def directory(req):
+    directories = PeopleDirectory.objects.filter(author=req.user)
+    form = DirectoryForm()
+
+    if req.method == "POST":
+        form = DirectoryForm(req.POST)
+        if form.is_valid():
+            directory = form.save(commit=False)
+            directory.author = req.user
+            directory.save()
+            return redirect("directory")
+
+    ctx = {"form": form, "directories": directories}
+
+    return render(req, "directory/directory.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def directory_change(req, directory_id):
+    directory = PeopleDirectory.objects.get(id=directory_id, author=req.user)
+    ctx = changeForm("directory", req, DirectoryForm, directory)
+
+    return render(req, "directory/directory-change.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def directory_delete(req, directory_id):
+    directory = directory.objects.get(id=directory_id, author=req.user)
+    directory.delete()
+
+    return redirect("directory")
+
+
+@login_required(login_url="sign-in")
+def category(req):
+    categories = Category.objects.filter(
+        models.Q(is_default=True) | models.Q(author=req.user),
+    )
+    form = CategoryForm()
+
+    if req.method == "POST":
+        form = CategoryForm(req.POST)
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.author = req.user
+            category.is_default = False
+            category.save()
+            return redirect("category")
+
+    ctx = {"form": form, "categories": categories}
+
+    return render(req, "category/category.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def category_change(req, category_id):
+    category = Category.objects.get(id=category_id, author=req.user)
+
+    if category.is_default:
+        return render(req, "category/category-is-default.html")
+
+    form = CategoryForm(instance=category)
+    if req.method == "POST":
+        form = CategoryForm(req.POST, instance=category)
+
+        if form.is_valid():
+            form.save()
+            return redirect("category")
+
+    ctx = {"form": form, "category": category}
+    return render(req, "category/category-change.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def category_delete(req, category_id):
+    category = category.objects.get(id=category_id, author=req.user)
+
+    if category.is_default:
+        return render(req, "category/category-is-default.html")
+
+    category.delete()
+    return redirect("category")

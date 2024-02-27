@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 
 {% block title %}
-<title>Chỉnh sửa bản ghi</title>
+<title>Chỉnh Sửa Bản Ghi</title>
 {% endblock  %}
 
 {% block stylesheet %}
@@ -11,18 +11,22 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mt-3">
+<div class="container my-3">
     <div class="bg-white rounded-3">
         <form method="post" class="p-3">
             {% csrf_token %}
             {{ form|crispy }}
 
-            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Lưu thay đổi</button>
+            <div class="d-flex justify-content-center gap-3">
+                <button type="submit" class="btn btn-primary py-2 fw-bold">Lưu thay đổi</button>
+                <a href="/record/{{record.id}}/delete" class="btn btn-danger py-2 fw-bold"
+                    onclick="DeleteRecordDialog(event)">Xóa</a>
+            </div>
         </form>
     </div>
 </div>
 {% endblock %}
 
 {% block script %}
-
+<script src="{% static "js/delete.js" %}"></script>
 {% endblock  %}

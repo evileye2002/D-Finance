@@ -1,0 +1,61 @@
+{% extends "base/main.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}
+<title>Danh bạ</title>
+{% endblock  %}
+
+{% block stylesheet %}
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div class="d-flex justify-content-center align-items-center rounded-3 bg-white">
+        <table class="table m-3">
+            <thead>
+                <tr>
+                    <th class="text-center">Họ tên</th>
+                    <th class="text-center">Số điện thoại</th>
+                    <th class="text-center"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for directory in directories %}
+                <tr>
+                    <td class="text-center">
+                        <div class="py-2">{{ directory }}</div>
+                    </td>
+                    <td class="text-center">
+                        <div class="py-2">{{ directory.phone }}
+                        </div>
+                    </td>
+                    <td class="text-center" style="width: 80px;">
+                        <div class="d-flex gap-4 py-2">
+                            <a href="directory/{{directory.id}}/change">
+                                <i class="fa-solid fa-pen"></i>
+                            </a>
+                            <a href="directory/{{directory.id}}/delete" class="text-danger"
+                                onclick="DeleteDirectoryDialog(event)">
+                                <i class=" fa-solid fa-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-flex justify-content-end gap-3">
+        <a class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#mainModal">Thêm</a>
+    </div>
+</div>
+
+{% include "directory/directory-modal.html" %}
+{% endblock %}
+
+{% block script %}
+<script src="{% static "js/delete.js" %}"></script>
+{% endblock  %}
