@@ -163,6 +163,15 @@ class RecordForm(forms.ModelForm):
                     category_group__name="Vay nợ",
                 )
 
+            if type == "change":
+                self.fields["name"].label = "Tên bản ghi"
+                self.fields["category"].label = "Hạng mục"
+                self.fields["category"].queryset = Category.objects.filter(
+                    models.Q(is_default=True) | models.Q(author=user),
+                    models.Q(category_group__name="Thu tiền")
+                    | models.Q(category_group__name="Chi tiền"),
+                )
+
 
 class WalletForm(forms.ModelForm):
     name = forms.CharField(label="Tên ví")
@@ -260,6 +269,7 @@ class CategoryForm(forms.ModelForm):
         fields = [
             "name",
             "category_group",
+            "description",
         ]
         labels = {
             "name": "Tên",

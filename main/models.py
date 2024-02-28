@@ -77,7 +77,10 @@ class PeopleDirectory(models.Model):
     address = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return self.last_name + " " + self.first_name
+        if self.last_name:
+            return self.last_name + " " + self.first_name
+        else:
+            return self.first_name
 
 
 class Loan(models.Model):

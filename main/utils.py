@@ -1,7 +1,7 @@
 from collections import defaultdict
 from itertools import groupby
 from datetime import datetime
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
 
 def getDailyRecord(sorted_records):
@@ -38,15 +38,14 @@ def getTotal(daily_records, filter):
     return "{:,}".format(total_money)
 
 
-def changeForm(name, req, form, instance):
-    _form = form(instance=instance)
+def changeForm(req, url_name, form_class, instance, render_file):
+    form = form_class(instance=instance)
+
     if req.method == "POST":
-        _form = form(req.POST, instance=instance)
+        form = form_class(req.POST, instance=instance)
+        if form.is_valid():
+            form.save()
+            return redirect(url_name)
 
-        if _form.is_valid():
-            _form.save()
-            if name == "record":
-                return redirect("/")
-            return redirect(name)
-
-    return {"form": _form, name: instance}
+    ctx = {"form": form, "instance": instance}
+    return render(req, render_file, ctx)

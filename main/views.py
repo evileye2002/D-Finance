@@ -109,7 +109,14 @@ def record_change(req, record_id):
     record = Record.objects.get(
         id=record_id, wallet__in=Wallet.objects.filter(author=req.user)
     )
-    ctx = changeForm("record", req, RecordForm, record)
+    form = RecordForm(instance=record, user=req.user, type="change")
+    if req.method == "POST":
+        form = RecordForm(req.POST, instance=record, user=req.user, type="change")
+        if form.is_valid():
+            form.save()
+            return redirect("/")
+
+    ctx = {"form": form, "record": record}
 
     return render(req, "record/record-change.html", ctx)
 
@@ -181,7 +188,7 @@ def wallet(req):
             wallet.save()
             return redirect("wallet")
 
-    ctx = {"wallets": wallets, "form": form}
+    ctx = {"form": form, "wallets": wallets}
 
     return render(req, "wallet/wallet.html", ctx)
 
@@ -189,9 +196,8 @@ def wallet(req):
 @login_required(login_url="sign-in")
 def wallet_change(req, wallet_id):
     wallet = Wallet.objects.get(id=wallet_id, author=req.user)
-    ctx = changeForm("wallet", req, WalletForm, wallet)
 
-    return render(req, "wallet/wallet-change.html", ctx)
+    return changeForm(req, "wallet", WalletForm, wallet, "wallet/wallet-change.html")
 
 
 @login_required(login_url="sign-in")
@@ -223,14 +229,15 @@ def directory(req):
 @login_required(login_url="sign-in")
 def directory_change(req, directory_id):
     directory = PeopleDirectory.objects.get(id=directory_id, author=req.user)
-    ctx = changeForm("directory", req, DirectoryForm, directory)
 
-    return render(req, "directory/directory-change.html", ctx)
+    return changeForm(
+        req, "directory", DirectoryForm, directory, "directory/directory-change.html"
+    )
 
 
 @login_required(login_url="sign-in")
 def directory_delete(req, directory_id):
-    directory = directory.objects.get(id=directory_id, author=req.user)
+    directory = PeopleDirectory.objects.get(id=directory_id, author=req.user)
     directory.delete()
 
     return redirect("directory")
@@ -264,16 +271,9 @@ def category_change(req, category_id):
     if category.is_default:
         return render(req, "category/category-is-default.html")
 
-    form = CategoryForm(instance=category)
-    if req.method == "POST":
-        form = CategoryForm(req.POST, instance=category)
-
-        if form.is_valid():
-            form.save()
-            return redirect("category")
-
-    ctx = {"form": form, "category": category}
-    return render(req, "category/category-change.html", ctx)
+    return changeForm(
+        req, "category", CategoryForm, category, "category/category-change.html"
+    )
 
 
 @login_required(login_url="sign-in")
