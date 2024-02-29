@@ -8,5 +8,5 @@ from .models import Wallet
 def create_user_wallet(sender, instance, created, **kwargs):
     if created:
         Wallet.objects.create(
-            author=instance, name=instance.username, money=0, is_calculate=True
+            author=instance, name=instance.username, is_calculate=True
         )

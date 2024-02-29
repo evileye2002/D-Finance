@@ -3,16 +3,16 @@
 
 {% block modalContent %}
 <div class="modal-header">
-    <h1 class="modal-title fs-5" id="mainModal">Thêm Khoản Thu</h1>
-    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <h1 class="modal-title fs-5">Thêm danh mục</h1>
+    <button type=" button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 
 <div class="modal-body">
-    <form id="postIncomeForm" class="mb-0 w-100" method="post" autocomplete="off" action="{% url "income" %}">
+    <form class="mb-0 w-100" method="post" autocomplete="off">
         {% csrf_token %}
         {{ form|crispy }}
 
-        <div class="d-flex justify-content-center">
+        <div class=" d-flex justify-content-center">
             <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Lưu</button>
         </div>
     </form>

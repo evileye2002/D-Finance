@@ -26,21 +26,30 @@ class Category(models.Model):
 class Wallet(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
-    money = models.IntegerField()
     is_calculate = models.BooleanField()
 
     def __str__(self):
         return self.name
 
-    def formatted_money(self):
-        total_money = Record.objects.filter(wallet_id=self.id).aggregate(
-            total_money=Sum("money")
-        )["total_money"]
+    def total(self):
+        income = (
+            Record.objects.filter(
+                wallet_id=self.id, category__category_group__name="Thu tiền"
+            ).aggregate(total_money=Sum("money"))["total_money"]
+            or 0
+        )
 
-        if total_money is not None:
-            return "{:,}".format(total_money)
-        else:
-            return 0
+        spending = (
+            Record.objects.filter(
+                wallet_id=self.id, category__category_group__name="Chi tiền"
+            ).aggregate(total_money=Sum("money"))["total_money"]
+            or 0
+        )
+
+        total = income - spending
+        formatted_total = "{:,}".format(total)
+
+        return {"as_number": total, "as_formatted_number": formatted_total}
 
 
 class Record(models.Model):
@@ -62,10 +71,16 @@ class Record(models.Model):
 
 class PeopleDirectory(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50, null=True, blank=True)
+    phone = models.CharField(max_length=12, null=True, blank=True, unique=True)
+    address = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        if self.last_name:
+            return self.last_name + " " + self.first_name
+        else:
+            return self.first_name
 
 
 class Loan(models.Model):

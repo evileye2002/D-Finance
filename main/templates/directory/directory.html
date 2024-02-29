@@ -3,7 +3,7 @@
 {% load humanize %}
 
 {% block title %}
-<title>Ví Của Bạn</title>
+<title>Danh bạ</title>
 {% endblock  %}
 
 {% block stylesheet %}
@@ -13,48 +13,32 @@
 {% block content %}
 <div class="container mt-3">
     <div class="d-flex justify-content-center align-items-center rounded-3 bg-white">
-        {% if wallets %}
+        {% if directories %}
         <table class="table m-3">
             <thead>
                 <tr>
-                    <th class="text-center">Tên ví</th>
-                    <th class="text-center">Số dư hiện tại</th>
-                    <th class="text-center">Trạng thái</th>
+                    <th class="text-center">Họ tên</th>
+                    <th class="text-center">Số điện thoại</th>
                     <th class="text-center"></th>
                 </tr>
             </thead>
             <tbody>
-                {% for wallet in wallets %}
+                {% for directory in directories %}
                 <tr>
                     <td class="text-center">
-                        <div class="py-2">{{ wallet.name }}
+                        <div class="py-2">{{ directory }}</div>
+                    </td>
+                    <td class="text-center">
+                        <div class="py-2">{{ directory.phone }}
                         </div>
                     </td>
-                    <td class="text-center">
-                        {% if wallet.total.as_number < 0 %}
-                        <div class="py-2 fw-bold text-danger">{{ wallet.total.as_formatted_number }} VNĐ</div>
-                        {% else %}
-                        <div class="py-2 fw-bold text-success">{{ wallet.total.as_formatted_number }} VNĐ</div>
-                        {% endif %}
-                    </td>
-
-                    {% if wallet.is_calculate %}
-                    <td class="text-center">
-                        <i class="fa-solid fa-circle-check text-success py-2"></i>
-                    </td>
-                    {% else %}
-                    <td class="text-center">
-                        <i class="fa-regular fa-circle-xmark text-danger py-2"></i>
-                    </td>
-                    {% endif %}
-
                     <td class="text-center" style="width: 80px;">
                         <div class="d-flex gap-4 py-2">
-                            <a href="wallet/{{wallet.id}}/change">
+                            <a href="directory/{{directory.id}}/change">
                                 <i class="fa-solid fa-pen"></i>
                             </a>
-                            <a href="wallet/{{wallet.id}}/delete" class="text-danger"
-                                onclick="DeleteWalletDialog(event)">
+                            <a href="directory/{{directory.id}}/delete" class="text-danger"
+                                onclick="DeleteDirectoryDialog(event)">
                                 <i class=" fa-solid fa-trash"></i>
                             </a>
                         </div>
@@ -73,7 +57,7 @@
     </div>
 </div>
 
-{% include "wallet/wallet-modal.html" %}
+{% include "directory/directory-modal.html" %}
 {% endblock %}
 
 {% block script %}
