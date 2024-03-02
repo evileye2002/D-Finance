@@ -240,6 +240,54 @@ class LoanForm(forms.ModelForm):
             )
 
 
+class LoanCollectionForm(forms.ModelForm):
+    datetime_format = "%Y-%m-%dT%H:%M"
+    timestamp = forms.DateTimeField(
+        widget=forms.DateTimeInput(
+            attrs={"type": "datetime-local"},
+            format=datetime_format,
+        ),
+        label="Tại thời điểm",
+    )
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={"style": "height: 100px;"}),
+        label="Mô tả",
+        required=False,
+    )
+
+    class Meta:
+        model = Loan
+        fields = [
+            "name",
+            "wallet",
+            "category",
+            "lender_borrower",
+            "money",
+            "timestamp",
+            "description",
+        ]
+        labels = {
+            "name": "Tên",
+            "wallet": "Ví của bạn",
+            "money": "Số tiền",
+            "category": "Hạng mục",
+            "lender_borrower": "Người cho/đi vay",
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super(LoanCollectionForm, self).__init__(*args, **kwargs)
+
+        if user:
+            self.fields["wallet"].queryset = Wallet.objects.filter(author=user)
+            self.fields["lender_borrower"].queryset = PeopleDirectory.objects.filter(
+                author=user
+            )
+            self.fields["category"].queryset = Category.objects.filter(
+                category_group__name="Vay nợ",
+            )
+
+
 class DirectoryForm(forms.ModelForm):
     class Meta:
         model = PeopleDirectory

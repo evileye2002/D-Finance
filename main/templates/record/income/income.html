@@ -12,11 +12,14 @@
 
 {% block content %}
 <div class="container my-3">
-    <div class="d-flex justify-content-end gap-3">
-        <a class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#mainModal">Thêm</a>
+    <div type="button" class="position-fixed" style="bottom: 30px;right: 30px;" title="Thêm">
+        <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-circle fw-bold"
+            data-bs-toggle="modal" data-bs-target="#mainModal" style="width: 60px;height: 60px;">
+            <i class="fa-solid fa-plus fs-3"></i>
+        </a>
     </div>
 
-    <div class="rounded-3 bg-white">
+    <div class="rounded-3 bg-white" style="margin-bottom: 100px;">
         {% if daily_records %}
         <div class="p-3 pb-1">
             {% for date, records in daily_records %}

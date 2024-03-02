@@ -1,0 +1,27 @@
+{% extends "base/main.html" %}
+{% load static %}
+
+{% block title %}
+<title>Đi Vay</title>
+{% endblock  %}
+
+{% block stylesheet %}
+
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <div type="button" class="position-fixed" style="bottom: 30px;right: 30px;" title="Thêm">
+        <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-circle fw-bold"
+            data-bs-toggle="modal" data-bs-target="#mainModal" style="width: 60px;height: 60px;">
+            <i class="fa-solid fa-plus fs-3"></i>
+        </a>
+    </div>
+
+    {% include "loan/loan-modal.html" %}
+</div>
+{% endblock %}
+
+{% block script %}
+
+{% endblock  %}

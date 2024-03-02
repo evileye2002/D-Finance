@@ -10,7 +10,7 @@
         <a class="nav-link px-2 rounded-2 {% if request.path == '/income' %} active {% endif %}"
             href="{% url "income" %}">
             <i class="fa-solid fa-money-bill-trend-up fa-lg"></i>
-            <span>Thu Nhập</span>
+            <span>Thu nhập</span>
         </a>
     </li>
     <li class="nav-item">
@@ -20,11 +20,17 @@
             <span>Chi tiêu</span>
         </a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link px-2 rounded-2 {% if request.path == '/loan' %} active {% endif %}" href="{% url "loan" %}">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle rounded-2 {% if "loan" in request.path %} active {% endif %}" href="#"
+            role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fa-solid fa-hand-holding-dollar fa-lg"></i>
-            <span>Vay nợ</span>
+            Vay nợ
         </a>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url "lending" %}">Cho vay</a></li>
+            <li><a class="dropdown-item" href="{% url "borrowing" %}">Di vay</a></li>
+            <li><a class="dropdown-item" href="{% url "collection" %}">Thu/Trả nợ</a></li>
+        </ul>
     </li>
     <li class="nav-item">
         <a class="nav-link px-2 rounded-2 {% if request.path == '/wallet' %} active {% endif %}"

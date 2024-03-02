@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "pwa",
     "crispy_forms",
     "crispy_bootstrap5",
+    "django_extensions",  # temp
 ]
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"

@@ -10,6 +10,7 @@ from .forms import (
     LoanForm,
     DirectoryForm,
     CategoryForm,
+    LoanCollectionForm,
 )
 from .models import Wallet, Record, Category, PeopleDirectory, Loan
 from .utils import getDailyRecord, getTotalByMonth, changeForm
@@ -157,8 +158,46 @@ def spending(req):
 
 
 @login_required(login_url="sign-in")
-def loan(req):
+def collection(req):
     loans = Loan.objects.filter(
+        wallet__in=Wallet.objects.filter(author=req.user),
+        category__in=Category.objects.filter(category_group__name="Vay nợ"),
+    )
+    form = LoanCollectionForm(user=req.user)
+
+    if req.method == "POST":
+        form = LoanCollectionForm(req.POST, user=req.user)
+        if form.is_valid():
+            form.save()
+            return redirect("loan")
+
+    ctx = {"form": form, "loans": loans}
+
+    return render(req, "loan/collection/collection.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def lending(req):
+    lends = Loan.objects.filter(
+        wallet__in=Wallet.objects.filter(author=req.user),
+        category__name="Cho vay",
+    )
+    form = LoanForm(user=req.user)
+
+    if req.method == "POST":
+        form = LoanForm(req.POST, user=req.user)
+        if form.is_valid():
+            form.save()
+            return redirect("lending")
+
+    ctx = {"form": form, "lends": lends}
+
+    return render(req, "loan/lending/lending.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def borrowing(req):
+    borrows = Loan.objects.filter(
         wallet__in=Wallet.objects.filter(author=req.user),
         category__in=Category.objects.filter(category_group__name="Vay nợ"),
     )
@@ -168,11 +207,11 @@ def loan(req):
         form = LoanForm(req.POST, user=req.user)
         if form.is_valid():
             form.save()
-            return redirect("loan")
+            return redirect("borrowing")
 
-    ctx = {"form": form, "loans": loans}
+    ctx = {"form": form, "borrows": borrows}
 
-    return render(req, "loan/loan.html", ctx)
+    return render(req, "loan/borrowing/borrowing.html", ctx)
 
 
 @login_required(login_url="sign-in")
@@ -278,7 +317,7 @@ def category_change(req, category_id):
 
 @login_required(login_url="sign-in")
 def category_delete(req, category_id):
-    category = category.objects.get(id=category_id, author=req.user)
+    category = Category.objects.get(id=category_id, author=req.user)
 
     if category.is_default:
         return render(req, "category/category-is-default.html")
