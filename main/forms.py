@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from .models import Record, Wallet, Category, Loan, PeopleDirectory, CategoryGroup
 from django.db import models
+from django.utils import timezone
 
 
 class SignUpForm(UserCreationForm):
@@ -116,7 +117,6 @@ class RecordForm(forms.ModelForm):
         ),
         label="Tại thời điểm",
     )
-
     description = forms.CharField(
         widget=forms.Textarea(attrs={"style": "height: 100px;"}),
         label="Mô tả",
@@ -138,6 +138,7 @@ class RecordForm(forms.ModelForm):
 
         if user:
             self.fields["wallet"].queryset = Wallet.objects.filter(author=user)
+            self.fields["wallet"].initial = Wallet.objects.first()
 
             if type == "income":
                 self.fields["name"].label = "Tên khoản thu"
@@ -146,6 +147,9 @@ class RecordForm(forms.ModelForm):
                     models.Q(is_default=True) | models.Q(author=user),
                     category_group__name="Thu tiền",
                 )
+                self.fields["timestamp"].initial = timezone.now().strftime(
+                    self.datetime_format
+                )
 
             if type == "spending":
                 self.fields["name"].label = "Tên khoản chi"
@@ -153,6 +157,9 @@ class RecordForm(forms.ModelForm):
                 self.fields["category"].queryset = Category.objects.filter(
                     models.Q(is_default=True) | models.Q(author=user),
                     category_group__name="Chi tiền",
+                )
+                self.fields["timestamp"].initial = timezone.now().strftime(
+                    self.datetime_format
                 )
 
             if type == "loan":

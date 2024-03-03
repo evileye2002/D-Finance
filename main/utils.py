@@ -1,5 +1,5 @@
 from collections import defaultdict
-from itertools import groupby
+from django.utils import timezone
 from datetime import datetime
 from django.shortcuts import redirect, render
 
@@ -49,3 +49,22 @@ def changeForm(req, url_name, form_class, instance, render_file):
 
     ctx = {"form": form, "instance": instance}
     return render(req, render_file, ctx)
+
+
+def append_log(sender, instance, created, type):
+    if not hasattr(instance, "author") and not hasattr(instance, "wallet"):
+        return
+
+    log_name = timezone.now().strftime("%d-%m-%Y")
+    current_time = timezone.now().strftime("%d/%b/%Y %H:%M:%S")
+    user = instance.author if hasattr(instance, "author") else instance.wallet.author
+    action = "đã xóa"
+
+    if type == "save":
+        action = "đã thêm" if created else "đã sửa"
+
+    log = f'[{current_time}] {user} {action} "{instance.id}-{instance}" ==> {sender.__name__}'
+
+    print(log)
+    with open(f"logs/{log_name}.txt", "a", encoding="utf-8") as file:
+        file.write("\n" + log)
