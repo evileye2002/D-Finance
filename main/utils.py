@@ -63,7 +63,7 @@ def append_log(sender, instance, created, type):
     if type == "save":
         action = "đã thêm" if created else "đã sửa"
 
-    log = f'[{current_time}] {user} {action} "{instance.id}-{instance}" ==> {sender.__name__}'
+    log = f'[{current_time}] {user} {action} "{instance}" ==> {sender.__name__}'
 
     print(log)
     with open(f"logs/{log_name}.txt", "a", encoding="utf-8") as file:
