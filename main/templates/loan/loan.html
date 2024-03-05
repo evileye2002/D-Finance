@@ -11,14 +11,82 @@
 
 {% block content %}
 <div class="container mt-3">
-    <div class="d-flex justify-content-end gap-3">
-        <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mainModal">Thêm</a>
+    <div type="button" class="position-fixed" style="bottom: 30px;right: 30px;" title="Thêm">
+        <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-circle fw-bold"
+            data-bs-toggle="modal" data-bs-target="#mainModal" style="width: 60px;height: 60px;">
+            <i class="fa-solid fa-plus fs-3"></i>
+        </a>
     </div>
+
+    <div class="rounded-3 bg-white mb-3">
+        <div class="d-flex p-2">
+            <div class="dropdown">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Cho vay
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    <li><a class="dropdown-item" href="#">Cho vay</a></li>
+                    <li><a class="dropdown-item" href="#">Đi vay</a></li>
+                </ul>
+            </div>
+            <form class="d-flex ms-auto mb-0">
+                <input class="form-control me-2 ms-2" type="search" placeholder="Tìm kiếm người vay"
+                    aria-label="Tìm kiếm theo tên">
+                <button class="btn btn-outline-primary" type="submit">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="rounded-3 bg-white">
+        <div class="rounded-3 p-3 ">
+            <div class="">
+                <div class="d-flex fw-bold gap-2 mb-2">
+                    Cần thu:
+                    <div class="text-danger">200 đ</div>
+                </div>
+                <div class="d-flex mb-3">
+                    <div class="fw-bold">
+                        Đã thu
+                        <div class="text-success">200 đ</div>
+                    </div>
+                    <div class="fw-bold ms-auto text-end">
+                        Tổng cho vay
+                        <div class="text-info">200 đ</div>
+                    </div>
+                </div>
+
+                <div class="progress fw-bold" style="height: 22px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25"
+                        aria-valuemin="0" aria-valuemax="100">25%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3 rounded-3 bg-white">
+        <div class="p-3">
+            <div class="fw-bold mb-3">Danh sách cho vay</div>
+            <div>
+                <div class="d-flex p-3 border rounded-3 mb-2">
+                    <div class="fw-bold">ABC</div>
+                    <div class="text-success fw-bold ms-auto">200 đ</div>
+                </div>
+                <div class="d-flex p-3 border rounded-3 mb-2">
+                    <div class="fw-bold">ABC</div>
+                    <div class="text-success fw-bold ms-auto">200 đ</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     {% include "loan/loan-modal.html" %}
 </div>
 {% endblock %}
 
 {% block script %}
-
+<script src="{% static "js/loan.js" %}"></script>
 {% endblock  %}

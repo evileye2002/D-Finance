@@ -4,6 +4,9 @@ from datetime import datetime
 from django.shortcuts import redirect, render
 
 
+datetime_local_format = "%Y-%m-%dT%H:%M"
+
+
 def getDailyRecord(sorted_records):
     grouped_records = defaultdict(list)
     for record in sorted_records:
