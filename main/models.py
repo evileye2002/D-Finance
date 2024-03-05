@@ -102,3 +102,6 @@ class Loan(models.Model):
 
     def __str__(self):
         return self.name
+
+    def formatted_money(self):
+        return "{:,}".format(self.money)

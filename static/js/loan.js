@@ -3,7 +3,6 @@ $(document).ready(function () {
     var value = $(this).children("option:selected").text();
     var lender_borrower_label = $("label[for='id_lender_borrower']");
     var div_id_loan_end = $("#div_id_loan_end");
-    var id_loan_end = $("#id_loan_end");
 
     if (value == "Đi vay" || value == "Trả nợ")
       lender_borrower_label.text("Người cho vay");
@@ -11,10 +10,8 @@ $(document).ready(function () {
 
     if (value == "Thu nợ" || value == "Trả nợ") {
       div_id_loan_end.hide();
-      id_loan_end.prop("required", false);
     } else {
       div_id_loan_end.show();
-      id_loan_end.prop("required", true);
     }
   });
 });

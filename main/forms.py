@@ -205,6 +205,7 @@ class LoanForm(forms.ModelForm):
             format=datetime_local_format,
         ),
         label="Thời hạn",
+        required=False,
     )
     description = forms.CharField(
         widget=forms.Textarea(attrs={"style": "height: 100px;"}),
