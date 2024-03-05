@@ -22,8 +22,12 @@ def log_entry_created(sender, instance, created, **kwargs):
         log = f"[{current_time}] (administrator) {instance.user} {instance} ==> {instance.content_type}"
 
         print(log)
-        with open(f"logs/administrator_{timezone.now().strftime("%d-%m-%Y")}.txt", "a", encoding="utf-8") as file:
-            file.write("\n"+log)
+        with open(
+            f"logs/administrator_{timezone.now().strftime('%d-%m-%Y')}.txt",
+            "a",
+            encoding="utf-8",
+        ) as file:
+            file.write("\n" + log)
 
 
 @receiver(post_save)
