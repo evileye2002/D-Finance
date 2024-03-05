@@ -15,26 +15,26 @@ def create_user_wallet(sender, instance, created, **kwargs):
         )
 
 
-@receiver(post_save, sender=LogEntry)
-def log_entry_created(sender, instance, created, **kwargs):
-    if created:
-        current_time = timezone.now().strftime("%d/%b/%Y %H:%M:%S")
-        log = f"[{current_time}] (administrator) {instance.user} {instance} ==> {instance.content_type}"
+# @receiver(post_save, sender=LogEntry)
+# def log_entry_created(sender, instance, created, **kwargs):
+#     if created:
+#         current_time = timezone.now().strftime("%d/%b/%Y %H:%M:%S")
+#         log = f"[{current_time}] (administrator) {instance.user} {instance} ==> {instance.content_type}"
 
-        print(log)
-        with open(
-            f"logs/administrator_{timezone.now().strftime('%d-%m-%Y')}.txt",
-            "a",
-            encoding="utf-8",
-        ) as file:
-            file.write("\n" + log)
-
-
-@receiver(post_save)
-def log_entry_created(sender, instance, created, **kwargs):
-    append_log(sender, instance, created, "save")
+#         print(log)
+#         with open(
+#             f"logs/administrator_{timezone.now().strftime('%d-%m-%Y')}.txt",
+#             "a",
+#             encoding="utf-8",
+#         ) as file:
+#             file.write("\n" + log)
 
 
-@receiver(pre_delete)
-def log_deletion(sender, instance, **kwargs):
-    append_log(sender, instance, None, "delete")
+# @receiver(post_save)
+# def log_entry_created(sender, instance, created, **kwargs):
+#     append_log(sender, instance, created, "save")
+
+
+# @receiver(pre_delete)
+# def log_deletion(sender, instance, **kwargs):
+#     append_log(sender, instance, None, "delete")
