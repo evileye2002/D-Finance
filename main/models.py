@@ -17,7 +17,8 @@ class Category(models.Model):
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=250, null=True, blank=True)
     is_default = models.BooleanField()
-    # is_active = models.BooleanField()
+    createdAt = models.DateTimeField(auto_now_add=True)
+    updatedAt = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -27,6 +28,8 @@ class Wallet(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     is_calculate = models.BooleanField()
+    createdAt = models.DateTimeField(auto_now_add=True)
+    updatedAt = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -59,8 +62,8 @@ class Record(models.Model):
     money = models.IntegerField()
     timestamp = models.DateTimeField()
     description = models.TextField(max_length=250, null=True, blank=True)
-    # createdAt = models.DateTimeField(auto_now_add=True)
-    # updatedAt = models.DateTimeField(auto_now=True)
+    createdAt = models.DateTimeField(auto_now_add=True)
+    updatedAt = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -75,6 +78,8 @@ class PeopleDirectory(models.Model):
     last_name = models.CharField(max_length=50, null=True, blank=True)
     phone = models.CharField(max_length=12, null=True, blank=True, unique=True)
     address = models.CharField(max_length=100, null=True, blank=True)
+    createdAt = models.DateTimeField(auto_now_add=True)
+    updatedAt = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         if self.last_name:
@@ -90,8 +95,13 @@ class Loan(models.Model):
     name = models.CharField(max_length=50)
     money = models.IntegerField()
     timestamp = models.DateTimeField()
-    loan_end = models.DateField(blank=True)
+    loan_end = models.DateField(null=True, blank=True)
     description = models.TextField(max_length=250, null=True, blank=True)
+    createdAt = models.DateTimeField(auto_now_add=True)
+    updatedAt = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
+
+    def formatted_money(self):
+        return "{:,}".format(self.money)

@@ -12,7 +12,7 @@ from .forms import (
     CategoryForm,
 )
 from .models import Wallet, Record, Category, PeopleDirectory, Loan
-from .utils import getDailyRecord, getTotalByMonth, changeForm
+from .utils import getDailyRecord, getTotalByMonth, changeForm, getLoan, getLoanTotal
 
 
 # Create your views here.
@@ -157,20 +157,47 @@ def spending(req):
 
 
 @login_required(login_url="sign-in")
-def loan(req):
-    loans = Loan.objects.filter(
-        wallet__in=Wallet.objects.filter(author=req.user),
-        category__in=Category.objects.filter(category_group__name="Vay nợ"),
+def lend(req):
+    lends = Loan.objects.filter(
+        wallet__in=Wallet.objects.filter(author=req.user), category__name="Cho vay"
     )
+    collects = Loan.objects.filter(
+        wallet__in=Wallet.objects.filter(author=req.user), category__name="Thu nợ"
+    )
+    loans = getLoan(lends)
+    calculate = getLoanTotal(lends, collects)
     form = LoanForm(user=req.user)
 
     if req.method == "POST":
         form = LoanForm(req.POST, user=req.user)
         if form.is_valid():
             form.save()
-            return redirect("loan")
+            return redirect("lend")
 
-    ctx = {"form": form, "loans": loans}
+    ctx = {"form": form, "loans": loans, "calculate": calculate}
+
+    return render(req, "loan/loan.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def borrow(req):
+    borrows = Loan.objects.filter(
+        wallet__in=Wallet.objects.filter(author=req.user), category__name="Đi vay"
+    )
+    repaid = Loan.objects.filter(
+        wallet__in=Wallet.objects.filter(author=req.user), category__name="Trả nợ"
+    )
+    loans = getLoan(borrows)
+    calculate = getLoanTotal(borrows, repaid)
+    form = LoanForm(user=req.user)
+
+    if req.method == "POST":
+        form = LoanForm(req.POST, user=req.user)
+        if form.is_valid():
+            form.save()
+            return redirect("borrow")
+
+    ctx = {"form": form, "loans": loans, "calculate": calculate}
 
     return render(req, "loan/loan.html", ctx)
 
@@ -278,7 +305,7 @@ def category_change(req, category_id):
 
 @login_required(login_url="sign-in")
 def category_delete(req, category_id):
-    category = category.objects.get(id=category_id, author=req.user)
+    category = Category.objects.get(id=category_id, author=req.user)
 
     if category.is_default:
         return render(req, "category/category-is-default.html")

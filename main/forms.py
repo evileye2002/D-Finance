@@ -4,6 +4,8 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from .models import Record, Wallet, Category, Loan, PeopleDirectory, CategoryGroup
 from django.db import models
+from django.utils import timezone
+from .utils import datetime_local_format
 
 
 class SignUpForm(UserCreationForm):
@@ -108,15 +110,13 @@ class SignInForm(AuthenticationForm):
 
 
 class RecordForm(forms.ModelForm):
-    datetime_format = "%Y-%m-%dT%H:%M"
     timestamp = forms.DateTimeField(
         widget=forms.DateTimeInput(
             attrs={"type": "datetime-local"},
-            format=datetime_format,
+            format=datetime_local_format,
         ),
         label="Tại thời điểm",
     )
-
     description = forms.CharField(
         widget=forms.Textarea(attrs={"style": "height: 100px;"}),
         label="Mô tả",
@@ -138,6 +138,7 @@ class RecordForm(forms.ModelForm):
 
         if user:
             self.fields["wallet"].queryset = Wallet.objects.filter(author=user)
+            self.fields["wallet"].initial = Wallet.objects.first()
 
             if type == "income":
                 self.fields["name"].label = "Tên khoản thu"
@@ -146,6 +147,9 @@ class RecordForm(forms.ModelForm):
                     models.Q(is_default=True) | models.Q(author=user),
                     category_group__name="Thu tiền",
                 )
+                self.fields["timestamp"].initial = timezone.now().strftime(
+                    datetime_local_format
+                )
 
             if type == "spending":
                 self.fields["name"].label = "Tên khoản chi"
@@ -153,6 +157,9 @@ class RecordForm(forms.ModelForm):
                 self.fields["category"].queryset = Category.objects.filter(
                     models.Q(is_default=True) | models.Q(author=user),
                     category_group__name="Chi tiền",
+                )
+                self.fields["timestamp"].initial = timezone.now().strftime(
+                    datetime_local_format
                 )
 
             if type == "loan":
@@ -185,20 +192,20 @@ class WalletForm(forms.ModelForm):
 
 
 class LoanForm(forms.ModelForm):
-    datetime_format = "%Y-%m-%dT%H:%M"
     timestamp = forms.DateTimeField(
         widget=forms.DateTimeInput(
             attrs={"type": "datetime-local"},
-            format=datetime_format,
+            format=datetime_local_format,
         ),
         label="Tại thời điểm",
     )
     loan_end = forms.DateTimeField(
         widget=forms.DateTimeInput(
             attrs={"type": "datetime-local"},
-            format=datetime_format,
+            format=datetime_local_format,
         ),
         label="Thời hạn",
+        required=False,
     )
     description = forms.CharField(
         widget=forms.Textarea(attrs={"style": "height: 100px;"}),
@@ -222,8 +229,8 @@ class LoanForm(forms.ModelForm):
             "name": "Tên khoản vay",
             "wallet": "Ví của bạn",
             "money": "Số tiền",
-            "category": "Hạng mục vay",
-            "lender_borrower": "Người cho vay/ đi vay",
+            "category": "Hạng mục",
+            "lender_borrower": "Người vay/cho vay",
         }
 
     def __init__(self, *args, **kwargs):
@@ -231,6 +238,11 @@ class LoanForm(forms.ModelForm):
         super(LoanForm, self).__init__(*args, **kwargs)
 
         if user:
+            self.fields["wallet"].initial = Wallet.objects.first()
+            self.fields["timestamp"].initial = timezone.now().strftime(
+                datetime_local_format
+            )
+
             self.fields["wallet"].queryset = Wallet.objects.filter(author=user)
             self.fields["lender_borrower"].queryset = PeopleDirectory.objects.filter(
                 author=user
