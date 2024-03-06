@@ -5,7 +5,7 @@ A Finance Management web app using Django Framework (Python) <a href="http://www
 
 ![enter image description here](https://hoangduongkhanh.id.vn/assets/imgs/projects/dfm1.png)
 
-![enter image description here](https://hoangduongkhanh.id.vn/assets/imgs/projects/dfm2.png)
+![enter image description here](https://hoangduongkhanh.id.vn/assets/imgs/projects/dfm2.PNG)
 
 
 
