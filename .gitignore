@@ -140,7 +140,7 @@ GitHub.sublime-settings
 static/app/vendor/**
 
 /temp
-/logs/**.txt
+/logs
 
 
 

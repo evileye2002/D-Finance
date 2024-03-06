@@ -101,7 +101,7 @@ def income(req):
 
     ctx = {"form": form, "daily_records": daily_records}
 
-    return render(req, "record/income/income.html", ctx)
+    return render(req, "record/record.html", ctx)
 
 
 @login_required(login_url="sign-in")
@@ -153,7 +153,7 @@ def spending(req):
 
     ctx = {"form": form, "daily_records": daily_records}
 
-    return render(req, "record/spending/spending.html", ctx)
+    return render(req, "record/record.html", ctx)
 
 
 @login_required(login_url="sign-in")
