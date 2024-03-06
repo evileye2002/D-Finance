@@ -6,7 +6,7 @@
 {% endblock  %}
 
 {% block stylesheet %}
-
+<link rel="stylesheet" href="{% static "css/loan.css" %}">
 {% endblock %}
 
 {% block content %}
@@ -63,7 +63,7 @@
                     </div>
                 </div>
 
-                <div class="progress fw-bold">
+                <div class="progress fw-bold" style="height: 10px;">
                     <div class="progress-bar bg-success" role="progressbar"
                         style="width: {{calculate.complete_percent}}%" aria-valuenow="{{calculate.complete_percent}}"
                         aria-valuemin="0" aria-valuemax="100">
@@ -84,8 +84,12 @@
             <div>
                 {% if loans %}
                 {% for loan in loans %}
-                <div class="d-flex p-3 border rounded-3 mb-2">
-                    <div class="fw-bold">{{loan.lender_borrower}}</div>
+                <div class="d-flex p-3 border rounded-3 mb-2 loan" style="cursor: pointer;"
+                    onclick="location.href='lend/{{loan.lender_borrower.id}}';">
+                    <div class="fw-bold">
+                        <i class="fa-solid fa-user me-1"></i>
+                        {{loan.lender_borrower}}
+                    </div>
                     <div class="text-danger fw-bold ms-auto">{{loan.total_money}} đ</div>
                 </div>
                 {% endfor %}

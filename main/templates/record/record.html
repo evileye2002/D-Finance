@@ -1,0 +1,75 @@
+{% extends "base/main.html" %}
+{% load static %}
+{% load custom_filters %}
+
+{% block title %}
+{% if "income" in request.path %}
+<title>Thu Nhập</title>
+{% else %}
+<title>Chi Tiêu</title>
+{% endif %}
+{% endblock  %}
+
+{% block stylesheet %}
+<link rel="stylesheet" href="{% static "css/record.css" %}">
+{% endblock %}
+
+{% block content %}
+<div class="container my-3">
+    <div type="button" class="position-fixed" style="bottom: 30px;right: 30px;" title="Thêm">
+        <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-circle fw-bold"
+            data-bs-toggle="modal" data-bs-target="#mainModal" style="width: 60px;height: 60px;">
+            <i class="fa-solid fa-plus fs-3"></i>
+        </a>
+    </div>
+
+    <div class="rounded-3">
+        {% if daily_records %}
+        {% for date, records in daily_records %}
+        <div class="rounded-3 p-3 bg-white mb-3">
+            <div class="d-flex align-items-center fw-bold mb-3">
+                <div class="fw-bold text-primary">
+                    <i class="fa-regular fa-calendar me-1"></i>
+                    {{ date }}
+                </div>
+                <div class="text-success ms-auto">{{ records|sum_money }} đ</div>
+            </div>
+            <div>
+                {% for record in records %}
+                <div class="p-2 record border rounded-3 mb-2">
+                    <div class="d-flex align-items-center" onclick="location.href='record/{{record.id}}/change';"
+                        style="cursor: pointer;">
+                        <div class="">
+                            <small>
+                                <i class="fa-regular fa-clock"></i>
+                                {{ record.timestamp|time:"H:i" }}
+                            </small>
+                            <div class="fw-bold">{{ record.category }}</div>
+                        </div>
+                        <div class="ms-auto">
+                            <div class="fw-bold text-success">{{ record.formatted_money }} đ</div>
+                            <div class="text-end">
+                                <small>
+                                    <i class="fa-solid fa-wallet me-1"></i>
+                                    {{ record.wallet }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="p-3 text-center text-danger">Không có bản ghi nào</div>
+        {% endif %}
+    </div>
+
+    {% include "record/record-modal.html" %}
+</div>
+{% endblock %}
+
+{% block script %}
+
+{% endblock  %}

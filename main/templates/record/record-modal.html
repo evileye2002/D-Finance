@@ -3,7 +3,11 @@
 
 {% block modalContent %}
 <div class="modal-header">
+    {% if "income" in request.path %}
+    <h1 class="modal-title fs-5" id="mainModal">Thêm Khoản Thu</h1>
+    {% else %}
     <h1 class="modal-title fs-5" id="mainModal">Thêm Khoản Chi</h1>
+    {% endif %}
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 </div>
 
