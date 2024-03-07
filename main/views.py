@@ -166,10 +166,10 @@ def lend(req):
     )
     loans = getLoan(lends)
     calculate = getLoanTotal(lends, collects)
-    form = LoanForm(user=req.user)
+    form = LoanForm(user=req.user, type="lend")
 
     if req.method == "POST":
-        form = LoanForm(req.POST, user=req.user)
+        form = LoanForm(req.POST, user=req.user, type="lend")
         if form.is_valid():
             form.save()
             return redirect("lend")
@@ -189,7 +189,7 @@ def borrow(req):
     )
     loans = getLoan(borrows)
     calculate = getLoanTotal(borrows, repaid)
-    form = LoanForm(user=req.user)
+    form = LoanForm(user=req.user, type="borrow")
 
     if req.method == "POST":
         form = LoanForm(req.POST, user=req.user)
@@ -200,6 +200,15 @@ def borrow(req):
     ctx = {"form": form, "loans": loans, "calculate": calculate}
 
     return render(req, "loan/loan.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def loan_detail(req, lender_borrower_id):
+    people = PeopleDirectory.objects.get(id=lender_borrower_id, author=req.user)
+    form = LoanForm(user=req.user, type="detail")
+
+    ctx = {"form": form, "people": people}
+    return render(req, "loan/loan-detail.html", ctx)
 
 
 @login_required(login_url="sign-in")

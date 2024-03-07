@@ -12,6 +12,7 @@ urlpatterns = [
     path("spending", views.spending, name="spending"),
     path("lend", views.lend, name="lend"),
     path("borrow", views.borrow, name="borrow"),
+    path("loan/<int:lender_borrower_id>", views.loan_detail, name="loan_detail"),
     path("wallet", views.wallet, name="wallet"),
     path("wallet/<int:wallet_id>/change", views.wallet_change, name="wallet_change"),
     path("wallet/<int:wallet_id>/delete", views.wallet_delete, name="wallet_delete"),

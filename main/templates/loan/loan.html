@@ -17,25 +17,6 @@
             <i class="fa-solid fa-plus fs-3"></i>
         </a>
     </div>
-
-    {% comment %} <div class="rounded-3 bg-white mb-3">
-        <div class="d-flex p-2">
-            <div class="">
-                <select class="select form-select" id="loan_type">
-                    <option value="1">Cho vay</option>
-                    <option value="2">Đi vay</option>
-                </select>
-            </div>
-            <form class="d-flex ms-auto mb-0">
-                <input class="form-control me-2 ms-2" type="search" placeholder="Tìm kiếm người vay"
-                    aria-label="Tìm kiếm theo tên">
-                <button class="btn btn-outline-primary" type="submit">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </button>
-            </form>
-        </div>
-    </div> {% endcomment %}
-
     <div class="rounded-3 bg-white">
         <div class="rounded-3 p-3 ">
             <div class="">
@@ -85,7 +66,7 @@
                 {% if loans %}
                 {% for loan in loans %}
                 <div class="d-flex p-3 border rounded-3 mb-2 loan" style="cursor: pointer;"
-                    onclick="location.href='lend/{{loan.lender_borrower.id}}';">
+                    onclick="location.href='loan/{{loan.lender_borrower.id}}';">
                     <div class="fw-bold">
                         <i class="fa-solid fa-user me-1"></i>
                         {{loan.lender_borrower}}

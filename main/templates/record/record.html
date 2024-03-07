@@ -32,7 +32,8 @@
                     <i class="fa-regular fa-calendar me-1"></i>
                     {{ date }}
                 </div>
-                <div class="text-success ms-auto">{{ records|sum_money }} đ</div>
+                <div class="{% if "income" in request.path %}text-success{% else %}text-danger{% endif %} ms-auto">
+                    {{ records|sum_money }} đ</div>
             </div>
             <div>
                 {% for record in records %}
@@ -41,13 +42,15 @@
                         style="cursor: pointer;">
                         <div class="">
                             <small>
-                                <i class="fa-regular fa-clock"></i>
+                                <i class="fa-regular fa-clock me-1"></i>
                                 {{ record.timestamp|time:"H:i" }}
                             </small>
                             <div class="fw-bold">{{ record.category }}</div>
                         </div>
                         <div class="ms-auto">
-                            <div class="fw-bold text-success">{{ record.formatted_money }} đ</div>
+                            <div
+                                class="fw-bold {% if "income" in request.path %}text-success{% else %}text-danger{% endif %}">
+                                {{ record.formatted_money }} đ</div>
                             <div class="text-end">
                                 <small>
                                     <i class="fa-solid fa-wallet me-1"></i>
