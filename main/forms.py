@@ -137,47 +137,45 @@ class RecordForm(forms.ModelForm):
         super(RecordForm, self).__init__(*args, **kwargs)
 
         if user:
-            self.fields["wallet"].queryset = Wallet.objects.filter(author=user)
-            self.fields["wallet"].initial = Wallet.objects.first()
+
+            name = ""
+            category_label = ""
+            category = Category.objects.all()
+            wallet = Wallet.objects.filter(author=user)
 
             if type == "income":
-                self.fields["name"].label = "Tên khoản thu"
-                self.fields["category"].label = "Hạng mục thu"
-                self.fields["category"].queryset = Category.objects.filter(
+                name = "Tên khoản thu"
+                category_label = "Hạng mục thu"
+                category = Category.objects.filter(
                     models.Q(is_default=True) | models.Q(author=user),
                     category_group__name="Thu tiền",
                 )
-                self.fields["timestamp"].initial = timezone.now().strftime(
-                    datetime_local_format
-                )
 
             if type == "spending":
-                self.fields["name"].label = "Tên khoản chi"
-                self.fields["category"].label = "Hạng mục chi"
-                self.fields["category"].queryset = Category.objects.filter(
+                name = "Tên khoản chi"
+                category_label = "Hạng mục chi"
+                category = Category.objects.filter(
                     models.Q(is_default=True) | models.Q(author=user),
                     category_group__name="Chi tiền",
                 )
-                self.fields["timestamp"].initial = timezone.now().strftime(
-                    datetime_local_format
-                )
-
-            if type == "loan":
-                self.fields["name"].label = "Tên khoản vay"
-                self.fields["category"].label = "Hạng mục vay"
-                self.fields["category"].queryset = Category.objects.filter(
-                    models.Q(is_default=True) | models.Q(author=user),
-                    category_group__name="Vay nợ",
-                )
 
             if type == "change":
-                self.fields["name"].label = "Tên bản ghi"
-                self.fields["category"].label = "Hạng mục"
-                self.fields["category"].queryset = Category.objects.filter(
+                name = "Tên bản ghi"
+                category_label = "Hạng mục"
+                category = Category.objects.filter(
                     models.Q(is_default=True) | models.Q(author=user),
                     models.Q(category_group__name="Thu tiền")
                     | models.Q(category_group__name="Chi tiền"),
                 )
+
+            self.fields["name"].label = name
+            self.fields["category"].label = category_label
+            self.fields["category"].queryset = category
+            self.fields["wallet"].queryset = wallet
+            self.fields["wallet"].initial = wallet.first()
+            self.fields["timestamp"].initial = timezone.now().strftime(
+                datetime_local_format
+            )
 
 
 class WalletForm(forms.ModelForm):
@@ -235,20 +233,35 @@ class LoanForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
+        type = kwargs.pop("type", None)
         super(LoanForm, self).__init__(*args, **kwargs)
 
         if user:
-            self.fields["wallet"].initial = Wallet.objects.first()
+            category = Category.objects.all()
+            wallet = Wallet.objects.filter(author=user)
+
+            if type == "lend":
+                category = Category.objects.filter(
+                    models.Q(name="Cho vay") | models.Q(name="Thu nợ"),
+                )
+
+            if type == "borrow":
+                category = Category.objects.filter(
+                    models.Q(name="Đi vay") | models.Q(name="Trả nợ"),
+                )
+
+            if type == "detail":
+                category = Category.objects.filter(category_group__name="Vay nợ")
+
+            self.fields["category"].queryset = category
+            self.fields["category"].initial = category.first()
+            self.fields["wallet"].initial = wallet.first()
+            self.fields["wallet"].queryset = wallet
             self.fields["timestamp"].initial = timezone.now().strftime(
                 datetime_local_format
             )
-
-            self.fields["wallet"].queryset = Wallet.objects.filter(author=user)
             self.fields["lender_borrower"].queryset = PeopleDirectory.objects.filter(
                 author=user
-            )
-            self.fields["category"].queryset = Category.objects.filter(
-                category_group__name="Vay nợ",
             )
 
 
