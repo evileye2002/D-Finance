@@ -19,7 +19,7 @@
 
             <div class="d-flex justify-content-center gap-3">
                 <button type="submit" class="btn btn-primary py-2 fw-bold">Lưu thay đổi</button>
-                <a href="/record/{{record.id}}/delete" class="btn btn-danger py-2 fw-bold"
+                <a href="/record/{{record.id}}/delete?next={{next_url}}" class="btn btn-danger py-2 fw-bold"
                     onclick="DeleteRecordDialog(event)">Xóa</a>
             </div>
         </form>

@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import models
+from django.urls import reverse
 from .forms import (
     SignUpForm,
     SignInForm,
@@ -12,14 +13,17 @@ from .forms import (
     CategoryForm,
 )
 from .models import Wallet, Record, Category, PeopleDirectory, Loan
-from .utils import getDailyRecord, getTotalByMonth, changeForm, getLoan, getLoanTotal
+from .utils import (
+    getDailyRecord,
+    getTotalByMonth,
+    changeForm,
+    getLoan,
+    getLoanTotal,
+    renderLoanDetail,
+)
 
 
 # Create your views here.
-def test(req):
-    return render(req, "test-up.html")
-
-
 @login_required(login_url="sign-in")
 def index(req):
     return render(req, "index.html")
@@ -106,6 +110,7 @@ def income(req):
 
 @login_required(login_url="sign-in")
 def record_change(req, record_id):
+    next_url = req.GET.get("next")
     record = Record.objects.get(
         id=record_id, wallet__in=Wallet.objects.filter(author=req.user)
     )
@@ -114,20 +119,21 @@ def record_change(req, record_id):
         form = RecordForm(req.POST, instance=record, user=req.user, type="change")
         if form.is_valid():
             form.save()
-            return redirect("/")
+            return redirect(next_url)
 
-    ctx = {"form": form, "record": record}
+    ctx = {"form": form, "record": record, "next_url": next_url}
 
     return render(req, "record/record-change.html", ctx)
 
 
 @login_required(login_url="sign-in")
 def record_delete(req, record_id):
+    next_url = req.GET.get("next")
     record = Record.objects.get(
         id=record_id, wallet__in=Wallet.objects.filter(author=req.user)
     )
     record.delete()
-    return redirect("/")
+    return redirect(next_url)
 
 
 @login_required(login_url="sign-in")
@@ -184,31 +190,56 @@ def borrow(req):
     borrows = Loan.objects.filter(
         wallet__in=Wallet.objects.filter(author=req.user), category__name="Đi vay"
     )
-    repaid = Loan.objects.filter(
+    repaids = Loan.objects.filter(
         wallet__in=Wallet.objects.filter(author=req.user), category__name="Trả nợ"
     )
     loans = getLoan(borrows)
-    calculate = getLoanTotal(borrows, repaid)
+    calculate = getLoanTotal(borrows, repaids)
     form = LoanForm(user=req.user, type="borrow")
 
     if req.method == "POST":
-        form = LoanForm(req.POST, user=req.user)
+        form = LoanForm(req.POST, user=req.user, type="borrow")
         if form.is_valid():
             form.save()
             return redirect("borrow")
 
     ctx = {"form": form, "loans": loans, "calculate": calculate}
-
     return render(req, "loan/loan.html", ctx)
 
 
 @login_required(login_url="sign-in")
-def loan_detail(req, lender_borrower_id):
-    people = PeopleDirectory.objects.get(id=lender_borrower_id, author=req.user)
-    form = LoanForm(user=req.user, type="detail")
+def lend_detail(req, lender_id):
+    return renderLoanDetail(req, lender_id, LoanForm, "lend-detail")
 
-    ctx = {"form": form, "people": people}
-    return render(req, "loan/loan-detail.html", ctx)
+
+@login_required(login_url="sign-in")
+def borrow_detail(req, borrower_id):
+    return renderLoanDetail(req, borrower_id, LoanForm, "borrow-detail")
+
+
+@login_required(login_url="sign-in")
+def loan_change(req, loan_id):
+    next_url = req.GET.get("next")
+    loan = Loan.objects.get(id=loan_id, wallet__author=req.user)
+    form = LoanForm(instance=loan, user=req.user, type="change")
+
+    if req.method == "POST":
+        form = LoanForm(req.POST, instance=loan, user=req.user, type="change")
+        if form.is_valid():
+            form.save()
+            return redirect(next_url)
+
+    ctx = {"form": form, "loan": loan, "next_url": next_url}
+    return render(req, "loan/loan-change.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def loan_delete(req, loan_id):
+    next_url = req.GET.get("next")
+    loan = Loan.objects.get(id=loan_id, wallet__author=req.user)
+    loan.delete()
+
+    return redirect(next_url)
 
 
 @login_required(login_url="sign-in")

@@ -234,34 +234,43 @@ class LoanForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
         type = kwargs.pop("type", None)
+        lender_borrower_id = kwargs.pop("lender_borrower_id", None)
         super(LoanForm, self).__init__(*args, **kwargs)
 
         if user:
             category = Category.objects.all()
             wallet = Wallet.objects.filter(author=user)
+            lender_borrower = PeopleDirectory.objects.filter(author=user)
 
-            if type == "lend":
+            if "lend" in type:
                 category = Category.objects.filter(
                     models.Q(name="Cho vay") | models.Q(name="Thu nợ"),
                 )
 
-            if type == "borrow":
+            if "borrow" in type:
                 category = Category.objects.filter(
                     models.Q(name="Đi vay") | models.Q(name="Trả nợ"),
                 )
 
-            if type == "detail":
+            if type == "lend-detail":
+                lender_borrower = PeopleDirectory.objects.filter(id=lender_borrower_id)
+
+            if type == "borrow-detail":
+                lender_borrower = PeopleDirectory.objects.filter(id=lender_borrower_id)
+
+            if "detail" in type:
+                self.fields["lender_borrower"].initial = lender_borrower.first()
+
+            if type == "change":
                 category = Category.objects.filter(category_group__name="Vay nợ")
 
             self.fields["category"].queryset = category
             self.fields["category"].initial = category.first()
             self.fields["wallet"].initial = wallet.first()
             self.fields["wallet"].queryset = wallet
+            self.fields["lender_borrower"].queryset = lender_borrower
             self.fields["timestamp"].initial = timezone.now().strftime(
                 datetime_local_format
-            )
-            self.fields["lender_borrower"].queryset = PeopleDirectory.objects.filter(
-                author=user
             )
 
 
