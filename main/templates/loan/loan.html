@@ -66,7 +66,8 @@
                 {% if loans %}
                 {% for loan in loans %}
                 <div class="d-flex p-3 border rounded-3 mb-2 loan" style="cursor: pointer;"
-                    onclick="location.href='loan/{{loan.lender_borrower.id}}';">
+                    {% if "lend" in request.path %}onclick="location.href='lend/{{loan.lender_borrower.id}}';"
+                    {% else %}onclick="location.href='borrow/{{loan.lender_borrower.id}}';" {% endif %}>
                     <div class="fw-bold">
                         <i class="fa-solid fa-user me-1"></i>
                         {{loan.lender_borrower}}
