@@ -1,6 +1,6 @@
 {% extends "base/main.html" %}
 {% load static %}
-{% load humanize %}
+{% load custom_filters %}
 
 {% block title %}
 <title>Ví Của Bạn</title>
@@ -31,10 +31,10 @@
                         </div>
                     </td>
                     <td class="text-center">
-                        {% if wallet.total.as_number < 0 %}
-                        <div class="py-2 fw-bold text-danger">{{ wallet.total.as_formatted_number }} đ</div>
+                        {% if wallet.total < 0 %}
+                        <div class="py-2 fw-bold text-danger">{{ wallet.total|formated }} đ</div>
                         {% else %}
-                        <div class="py-2 fw-bold text-success">{{ wallet.total.as_formatted_number }} đ</div>
+                        <div class="py-2 fw-bold text-success">{{ wallet.total|formated }} đ</div>
                         {% endif %}
                     </td>
 

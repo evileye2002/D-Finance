@@ -49,10 +49,22 @@ class Wallet(models.Model):
             or 0
         )
 
-        total = income - spending
-        formatted_total = "{:,}".format(total)
+        collecting = (
+            Loan.objects.filter(wallet_id=self.id, category__name="Thu nợ").aggregate(
+                total_money=Sum("money")
+            )["total_money"]
+            or 0
+        )
 
-        return {"as_number": total, "as_formatted_number": formatted_total}
+        repaid = (
+            Loan.objects.filter(wallet_id=self.id, category__name="Trả nợ").aggregate(
+                total_money=Sum("money")
+            )["total_money"]
+            or 0
+        )
+
+        total = income - spending + collecting - repaid
+        return total
 
 
 class Record(models.Model):
@@ -64,6 +76,9 @@ class Record(models.Model):
     description = models.TextField(max_length=250, null=True, blank=True)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-timestamp"]
 
     def __str__(self):
         return self.name
@@ -100,8 +115,27 @@ class Loan(models.Model):
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        ordering = ["-timestamp"]
+
     def __str__(self):
         return self.name
 
     def formatted_money(self):
         return "{:,}".format(self.money)
+
+
+class UserProfile(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50, null=True, blank=True)
+    phone = models.CharField(max_length=12, null=True, blank=True, unique=True)
+    address = models.CharField(max_length=100, null=True, blank=True)
+    createdAt = models.DateTimeField(auto_now_add=True)
+    updatedAt = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        if self.last_name:
+            return self.last_name + " " + self.first_name
+        else:
+            return self.first_name

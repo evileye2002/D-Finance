@@ -1,5 +1,6 @@
 {% extends "base/main.html" %}
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}
 <title>Trang Chủ</title>
@@ -11,9 +12,67 @@
 
 {% block content %}
 <div class="container my-3">
-    <h2>Start</h2>
-    <h2>{{request.path}}</h2>
+    <div class=" mb-3">
+        <div class="d-flex gap-3 justify-content-center p-1">
+            <div class="rounded-3 bg-white w-100">
+                <div class="p-3">
+                    <div class="fw-bold mb-2">Hôm nay</div>
+                    <div>
+                        <div class="d-flex text-success fw-bold">
+                            <span>
+                                <i class="fa-solid fa-money-bill-trend-up fa-lg"></i>
+                                {{incomes.today|formated}} đ</span>
+                        </div>
+                        <div class="d-flex text-danger fw-bold">
+                            <span>
+                                <i class="fa-solid fa-comments-dollar"></i>
+                                {{spendings.today|formated}} đ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="rounded-3 bg-white w-100">
+                <div class="p-3">
+                    <div class="fw-bold mb-2">Tháng này</div>
+                    <div>
+                        <div class="d-flex text-success fw-bold">
+                            <span>
+                                <i class="fa-solid fa-money-bill-trend-up fa-lg"></i>
+                                {{incomes.this_month|formated}} đ</span>
+                        </div>
+                        <div class="d-flex text-danger fw-bold">
+                            <span>
+                                <i class="fa-solid fa-comments-dollar"></i>
+                                {{spendings.this_month|formated}} đ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="rounded-3 bg-white w-100">
+                <div class="p-3">
+                    <div class="fw-bold mb-2">Năm nay</div>
+                    <div>
+                        <div class="d-flex text-success fw-bold">
+                            <span>
+                                <i class="fa-solid fa-money-bill-trend-up fa-lg"></i>
+                                {{incomes.this_year|formated}} đ</span>
+                        </div>
+                        <div class="d-flex text-danger fw-bold">
+                            <span>
+                                <i class="fa-solid fa-comments-dollar"></i>
+                                {{spendings.this_year|formated}} đ</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="rounded-3 bg-white">
+        <div class="p-1">
+            {{month_reports|safe}}
+        </div>
+    </div>
 </div>
 {% endblock %}
 
