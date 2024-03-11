@@ -49,8 +49,22 @@ class Wallet(models.Model):
             or 0
         )
 
+        lend = (
+            Loan.objects.filter(wallet_id=self.id, category__name="Cho vay").aggregate(
+                total_money=Sum("money")
+            )["total_money"]
+            or 0
+        )
+
         collecting = (
             Loan.objects.filter(wallet_id=self.id, category__name="Thu nợ").aggregate(
+                total_money=Sum("money")
+            )["total_money"]
+            or 0
+        )
+
+        borrow = (
+            Loan.objects.filter(wallet_id=self.id, category__name="Đi vay").aggregate(
                 total_money=Sum("money")
             )["total_money"]
             or 0
@@ -63,7 +77,7 @@ class Wallet(models.Model):
             or 0
         )
 
-        total = income - spending + collecting - repaid
+        total = income + collecting + borrow - spending - lend - repaid
         return total
 
 
