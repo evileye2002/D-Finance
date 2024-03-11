@@ -158,5 +158,5 @@ PWA_APP_DESCRIPTION = ""
 PWA_APP_THEME_COLOR = "#FFF"
 PWA_APP_THEME_BACKGROUND_COLOR = "#CFE2FF"
 
-PWA_APP_ICONS = [{"src": "static/imgs/avatar.jpg", "size": "160x160"}]
+PWA_APP_ICONS = [{"src": "/static/imgs/avatar.jpg", "size": "160x160"}]
 PWA_SERVICE_WORKER_PATH = BASE_DIR / "serviceworker.js"

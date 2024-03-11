@@ -266,6 +266,7 @@ def month_report(req, year):
         xaxis_title="<b>Tháng</b>",
         title_x=0.5,
         plot_bgcolor='white',
+        # xaxis=dict(range=[1, 12])
     )
 
     return fig

@@ -2,7 +2,15 @@ from django import forms
 from django.forms import widgets
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import Record, Wallet, Category, Loan, PeopleDirectory, CategoryGroup
+from .models import (
+    Record,
+    Wallet,
+    Category,
+    Loan,
+    PeopleDirectory,
+    CategoryGroup,
+    UserProfile,
+)
 from django.db import models
 from django.utils import timezone
 from .utils import datetime_local_format
@@ -316,3 +324,29 @@ class CategoryForm(forms.ModelForm):
         self.fields["category_group"].queryset = CategoryGroup.objects.filter(
             models.Q(name="Thu tiền") | models.Q(name="Chi tiền"),
         )
+
+
+class ProfileForm(forms.ModelForm):
+    email = forms.CharField(
+        widget=forms.TextInput(attrs={"class": "disabled"}),
+        label="Email",
+        required=False,
+    )
+
+    class Meta:
+        model = UserProfile
+        fields = ["last_name", "first_name", "phone", "address"]
+        labels = {
+            "last_name": "Họ",
+            "first_name": "Tên",
+            "phone": "Số điện thoại",
+            "address": "Địa chỉ",
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super(ProfileForm, self).__init__(*args, **kwargs)
+        self.fields["email"].disabled = True
+
+        if user:
+            self.fields["email"].initial = user.email

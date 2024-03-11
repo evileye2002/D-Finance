@@ -3,7 +3,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import models
 from datetime import datetime
-from .models import Wallet, Record, Category, PeopleDirectory, Loan
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from .models import Wallet, Record, Category, PeopleDirectory, Loan, UserProfile
 from .forms import (
     SignUpForm,
     SignInForm,
@@ -12,6 +14,7 @@ from .forms import (
     LoanForm,
     DirectoryForm,
     CategoryForm,
+    ProfileForm,
 )
 from .utils import (
     getDailyRecord,
@@ -361,14 +364,31 @@ def category_delete(req, category_id):
 
 @login_required(login_url="sign-in")
 def user_profile(req):
-    pass
+    profile = UserProfile.objects.get(author=req.user)
+    form = ProfileForm(user=req.user, instance=profile)
 
+    if req.method == "POST":
+        form = ProfileForm(req.POST, user=req.user, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect("profile")
 
-@login_required(login_url="sign-in")
-def user_profile_change(req):
-    pass
+    ctx = {"form": form}
+
+    return render(req, "profile/profile.html", ctx)
 
 
 @login_required(login_url="sign-in")
 def user_password_change(req):
-    pass
+    form = PasswordChangeForm(req.user)
+
+    if req.method == "POST":
+        form = PasswordChangeForm(req.user, req.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(req, user)
+            return redirect("index")
+
+    ctx = {"form": form}
+
+    return render(req, "profile/change-password.html", ctx)

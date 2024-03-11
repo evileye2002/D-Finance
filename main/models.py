@@ -139,3 +139,6 @@ class UserProfile(models.Model):
             return self.last_name + " " + self.first_name
         else:
             return self.first_name
+
+    def email(self):
+        return self.author.email
