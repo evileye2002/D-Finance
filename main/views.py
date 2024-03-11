@@ -5,7 +5,15 @@ from django.db import models
 from datetime import datetime
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
-from .models import Wallet, Record, Category, PeopleDirectory, Loan, UserProfile
+from .models import (
+    Wallet,
+    Record,
+    Category,
+    PeopleDirectory,
+    Loan,
+    UserProfile,
+    CategoryGroup,
+)
 from .forms import (
     SignUpForm,
     SignInForm,
@@ -33,7 +41,7 @@ def index(req):
     year = datetime.now().year
     month_reports = month_report(req, year).to_html(full_html=False)
     incomes = total_report(req)
-    spendings = total_report(req, "Chi tiền")
+    spendings = total_report(req, CategoryGroup.SPENDING)
 
     ctx = {"month_reports": month_reports, "incomes": incomes, "spendings": spendings}
     return render(req, "index.html", ctx)
@@ -97,15 +105,15 @@ def income(req):
         wallet__in=Wallet.objects.filter(author=req.user),
         category__in=Category.objects.filter(
             models.Q(is_default=True) | models.Q(author=req.user),
-            category_group__name="Thu tiền",
+            category_group=CategoryGroup.INCOME,
         ),
     )
 
     daily_records = getDailyRecord(records)
-    form = RecordForm(type="income", user=req.user)
+    form = RecordForm(type=CategoryGroup.INCOME, user=req.user)
 
     if req.method == "POST":
-        form = RecordForm(req.POST, user=req.user, type="income")
+        form = RecordForm(req.POST, user=req.user, type=CategoryGroup.INCOME)
         if form.is_valid():
             income = form.save(commit=False)
             income.author = req.user
@@ -151,14 +159,14 @@ def spending(req):
         wallet__author=req.user,
         category__in=Category.objects.filter(
             models.Q(is_default=True) | models.Q(author=req.user),
-            category_group__name="Chi tiền",
+            category_group=CategoryGroup.SPENDING,
         ),
     )
     daily_records = getDailyRecord(records)
-    form = RecordForm(type="spending", user=req.user)
+    form = RecordForm(type=CategoryGroup.SPENDING, user=req.user)
 
     if req.method == "POST":
-        form = RecordForm(req.POST, user=req.user, type="spending")
+        form = RecordForm(req.POST, user=req.user, type=CategoryGroup.SPENDING)
         if form.is_valid():
             spending = form.save(commit=False)
             spending.author = req.user
