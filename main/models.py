@@ -4,16 +4,15 @@ from django.db.models import Sum
 
 
 # Create your models here.
-class CategoryGroup(models.Model):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return self.name
+class CategoryGroup(models.IntegerChoices):
+    INCOME = 1, "Thu tiền"
+    SPENDING = 2, "Chi tiền"
+    LOAN = 3, "Vay nợ"
 
 
 class Category(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    category_group = models.ForeignKey(CategoryGroup, on_delete=models.CASCADE)
+    category_group = models.IntegerField(choices=CategoryGroup.choices)
     name = models.CharField(max_length=50)
     description = models.TextField(max_length=250, null=True, blank=True)
     is_default = models.BooleanField()
@@ -37,14 +36,14 @@ class Wallet(models.Model):
     def total(self):
         income = (
             Record.objects.filter(
-                wallet_id=self.id, category__category_group__name="Thu tiền"
+                wallet_id=self.id, category__category_group=CategoryGroup.INCOME
             ).aggregate(total_money=Sum("money"))["total_money"]
             or 0
         )
 
         spending = (
             Record.objects.filter(
-                wallet_id=self.id, category__category_group__name="Chi tiền"
+                wallet_id=self.id, category__category_group=CategoryGroup.SPENDING
             ).aggregate(total_money=Sum("money"))["total_money"]
             or 0
         )

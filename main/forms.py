@@ -151,20 +151,20 @@ class RecordForm(forms.ModelForm):
             category = Category.objects.all()
             wallet = Wallet.objects.filter(author=user)
 
-            if type == "income":
+            if type == CategoryGroup.INCOME:
                 name = "Tên khoản thu"
                 category_label = "Hạng mục thu"
                 category = Category.objects.filter(
                     models.Q(is_default=True) | models.Q(author=user),
-                    category_group__name="Thu tiền",
+                    category_group=type,
                 )
 
-            if type == "spending":
+            if type == CategoryGroup.SPENDING:
                 name = "Tên khoản chi"
                 category_label = "Hạng mục chi"
                 category = Category.objects.filter(
                     models.Q(is_default=True) | models.Q(author=user),
-                    category_group__name="Chi tiền",
+                    category_group=type,
                 )
 
             if type == "change":
@@ -172,8 +172,8 @@ class RecordForm(forms.ModelForm):
                 category_label = "Hạng mục"
                 category = Category.objects.filter(
                     models.Q(is_default=True) | models.Q(author=user),
-                    models.Q(category_group__name="Thu tiền")
-                    | models.Q(category_group__name="Chi tiền"),
+                    models.Q(category_group=CategoryGroup.INCOME)
+                    | models.Q(category_group=CategoryGroup.SPENDING),
                 )
 
             self.fields["name"].label = name
@@ -270,7 +270,7 @@ class LoanForm(forms.ModelForm):
                 self.fields["lender_borrower"].initial = lender_borrower.first()
 
             if type == "change":
-                category = Category.objects.filter(category_group__name="Vay nợ")
+                category = Category.objects.filter(category_group=CategoryGroup.LOAN)
 
             self.fields["category"].queryset = category
             self.fields["category"].initial = category.first()
@@ -314,16 +314,18 @@ class CategoryForm(forms.ModelForm):
             "description",
         ]
         labels = {
-            "name": "Tên",
-            "category_group": "Nhóm",
+            "name": "Tên hạng mục",
+            "category_group": "Nhóm hạng mục",
         }
 
     def __init__(self, *args, **kwargs):
         super(CategoryForm, self).__init__(*args, **kwargs)
 
-        self.fields["category_group"].queryset = CategoryGroup.objects.filter(
-            models.Q(name="Thu tiền") | models.Q(name="Chi tiền"),
-        )
+        self.fields["category_group"].choices = [
+            (choice[0], choice[1])
+            for choice in CategoryGroup.choices
+            if choice[0] in [CategoryGroup.INCOME, CategoryGroup.SPENDING]
+        ]
 
 
 class ProfileForm(forms.ModelForm):

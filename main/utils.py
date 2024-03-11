@@ -10,7 +10,7 @@ import plotly.graph_objects as go
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth
 from datetime import datetime
-from .models import Record, Category
+from .models import Record, Category, CategoryGroup
 
 datetime_local_format = "%Y-%m-%dT%H:%M"
 date_format = "%d/%m/%Y"
@@ -161,7 +161,7 @@ def renderLoanDetail(req, id, loanForm, type):
     return render(req, "loan/loan-detail.html", ctx)
 
 
-def total_report(req, type="Thu tiền"):
+def total_report(req, type=CategoryGroup.INCOME):
     today = date.today()
     start_of_month = datetime(today.year, today.month, 1)
     end_of_month = datetime(today.year, today.month, 31)
@@ -175,7 +175,7 @@ def total_report(req, type="Thu tiền"):
             wallet__is_calculate=True,
             category__in=Category.objects.filter(
                 models.Q(is_default=True) | models.Q(author=req.user),
-                category_group__name=type,
+                category_group=type,
             ),
         ).aggregate(total_money=Sum("money"))["total_money"]
         or 0
@@ -188,7 +188,7 @@ def total_report(req, type="Thu tiền"):
             wallet__is_calculate=True,
             category__in=Category.objects.filter(
                 models.Q(is_default=True) | models.Q(author=req.user),
-                category_group__name=type,
+                category_group=type,
             ),
         ).aggregate(total_money=Sum("money"))["total_money"]
         or 0
@@ -201,7 +201,7 @@ def total_report(req, type="Thu tiền"):
             wallet__is_calculate=True,
             category__in=Category.objects.filter(
                 models.Q(is_default=True) | models.Q(author=req.user),
-                category_group__name=type,
+                category_group=type,
             ),
         ).aggregate(total_money=Sum("money"))["total_money"]
         or 0
@@ -222,7 +222,7 @@ def month_report(req, year):
             timestamp__year=year,
             category__in=Category.objects.filter(
                 models.Q(is_default=True) | models.Q(author=req.user),
-                category_group__name="Thu tiền",
+                category_group=CategoryGroup.INCOME,
             ),
         )
         .annotate(month_year=TruncMonth("timestamp"))
@@ -237,7 +237,7 @@ def month_report(req, year):
             timestamp__year=year,
             category__in=Category.objects.filter(
                 models.Q(is_default=True) | models.Q(author=req.user),
-                category_group__name="Chi tiền",
+                category_group=CategoryGroup.SPENDING,
             ),
         )
         .annotate(month_year=TruncMonth("timestamp"))
