@@ -236,7 +236,7 @@ def month_report(req, year):
         .order_by("month_year")
     )
 
-    months_incomes = [f"Thg {data["month_year"].strftime("%m")}" for data in incomes]
+    months_incomes = [f"Thg {data['month_year'].strftime('%m')}" for data in incomes]
     total_incomes = [data["total_money"] for data in incomes]
     
     months_spendings = [f"Thg {data["month_year"].strftime("%m")}" for data in spendings]
