@@ -2,7 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import models
-from django.urls import reverse
+from datetime import datetime
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
+from .models import Wallet, Record, Category, PeopleDirectory, Loan, UserProfile
 from .forms import (
     SignUpForm,
     SignInForm,
@@ -11,22 +14,29 @@ from .forms import (
     LoanForm,
     DirectoryForm,
     CategoryForm,
+    ProfileForm,
 )
-from .models import Wallet, Record, Category, PeopleDirectory, Loan
 from .utils import (
     getDailyRecord,
-    getTotalByMonth,
     changeForm,
     getLoan,
     getLoanTotal,
     renderLoanDetail,
+    month_report,
+    total_report,
 )
 
 
 # Create your views here.
 @login_required(login_url="sign-in")
 def index(req):
-    return render(req, "index.html")
+    year = datetime.now().year
+    month_reports = month_report(req, year).to_html(full_html=False)
+    incomes = total_report(req)
+    spendings = total_report(req, "Chi tiền")
+
+    ctx = {"month_reports": month_reports, "incomes": incomes, "spendings": spendings}
+    return render(req, "index.html", ctx)
 
 
 def sign_in(req):
@@ -91,8 +101,7 @@ def income(req):
         ),
     )
 
-    sorted_records = records.order_by("timestamp")
-    daily_records = getDailyRecord(sorted_records)
+    daily_records = getDailyRecord(records)
     form = RecordForm(type="income", user=req.user)
 
     if req.method == "POST":
@@ -139,14 +148,13 @@ def record_delete(req, record_id):
 @login_required(login_url="sign-in")
 def spending(req):
     records = Record.objects.filter(
-        wallet__in=Wallet.objects.filter(author=req.user),
+        wallet__author=req.user,
         category__in=Category.objects.filter(
             models.Q(is_default=True) | models.Q(author=req.user),
             category_group__name="Chi tiền",
         ),
     )
-    sorted_records = records.order_by("timestamp")
-    daily_records = getDailyRecord(sorted_records=sorted_records)
+    daily_records = getDailyRecord(records)
     form = RecordForm(type="spending", user=req.user)
 
     if req.method == "POST":
@@ -352,3 +360,35 @@ def category_delete(req, category_id):
 
     category.delete()
     return redirect("category")
+
+
+@login_required(login_url="sign-in")
+def user_profile(req):
+    profile = UserProfile.objects.get(author=req.user)
+    form = ProfileForm(user=req.user, instance=profile)
+
+    if req.method == "POST":
+        form = ProfileForm(req.POST, user=req.user, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect("profile")
+
+    ctx = {"form": form}
+
+    return render(req, "profile/profile.html", ctx)
+
+
+@login_required(login_url="sign-in")
+def user_password_change(req):
+    form = PasswordChangeForm(req.user)
+
+    if req.method == "POST":
+        form = PasswordChangeForm(req.user, req.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(req, user)
+            return redirect("index")
+
+    ctx = {"form": form}
+
+    return render(req, "profile/change-password.html", ctx)

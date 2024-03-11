@@ -1,23 +1,28 @@
 from collections import defaultdict
 from django.utils import timezone
-from datetime import datetime
+from datetime import datetime,date
 from django.shortcuts import redirect, render
 from django.db.models import Sum
 from .models import PeopleDirectory, Loan
 from django.db import models
 
+import plotly.graph_objects as go
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
+from datetime import datetime
+from .models import Record, Category
 
 datetime_local_format = "%Y-%m-%dT%H:%M"
 date_format = "%d/%m/%Y"
 
 
-def getDailyRecord(sorted_records):
+def getDailyRecord(records):
     grouped_records = defaultdict(list)
-    for record in sorted_records:
+    for record in records:
         date_key = record.timestamp.strftime(date_format)
         grouped_records[date_key].append(record)
 
-    daily_records = sorted(grouped_records.items(), key=lambda x: x[0], reverse=True)
+    daily_records = list(grouped_records.items())
 
     return daily_records
 
@@ -71,27 +76,13 @@ def formatMoney(money):
     return output
 
 
-def getTotalByMonth(sorted_records):
-    daily_records = getDailyRecord(sorted_records)
-
-    current_day = datetime.now().strftime(date_format)
-    current_month = datetime.now().strftime("%m/%Y")
-    current_year = datetime.now().strftime("%Y")
-
-    return {
-        "by_day": getTotal(daily_records, current_day),
-        "by_month": getTotal(daily_records, current_month),
-        "by_year": getTotal(daily_records, current_year),
-    }
-
-
 def getTotal(daily_records, filter):
     filter_records = [
         records for date_key, records in daily_records if date_key.endswith(filter)
     ]
     total_money = sum(record.money for records in filter_records for record in records)
 
-    return "{:,}".format(total_money)
+    return formatMoney(total_money)
 
 
 def changeForm(req, url_name, form_class, instance, render_file):
@@ -168,3 +159,114 @@ def renderLoanDetail(req, id, loanForm, type):
 
     ctx = {"form": form, "loan_detail": loan_detail, "calculate": calculate}
     return render(req, "loan/loan-detail.html", ctx)
+
+
+def total_report(req,type="Thu tiền"):
+    today = date.today()
+    start_of_month = datetime(today.year, today.month, 1)
+    end_of_month = datetime(today.year, today.month, 31)
+    start_of_year = datetime(today.year, 1, 1)
+    end_of_year = datetime(today.year, 12, 31)
+    
+    total_today = Record.objects.filter(
+        timestamp__date=today,
+        wallet__author=req.user,
+        wallet__is_calculate=True,
+        category__in=Category.objects.filter(
+            models.Q(is_default=True) | models.Q(author=req.user),
+            category_group__name=type,
+        )
+    ).aggregate(total_money=Sum('money'))['total_money'] or 0
+
+    total_this_month = Record.objects.filter(
+        timestamp__range=(start_of_month, end_of_month),
+        wallet__author=req.user,
+        wallet__is_calculate=True,
+        category__in=Category.objects.filter(
+            models.Q(is_default=True) | models.Q(author=req.user),
+            category_group__name=type,
+        )
+    ).aggregate(total_money=Sum('money'))['total_money'] or 0
+
+    total_this_year = Record.objects.filter(
+        timestamp__range=(start_of_year, end_of_year),
+        wallet__author=req.user,
+        wallet__is_calculate=True,
+        category__in=Category.objects.filter(
+            models.Q(is_default=True) | models.Q(author=req.user),
+            category_group__name=type,
+        )
+    ).aggregate(total_money=Sum('money'))['total_money'] or 0
+
+
+    return {"today":total_today,
+            "this_month":total_this_month,
+            "this_year":total_this_year}
+
+
+def month_report(req, year):
+    incomes = (
+        Record.objects.filter(
+            wallet__author=req.user,
+            wallet__is_calculate=True,
+            timestamp__year=year,
+            category__in=Category.objects.filter(
+                models.Q(is_default=True) | models.Q(author=req.user),
+                category_group__name="Thu tiền",
+            ),
+        )
+        .annotate(month_year=TruncMonth("timestamp"))
+        .values("month_year")
+        .annotate(total_money=Sum("money"))
+        .order_by("month_year")
+    )
+    spendings = (
+        Record.objects.filter(
+            wallet__author=req.user,
+            wallet__is_calculate=True,
+            timestamp__year=year,
+            category__in=Category.objects.filter(
+                models.Q(is_default=True) | models.Q(author=req.user),
+                category_group__name="Chi tiền",
+            ),
+        )
+        .annotate(month_year=TruncMonth("timestamp"))
+        .values("month_year")
+        .annotate(total_money=Sum("money"))
+        .order_by("month_year")
+    )
+
+    months_incomes = [f"Thg {data["month_year"].strftime("%m")}" for data in incomes]
+    total_incomes = [data["total_money"] for data in incomes]
+    
+    months_spendings = [f"Thg {data["month_year"].strftime("%m")}" for data in spendings]
+    total_spendings = [data["total_money"] for data in spendings]
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Bar(
+            x=months_incomes,
+            y=total_incomes,
+            name="Thu Nhập",
+            marker=dict(color="rgb(25, 135, 84)"),
+        )
+    )
+    fig.add_trace(
+        go.Bar(
+            x=months_spendings,
+            y=total_spendings,
+            name="Chi Tiêu",
+            marker=dict(color="rgb(220, 53, 69)"),
+        )
+    )
+
+    fig.update_layout(
+        barmode="group",
+        title=f"<b>Tình hình Thu Chi năm {year}</b>",
+        xaxis_title="<b>Tháng</b>",
+        title_x=0.5,
+        plot_bgcolor='white',
+        # xaxis=dict(range=[1, 12])
+    )
+
+    return fig

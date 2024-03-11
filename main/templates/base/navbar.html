@@ -14,11 +14,17 @@
 
     {% if user.is_authenticated %}
     <div class="offcanvas-bottom border-top">
-        <div class="p-3">
-            <a class="nav-link" href="{% url "sign-out" %}">
-                <i class="fa-solid fa-right-from-bracket fa-lg"></i>
-                <span>Đăng Xuất</span>
-            </a>
+        <div class="dropdown dropup py-2 ms-2">
+            <button class="btn dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static"
+                aria-expanded="false">
+                <i class="fa-solid fa-user me-1"></i>
+                {{request.user}}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-lg-end">
+                <li><a class="dropdown-item" href="{% url "profile" %}">Thông tin tài khoản</a></li>
+                <li><a class="dropdown-item" href="{% url "change_password" %}">Đổi mật khẩu</a></li>
+                <li><a class="dropdown-item" href="{% url "sign-out" %}">Đăng xuất</a></li>
+            </ul>
         </div>
     </div>
     {% endif %}
@@ -37,11 +43,17 @@
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             {% include "base/navbar-nav.html" %}
-
-            <div class="sign-out">
-                <a class="nav-link rounded-2 p-3" href="{% url "sign-out" %}">
-                    <i class="fa-solid fa-right-from-bracket fa-lg"></i>
-                </a>
+            <div class="dropdown">
+                <button class="btn dropdown-toggle" data-bs-toggle="dropdown" data-bs-display="static"
+                    aria-expanded="false">
+                    <i class="fa-solid fa-user me-1"></i>
+                    {{request.user}}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-lg-end">
+                    <li><a class="dropdown-item" href="{% url "profile" %}">Thông tin tài khoản</a></li>
+                    <li><a class="dropdown-item" href="{% url "change_password" %}">Đổi mật khẩu</a></li>
+                    <li><a class="dropdown-item" href="{% url "sign-out" %}">Đăng xuất</a></li>
+                </ul>
             </div>
         </div>
     </div>

@@ -1,15 +1,13 @@
 from django.contrib.auth.models import User
-from django.contrib.admin.models import LogEntry
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
-from .models import Wallet
-from django.utils import timezone
-from .utils import append_log
+from .models import Wallet, UserProfile
 
 
 @receiver(post_save, sender=User)
 def create_user_wallet(sender, instance, created, **kwargs):
     if created:
+        UserProfile.objects.create(author=instance, first_name=instance.username)
         Wallet.objects.create(
             author=instance, name=instance.username, is_calculate=True
         )
