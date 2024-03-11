@@ -1,6 +1,6 @@
 from collections import defaultdict
 from django.utils import timezone
-from datetime import datetime,date
+from datetime import datetime, date
 from django.shortcuts import redirect, render
 from django.db.models import Sum
 from .models import PeopleDirectory, Loan
@@ -161,47 +161,57 @@ def renderLoanDetail(req, id, loanForm, type):
     return render(req, "loan/loan-detail.html", ctx)
 
 
-def total_report(req,type="Thu tiền"):
+def total_report(req, type="Thu tiền"):
     today = date.today()
     start_of_month = datetime(today.year, today.month, 1)
     end_of_month = datetime(today.year, today.month, 31)
     start_of_year = datetime(today.year, 1, 1)
     end_of_year = datetime(today.year, 12, 31)
-    
-    total_today = Record.objects.filter(
-        timestamp__date=today,
-        wallet__author=req.user,
-        wallet__is_calculate=True,
-        category__in=Category.objects.filter(
-            models.Q(is_default=True) | models.Q(author=req.user),
-            category_group__name=type,
-        )
-    ).aggregate(total_money=Sum('money'))['total_money'] or 0
 
-    total_this_month = Record.objects.filter(
-        timestamp__range=(start_of_month, end_of_month),
-        wallet__author=req.user,
-        wallet__is_calculate=True,
-        category__in=Category.objects.filter(
-            models.Q(is_default=True) | models.Q(author=req.user),
-            category_group__name=type,
-        )
-    ).aggregate(total_money=Sum('money'))['total_money'] or 0
+    total_today = (
+        Record.objects.filter(
+            timestamp__date=today,
+            wallet__author=req.user,
+            wallet__is_calculate=True,
+            category__in=Category.objects.filter(
+                models.Q(is_default=True) | models.Q(author=req.user),
+                category_group__name=type,
+            ),
+        ).aggregate(total_money=Sum("money"))["total_money"]
+        or 0
+    )
 
-    total_this_year = Record.objects.filter(
-        timestamp__range=(start_of_year, end_of_year),
-        wallet__author=req.user,
-        wallet__is_calculate=True,
-        category__in=Category.objects.filter(
-            models.Q(is_default=True) | models.Q(author=req.user),
-            category_group__name=type,
-        )
-    ).aggregate(total_money=Sum('money'))['total_money'] or 0
+    total_this_month = (
+        Record.objects.filter(
+            timestamp__range=(start_of_month, end_of_month),
+            wallet__author=req.user,
+            wallet__is_calculate=True,
+            category__in=Category.objects.filter(
+                models.Q(is_default=True) | models.Q(author=req.user),
+                category_group__name=type,
+            ),
+        ).aggregate(total_money=Sum("money"))["total_money"]
+        or 0
+    )
 
+    total_this_year = (
+        Record.objects.filter(
+            timestamp__range=(start_of_year, end_of_year),
+            wallet__author=req.user,
+            wallet__is_calculate=True,
+            category__in=Category.objects.filter(
+                models.Q(is_default=True) | models.Q(author=req.user),
+                category_group__name=type,
+            ),
+        ).aggregate(total_money=Sum("money"))["total_money"]
+        or 0
+    )
 
-    return {"today":total_today,
-            "this_month":total_this_month,
-            "this_year":total_this_year}
+    return {
+        "today": total_today,
+        "this_month": total_this_month,
+        "this_year": total_this_year,
+    }
 
 
 def month_report(req, year):
@@ -238,8 +248,10 @@ def month_report(req, year):
 
     months_incomes = [f"Thg {data['month_year'].strftime('%m')}" for data in incomes]
     total_incomes = [data["total_money"] for data in incomes]
-    
-    months_spendings = [f"Thg {data["month_year"].strftime("%m")}" for data in spendings]
+
+    months_spendings = [
+        f"Thg {data['month_year'].strftime('%m')}" for data in spendings
+    ]
     total_spendings = [data["total_money"] for data in spendings]
 
     fig = go.Figure()
@@ -265,7 +277,7 @@ def month_report(req, year):
         title=f"<b>Tình hình Thu Chi năm {year}</b>",
         xaxis_title="<b>Tháng</b>",
         title_x=0.5,
-        plot_bgcolor='white',
+        plot_bgcolor="white",
         # xaxis=dict(range=[1, 12])
     )
 
