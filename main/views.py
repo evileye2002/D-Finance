@@ -32,6 +32,7 @@ from .utils import (
     renderLoanDetail,
     month_report,
     total_report,
+    category_report,
 )
 
 
@@ -42,8 +43,14 @@ def index(req):
     month_reports = month_report(req, year).to_html(full_html=False)
     incomes = total_report(req)
     spendings = total_report(req, CategoryGroup.SPENDING)
+    category_reports = category_report(req)
 
-    ctx = {"month_reports": month_reports, "incomes": incomes, "spendings": spendings}
+    ctx = {
+        "month_reports": month_reports,
+        "category_reports": category_reports,
+        "incomes": incomes,
+        "spendings": spendings,
+    }
     return render(req, "index.html", ctx)
 
 
@@ -108,7 +115,7 @@ def income(req):
             category_group=CategoryGroup.INCOME,
         ),
     )
-
+    # records = loadMoreItem(req, queryset, 10)
     daily_records = getDailyRecord(records)
     form = RecordForm(type=CategoryGroup.INCOME, user=req.user)
 
@@ -162,6 +169,7 @@ def spending(req):
             category_group=CategoryGroup.SPENDING,
         ),
     )
+    # records = loadMoreItem(req, queryset, 10)
     daily_records = getDailyRecord(records)
     form = RecordForm(type=CategoryGroup.SPENDING, user=req.user)
 
