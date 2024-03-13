@@ -13,7 +13,7 @@
 {% block content %}
 <div class="container my-3">
     <div class=" mb-3">
-        <div class="d-flex gap-3 justify-content-center p-1">
+        <div class="d-flex gap-3 justify-content-center">
             <div class="rounded-3 bg-white w-100">
                 <div class="p-3">
                     <div class="fw-bold mb-2">Hôm nay</div>
@@ -68,9 +68,20 @@
         </div>
     </div>
 
-    <div class="rounded-3 bg-white">
+    <div class="rounded-3 bg-white mb-3">
         <div class="p-1">
             {{month_reports|safe}}
+        </div>
+    </div>
+
+    <div class="rounded-3 bg-white">
+        <div class="d-flex">
+            <div class="p-1 w-50">
+                {{category_reports.incomes|safe}}
+            </div>
+            <div class="p-1 w-50">
+                {{category_reports.spendings|safe}}
+            </div>
         </div>
     </div>
 </div>

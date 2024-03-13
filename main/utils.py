@@ -7,10 +7,12 @@ from .models import PeopleDirectory, Loan
 from django.db import models
 
 import plotly.graph_objects as go
+import plotly.colors
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth
 from datetime import datetime
 from .models import Record, Category, CategoryGroup
+from django.core.paginator import Paginator
 
 datetime_local_format = "%Y-%m-%dT%H:%M"
 date_format = "%d/%m/%Y"
@@ -280,5 +282,50 @@ def month_report(req, year):
         plot_bgcolor="white",
         # xaxis=dict(range=[1, 12])
     )
+
+    return fig
+
+
+def loadMoreItem(req, queryset, per_page):
+    page_number = req.GET.get("page") or 1
+    items_per_page = per_page
+    paginator = Paginator(queryset, items_per_page)
+
+    return paginator.get_page(page_number)
+
+
+def category_report(req):
+    today = date.today()
+    start_of_month = datetime(today.year, today.month, 1)
+    end_of_month = datetime(today.year, today.month, 31)
+
+    incomes = Record.objects.filter(
+        wallet__author=req.user,
+        category__category_group=CategoryGroup.INCOME,
+        timestamp__range=(start_of_month, end_of_month),
+    )
+    spendings = Record.objects.filter(
+        wallet__author=req.user,
+        category__category_group=CategoryGroup.SPENDING,
+        timestamp__range=(start_of_month, end_of_month),
+    )
+
+    return {
+        "incomes": circle_chart(incomes, "Thu Nhập tháng này").to_html(),
+        "spendings": circle_chart(spendings, "Chi Tiêu tháng này").to_html(),
+    }
+
+
+def circle_chart(reports, title):
+    categories = reports.values("category__name").annotate(
+        total_money=models.Sum("money")
+    )
+    labels = [category["category__name"] for category in categories]
+    values = [category["total_money"] for category in categories]
+
+    fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
+    fig.update_layout(title=f"<b>{title}</b>")
+    # colors = plotly.colors.qualitative.Plotly
+    # fig.update_traces(marker=dict(colors=colors))
 
     return fig
