@@ -7,7 +7,7 @@ from .models import PeopleDirectory, Loan
 from django.db import models
 
 import plotly.graph_objects as go
-import plotly.colors
+import random
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth
 from datetime import datetime
@@ -323,9 +323,12 @@ def circle_chart(reports, title):
     labels = [category["category__name"] for category in categories]
     values = [category["total_money"] for category in categories]
 
-    fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
+    colors = ["#{:06x}".format(random.randint(0, 0xFFFFFF)) for _ in range(50)]
+    fig = go.Figure(
+        data=[go.Pie(labels=labels, values=values, marker=dict(colors=colors))]
+    )
+
+    # fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
     fig.update_layout(title=f"<b>{title}</b>")
-    # colors = plotly.colors.qualitative.Plotly
-    # fig.update_traces(marker=dict(colors=colors))
 
     return fig
