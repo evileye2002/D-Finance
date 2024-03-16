@@ -309,21 +309,23 @@ def category_report(req):
         category__category_group=CategoryGroup.SPENDING,
         timestamp__range=(start_of_month, end_of_month),
     )
+    colors = ["#{:06x}".format(random.randint(0, 0xFFFFFF)) for _ in range(50)]
 
     return {
-        "incomes": circle_chart(incomes, "Thu Nhập tháng này").to_html(),
-        "spendings": circle_chart(spendings, "Chi Tiêu tháng này").to_html(),
+        "incomes": circle_chart(incomes, "Thu Nhập tháng này", colors).to_html(),
+        "spendings": circle_chart(
+            spendings, "Chi Tiêu tháng này", colors[::-1]
+        ).to_html(),
     }
 
 
-def circle_chart(reports, title):
+def circle_chart(reports, title, colors):
     categories = reports.values("category__name").annotate(
         total_money=models.Sum("money")
     )
     labels = [category["category__name"] for category in categories]
     values = [category["total_money"] for category in categories]
 
-    colors = ["#{:06x}".format(random.randint(0, 0xFFFFFF)) for _ in range(50)]
     fig = go.Figure(
         data=[go.Pie(labels=labels, values=values, marker=dict(colors=colors))]
     )
