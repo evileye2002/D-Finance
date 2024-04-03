@@ -1,6 +1,8 @@
 from collections import defaultdict
 from django.utils import timezone
 from datetime import datetime, date
+import calendar
+
 from django.shortcuts import redirect, render
 from django.db.models import Sum
 from .models import PeopleDirectory, Loan
@@ -10,7 +12,6 @@ import plotly.graph_objects as go
 import random
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth
-from datetime import datetime
 from .models import Record, Category, CategoryGroup
 from django.core.paginator import Paginator
 
@@ -165,8 +166,10 @@ def renderLoanDetail(req, id, loanForm, type):
 
 def total_report(req, type=CategoryGroup.INCOME):
     today = date.today()
+    last_day_of_month = calendar.monthrange(today.year, today.month)[1]
+
     start_of_month = datetime(today.year, today.month, 1)
-    end_of_month = datetime(today.year, today.month, 31)
+    end_of_month = datetime(today.year, today.month, last_day_of_month)
     start_of_year = datetime(today.year, 1, 1)
     end_of_year = datetime(today.year, 12, 31)
 
@@ -296,8 +299,10 @@ def loadMoreItem(req, queryset, per_page):
 
 def category_report(req):
     today = date.today()
+    last_day_of_month = calendar.monthrange(today.year, today.month)[1]
+
     start_of_month = datetime(today.year, today.month, 1)
-    end_of_month = datetime(today.year, today.month, 31)
+    end_of_month = datetime(today.year, today.month, last_day_of_month)
 
     incomes = Record.objects.filter(
         wallet__author=req.user,
