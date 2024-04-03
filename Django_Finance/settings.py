@@ -103,7 +103,7 @@ DATABASES = {
 is_deploy = os.environ.get("DEPLOY", "False").lower() == "true"
 
 if is_deploy:
-    print("Deploy...")
+    print("Deploy detected")
     db_url = os.environ.get("DATABASE_URL")
     DATABASES["default"] = dj_database_url.parse(db_url)
 

@@ -13,6 +13,7 @@
 {% block content %}
 <div class="container mt-3">
     <div class="d-flex justify-content-center align-items-center rounded-3 bg-white mb-3">
+        {% if categories %}
         <table class="table m-3">
             <thead>
                 <tr>
@@ -48,6 +49,9 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% else %}
+        <div class="p-3 text-center text-danger">Không có bản ghi nào</div>
+        {% endif %}
     </div>
 
     <div type="button" class="position-fixed" style="bottom: 30px;right: 30px;" title="Thêm">

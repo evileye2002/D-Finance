@@ -191,10 +191,15 @@ class WalletForm(forms.ModelForm):
     is_calculate = forms.BooleanField(
         label="Tính vào báo cáo", required=False, initial=True
     )
+    description = forms.CharField(
+        widget=forms.Textarea(attrs={"style": "height: 100px;"}),
+        label="Mô tả",
+        required=False,
+    )
 
     class Meta:
         model = Wallet
-        fields = ["name", "is_calculate"]
+        fields = ["name", "description", "is_calculate"]
 
 
 class LoanForm(forms.ModelForm):

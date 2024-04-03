@@ -125,6 +125,8 @@ def renderLoanDetail(req, id, loanForm, type):
     category2 = "Thu nợ"
     redirect_to = "lend_detail"
 
+    lender_borrower = PeopleDirectory.objects.get(id=id)
+
     if "borrow" in type:
         category1 = "Đi vay"
         category2 = "Trả nợ"
@@ -160,7 +162,12 @@ def renderLoanDetail(req, id, loanForm, type):
             form.save()
             return redirect(redirect_to, id)
 
-    ctx = {"form": form, "loan_detail": loan_detail, "calculate": calculate}
+    ctx = {
+        "form": form,
+        "loan_detail": loan_detail,
+        "calculate": calculate,
+        "lender_borrower": lender_borrower,
+    }
     return render(req, "loan/loan-detail.html", ctx)
 
 

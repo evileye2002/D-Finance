@@ -27,6 +27,7 @@ class Wallet(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     is_calculate = models.BooleanField()
+    description = models.TextField(max_length=250, null=True, blank=True)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
 
