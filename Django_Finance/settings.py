@@ -100,7 +100,10 @@ DATABASES = {
     # }
 }
 
-if not DEBUG:
+is_deploy = os.environ.get("DEPLOY", "False").lower() == "true"
+
+if is_deploy:
+    print("Deploy...")
     db_url = os.environ.get("DATABASE_URL")
     DATABASES["default"] = dj_database_url.parse(db_url)
 
