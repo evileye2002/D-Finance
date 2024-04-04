@@ -77,7 +77,7 @@ def sign_in(req):
                 login(req, user)
                 return redirect("index")
 
-    print(form.errors.as_json())
+    # print(form.errors.as_json())
     ctx = {"signInForm": form, "errors": form.non_field_errors()}
 
     return render(req, "sign-in.html", ctx)
@@ -95,7 +95,7 @@ def sign_up(req):
             form.save()
             return redirect("sign-in")
 
-    print(form.__getitem__("password2").errors.as_json())
+    # print(form.__getitem__("password2").errors.as_json())
     ctx = {"signUpForm": form}
 
     return render(req, "sign-up.html", ctx)
@@ -336,9 +336,7 @@ def directory_delete(req, directory_id):
 
 @login_required(login_url="sign-in")
 def category(req):
-    categories = Category.objects.filter(
-        models.Q(is_default=True) | models.Q(author=req.user),
-    )
+    categories = Category.objects.filter(author=req.user)
     form = CategoryForm()
 
     if req.method == "POST":

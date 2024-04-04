@@ -22,6 +22,18 @@
         <div class="rounded-3 p-3 ">
             <div class="">
                 <div class="d-flex fw-bold gap-2 mb-2">
+                    {% if "lend" in request.path %} Người vay:
+                    {% else %}
+                    Người cho vay:
+                    {% endif %}
+                    <a href="/directory/{{lender_borrower.id}}/change" class="text-primary text-decoration-none"
+                        style="cursor: pointer;">
+                        {{lender_borrower}}
+                        <i class="ms-1 fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+
+                </div>
+                <div class="d-flex fw-bold gap-2 mb-2">
                     {% if "lend" in request.path %} Cần thu:
                     {% else %}
                     Cần trả:
