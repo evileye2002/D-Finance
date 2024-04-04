@@ -65,18 +65,52 @@
             <div>
                 {% if loans %}
                 {% for loan in loans %}
-                <div class="d-flex p-3 border rounded-3 mb-2 loan" style="cursor: pointer;"
+                {% if loan.calculate.complete_percent < 100 %}
+                <div class="d-flex align-items-center p-3 border rounded-3 mb-2 loan" style="cursor: pointer;"
                     {% if "lend" in request.path %}onclick="location.href='lend/{{loan.lender_borrower.id}}';"
                     {% else %}onclick="location.href='borrow/{{loan.lender_borrower.id}}';" {% endif %}>
                     <div class="fw-bold">
                         <i class="fa-solid fa-user me-1"></i>
                         {{loan.lender_borrower}}
                     </div>
-                    <div class="text-danger fw-bold ms-auto">{{loan.total_money}} đ</div>
+                    <div class="text-end fw-bold ms-auto">
+                        <div class="text-danger">
+                            {{loan.calculate.need_collect_repaid}} đ</div>
+                        <small class="text-success">
+                            {{loan.calculate.total_collect_repaid}} đ
+                        </small>
+                    </div>
                 </div>
+                {% endif %}
                 {% endfor %}
+
+
                 {% else %}
                 <div class="p-3 text-center text-danger">Không có bản ghi nào</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3 rounded-3 bg-white">
+        <div class="p-3">
+            <div class="fw-bold mb-3">Đã hoàn thành</div>
+            <div>
+                {% if loans %}
+                {% for loan in loans %}
+                {% if loan.calculate.complete_percent >= 100 %}
+                <div class="d-flex align-items-center p-3 border rounded-3 mb-2 loan" style="cursor: pointer;"
+                    {% if "lend" in request.path %}onclick="location.href='lend/{{loan.lender_borrower.id}}';"
+                    {% else %}onclick="location.href='borrow/{{loan.lender_borrower.id}}';" {% endif %}>
+                    <div class="fw-bold">
+                        <i class="fa-solid fa-user me-1"></i>
+                        {{loan.lender_borrower}}
+                    </div>
+                    <div class="text-end fw-bold ms-auto text-success">{{loan.total_money}} đ</div>
+                </div>
+                {% endif %}
+                {% endfor %}
+
                 {% endif %}
             </div>
         </div>

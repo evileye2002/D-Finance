@@ -194,7 +194,7 @@ def lend(req):
     collects = Loan.objects.filter(
         wallet__in=Wallet.objects.filter(author=req.user), category__name="Thu nợ"
     )
-    loans = getLoan(lends)
+    loans = getLoan(lends, collects)
     calculate = getLoanTotal(lends, collects)
     form = LoanForm(user=req.user, type="lend")
 
@@ -217,7 +217,7 @@ def borrow(req):
     repaids = Loan.objects.filter(
         wallet__in=Wallet.objects.filter(author=req.user), category__name="Trả nợ"
     )
-    loans = getLoan(borrows)
+    loans = getLoan(borrows, repaids)
     calculate = getLoanTotal(borrows, repaids)
     form = LoanForm(user=req.user, type="borrow")
 
