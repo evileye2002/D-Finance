@@ -30,7 +30,7 @@ def getDailyRecord(records):
     return daily_records
 
 
-def getLoan(loans):
+def getLoan(loans, collects):
     total_money_grouped = loans.values("lender_borrower").annotate(
         total_money=Sum("money")
     )
@@ -40,8 +40,17 @@ def getLoan(loans):
         lender_borrower_id = item["lender_borrower"]
         total_money = formatMoney(item["total_money"])
         lender_borrower = PeopleDirectory.objects.get(id=lender_borrower_id)
+
+        lends_borrows = loans.filter(lender_borrower__id=lender_borrower_id)
+        collects_repaids = collects.filter(lender_borrower__id=lender_borrower_id)
+        calculate = getLoanTotal(lends_borrows, collects_repaids)
+
         result_list.append(
-            {"lender_borrower": lender_borrower, "total_money": total_money}
+            {
+                "lender_borrower": lender_borrower,
+                "total_money": total_money,
+                "calculate": calculate,
+            }
         )
 
     return result_list
@@ -59,7 +68,11 @@ def getLoanTotal(loans, collect_repaid):
         if collect_repaid
         else 0
     )
-    need_collect_repaid = total_money - total_collect_repaid
+    need_collect_repaid = (
+        total_money - total_collect_repaid
+        if total_money - total_collect_repaid > 0
+        else 0
+    )
     complete_percent = (
         total_collect_repaid / total_money * 100 if total_money > 0 else 0
     )
