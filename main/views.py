@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import models
 from datetime import datetime
+from django.core.paginator import Paginator
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
 from .models import (
@@ -108,14 +109,18 @@ def sign_out(req):
 
 @login_required(login_url="sign-in")
 def income(req):
-    records = Record.objects.filter(
+    query = Record.objects.filter(
         wallet__in=Wallet.objects.filter(author=req.user),
         category__in=Category.objects.filter(
             models.Q(is_default=True) | models.Q(author=req.user),
             category_group=CategoryGroup.INCOME,
         ),
     )
-    # records = loadMoreItem(req, queryset, 10)
+
+    p = Paginator(query, 10)
+    page = req.GET.get("page")
+    records = p.get_page(page)
+
     daily_records = getDailyRecord(records)
     form = RecordForm(type=CategoryGroup.INCOME, user=req.user)
 
@@ -127,7 +132,7 @@ def income(req):
             income.save()
             return redirect("income")
 
-    ctx = {"form": form, "daily_records": daily_records}
+    ctx = {"form": form, "daily_records": daily_records, "paginator": records}
 
     return render(req, "record/record.html", ctx)
 
@@ -162,14 +167,18 @@ def record_delete(req, record_id):
 
 @login_required(login_url="sign-in")
 def spending(req):
-    records = Record.objects.filter(
+    query = Record.objects.filter(
         wallet__author=req.user,
         category__in=Category.objects.filter(
             models.Q(is_default=True) | models.Q(author=req.user),
             category_group=CategoryGroup.SPENDING,
         ),
     )
-    # records = loadMoreItem(req, queryset, 10)
+
+    p = Paginator(query, 10)
+    page = req.GET.get("page")
+    records = p.get_page(page)
+
     daily_records = getDailyRecord(records)
     form = RecordForm(type=CategoryGroup.SPENDING, user=req.user)
 
@@ -181,7 +190,7 @@ def spending(req):
             spending.save()
             return redirect("spending")
 
-    ctx = {"form": form, "daily_records": daily_records}
+    ctx = {"form": form, "daily_records": daily_records, "paginator": records}
 
     return render(req, "record/record.html", ctx)
 
@@ -268,8 +277,12 @@ def loan_delete(req, loan_id):
 
 @login_required(login_url="sign-in")
 def wallet(req):
-    wallets = Wallet.objects.filter(author=req.user)
+    query = Wallet.objects.filter(author=req.user)
     form = WalletForm()
+
+    p = Paginator(query, 10)
+    page = req.GET.get("page")
+    wallets = p.get_page(page)
 
     if req.method == "POST":
         form = WalletForm(req.POST)
@@ -279,7 +292,7 @@ def wallet(req):
             wallet.save()
             return redirect("wallet")
 
-    ctx = {"form": form, "wallets": wallets}
+    ctx = {"form": form, "wallets": wallets, "paginator": wallets}
 
     return render(req, "wallet/wallet.html", ctx)
 
@@ -336,8 +349,12 @@ def directory_delete(req, directory_id):
 
 @login_required(login_url="sign-in")
 def category(req):
-    categories = Category.objects.filter(author=req.user)
+    query = Category.objects.filter(author=req.user)
     form = CategoryForm()
+
+    p = Paginator(query, 10)
+    page = req.GET.get("page")
+    categories = p.get_page(page)
 
     if req.method == "POST":
         form = CategoryForm(req.POST)
@@ -348,7 +365,7 @@ def category(req):
             category.save()
             return redirect("category")
 
-    ctx = {"form": form, "categories": categories}
+    ctx = {"form": form, "categories": categories, "paginator": categories}
 
     return render(req, "category/category.html", ctx)
 

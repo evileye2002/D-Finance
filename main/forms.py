@@ -177,6 +177,7 @@ class RecordForm(forms.ModelForm):
                 )
 
             self.fields["name"].label = name
+            self.fields["name"].required = False
             self.fields["category"].label = category_label
             self.fields["category"].queryset = category
             self.fields["wallet"].queryset = wallet
@@ -277,6 +278,7 @@ class LoanForm(forms.ModelForm):
             if type == "change":
                 category = Category.objects.filter(category_group=CategoryGroup.LOAN)
 
+            self.fields["name"].required = False
             self.fields["category"].queryset = category
             self.fields["category"].initial = category.first()
             self.fields["wallet"].initial = wallet.first()
