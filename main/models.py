@@ -84,7 +84,7 @@ class Wallet(models.Model):
 class Record(models.Model):
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, null=True, blank=True)
     money = models.IntegerField()
     timestamp = models.DateTimeField()
     description = models.TextField(max_length=250, null=True, blank=True)
@@ -121,7 +121,7 @@ class Loan(models.Model):
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     lender_borrower = models.ForeignKey(PeopleDirectory, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, null=True, blank=True)
     money = models.IntegerField()
     timestamp = models.DateTimeField()
     loan_end = models.DateField(null=True, blank=True)

@@ -155,11 +155,16 @@ def renderLoanDetail(req, id, loanForm, type):
         wallet__author=req.user,
         category__name=category2,
     )
-    loans = Loan.objects.filter(
+    query = Loan.objects.filter(
         models.Q(category__name=category1) | models.Q(category__name=category2),
         lender_borrower__id=id,
         wallet__author=req.user,
     )
+
+    p = Paginator(query, 10)
+    page = req.GET.get("page")
+    loans = p.get_page(page)
+
     loan_detail = getDailyRecord(loans)
     calculate = getLoanTotal(lends_borrows, collects_repaids)
     form = loanForm(user=req.user, type=type, lender_borrower_id=id)
@@ -180,6 +185,7 @@ def renderLoanDetail(req, id, loanForm, type):
         "loan_detail": loan_detail,
         "calculate": calculate,
         "lender_borrower": lender_borrower,
+        "paginator": loans,
     }
     return render(req, "loan/loan-detail.html", ctx)
 
