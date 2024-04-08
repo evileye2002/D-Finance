@@ -282,8 +282,10 @@ def wallet_delete(req, wallet_id):
 
 @login_required(login_url="sign-in")
 def directory(req):
-    directories = PeopleDirectory.objects.filter(author=req.user)
+    query = PeopleDirectory.objects.filter(author=req.user)
     form = DirectoryForm()
+
+    directories = get_page(query, req)
 
     if req.method == "POST":
         form = DirectoryForm(req.POST)
@@ -293,7 +295,7 @@ def directory(req):
             directory.save()
             return redirect("directory")
 
-    ctx = {"form": form, "directories": directories}
+    ctx = {"form": form, "directories": directories, "paginator": directories}
 
     return render(req, "directory/directory.html", ctx)
 
@@ -320,7 +322,8 @@ def category(req):
     query = Category.objects.filter(author=req.user)
     form = CategoryForm()
 
-    categories = get_page(query, req)
+    page = get_page(query, req)
+    category_groups = get_categories(page)
 
     if req.method == "POST":
         form = CategoryForm(req.POST)
@@ -331,7 +334,7 @@ def category(req):
             category.save()
             return redirect("category")
 
-    ctx = {"form": form, "categories": categories, "paginator": categories}
+    ctx = {"form": form, "category_groups": category_groups, "paginator": page}
 
     return render(req, "category/category.html", ctx)
 
