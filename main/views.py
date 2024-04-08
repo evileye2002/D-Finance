@@ -6,42 +6,16 @@ from datetime import datetime
 from django.core.paginator import Paginator
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth import update_session_auth_hash
-from .models import (
-    Wallet,
-    Record,
-    Category,
-    PeopleDirectory,
-    Loan,
-    UserProfile,
-    CategoryGroup,
-)
-from .forms import (
-    SignUpForm,
-    SignInForm,
-    RecordForm,
-    WalletForm,
-    LoanForm,
-    DirectoryForm,
-    CategoryForm,
-    ProfileForm,
-)
-from .utils import (
-    getDailyRecord,
-    changeForm,
-    getLoan,
-    getLoanTotal,
-    renderLoanDetail,
-    month_report,
-    total_report,
-    category_report,
-)
+from .models import *
+from .forms import *
+from .utils import *
 
 
 # Create your views here.
 @login_required(login_url="sign-in")
 def index(req):
     year = datetime.now().year
-    month_reports = month_report(req, year).to_html(full_html=False)
+    month_reports = month_report(req, year)
     incomes = total_report(req)
     spendings = total_report(req, CategoryGroup.SPENDING)
     category_reports = category_report(req)
@@ -117,9 +91,7 @@ def income(req):
         ),
     )
 
-    p = Paginator(query, 10)
-    page = req.GET.get("page")
-    records = p.get_page(page)
+    records = get_page(query, req)
 
     daily_records = getDailyRecord(records)
     form = RecordForm(type=CategoryGroup.INCOME, user=req.user)
@@ -175,9 +147,7 @@ def spending(req):
         ),
     )
 
-    p = Paginator(query, 10)
-    page = req.GET.get("page")
-    records = p.get_page(page)
+    records = get_page(query, req)
 
     daily_records = getDailyRecord(records)
     form = RecordForm(type=CategoryGroup.SPENDING, user=req.user)
@@ -280,9 +250,7 @@ def wallet(req):
     query = Wallet.objects.filter(author=req.user)
     form = WalletForm()
 
-    p = Paginator(query, 10)
-    page = req.GET.get("page")
-    wallets = p.get_page(page)
+    wallets = get_page(query, req)
 
     if req.method == "POST":
         form = WalletForm(req.POST)
@@ -352,9 +320,7 @@ def category(req):
     query = Category.objects.filter(author=req.user)
     form = CategoryForm()
 
-    p = Paginator(query, 10)
-    page = req.GET.get("page")
-    categories = p.get_page(page)
+    categories = get_page(query, req)
 
     if req.method == "POST":
         form = CategoryForm(req.POST)

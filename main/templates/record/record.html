@@ -49,7 +49,7 @@
                             <div class="fw-bold">{{ record.category }}</div>
                         </div>
                         {% if record.name %}
-                        <div class="fw-bold text-primary ms-4">{{record.name}}</div>
+                        <div class="ms-4">{{record.name|truncatechars:50}}</div>
                         {% endif %}
                         <div class="ms-auto">
                             <div
