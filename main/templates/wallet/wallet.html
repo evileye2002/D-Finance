@@ -39,11 +39,19 @@
                         </div>
                     </td>
                     <td class="text-center">
-                        {% if wallet.total < 0 %}
-                        <div class="py-2 fw-bold text-danger">{{ wallet.total|formated }} đ</div>
-                        {% else %}
-                        <div class="py-2 fw-bold text-success">{{ wallet.total|formated }} đ</div>
-                        {% endif %}
+                        <div class="d-flex justify-content-center align-items-center">
+                            <div class="btn border-0" onclick="toggleVisibility(this)">
+                                <i class="fa-solid fa-eye-slash"></i>
+                            </div>
+                            <div id="fakeTotal" class="py-2 fw-bold text-success">***,***,*** đ</div>
+                            {% if wallet.total < 0 %}
+                            <div id="walletTotal" class="py-2 fw-bold text-danger visually-hidden">
+                                {{ wallet.total|formated }} đ</div>
+                            {% else %}
+                            <div id="walletTotal" class="py-2 fw-bold text-success visually-hidden">
+                                {{ wallet.total|formated }} đ</div>
+                            {% endif %}
+                        </div>
                     </td>
 
                     {% if wallet.is_calculate %}
@@ -85,4 +93,5 @@
 
 {% block script %}
 <script src="{% static "js/delete.js" %}"></script>
+<script src="{% static "js/wallet.js" %}"></script>
 {% endblock  %}

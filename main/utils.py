@@ -17,6 +17,7 @@ from django.core.paginator import Paginator
 
 datetime_local_format = "%Y-%m-%dT%H:%M"
 date_format = "%d/%m/%Y"
+item_per_page = 10
 
 
 def getDailyRecord(records):
@@ -133,6 +134,12 @@ def append_log(sender, instance, created, type):
         file.write("\n" + log)
 
 
+def get_page(query, req):
+    p = Paginator(query, item_per_page)
+    page = req.GET.get("page")
+    return p.get_page(page)
+
+
 def renderLoanDetail(req, id, loanForm, type):
     category1 = "Cho vay"
     category2 = "Thu nợ"
@@ -161,9 +168,7 @@ def renderLoanDetail(req, id, loanForm, type):
         wallet__author=req.user,
     )
 
-    p = Paginator(query, 10)
-    page = req.GET.get("page")
-    loans = p.get_page(page)
+    loans = get_page(query, req)
 
     loan_detail = getDailyRecord(loans)
     calculate = getLoanTotal(lends_borrows, collects_repaids)
@@ -312,15 +317,7 @@ def month_report(req, year):
         # xaxis=dict(range=[1, 12])
     )
 
-    return fig
-
-
-def loadMoreItem(req, queryset, per_page):
-    page_number = req.GET.get("page") or 1
-    items_per_page = per_page
-    paginator = Paginator(queryset, items_per_page)
-
-    return paginator.get_page(page_number)
+    return fig.to_html(include_plotlyjs=False, full_html=False)
 
 
 def category_report(req):
@@ -343,10 +340,12 @@ def category_report(req):
     colors = ["#{:06x}".format(random.randint(0, 0xFFFFFF)) for _ in range(50)]
 
     return {
-        "incomes": circle_chart(incomes, "Thu Nhập tháng này", colors).to_html(),
+        "incomes": circle_chart(incomes, "Thu Nhập tháng này", colors).to_html(
+            include_plotlyjs=False, full_html=False
+        ),
         "spendings": circle_chart(
             spendings, "Chi Tiêu tháng này", colors[::-1]
-        ).to_html(),
+        ).to_html(include_plotlyjs=False, full_html=False),
     }
 
 
