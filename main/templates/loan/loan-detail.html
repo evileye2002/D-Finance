@@ -93,7 +93,7 @@
                             <div class="fw-bold">{{ loan.category }}</div>
                         </div>
                         {% if loan.name %}
-                        <div class="ms-4">{{loan.name}}</div>
+                        <div class="ms-4">{{loan.name|truncatechars:20}}</div>
                         {% endif %}
                         <div class="ms-auto">
                             <div

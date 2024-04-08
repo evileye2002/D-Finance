@@ -364,3 +364,15 @@ def circle_chart(reports, title, colors):
     fig.update_layout(title=f"<b>{title}</b>")
 
     return fig
+
+
+def get_categories(query):
+    result = defaultdict(list)
+
+    for category in query:
+        category_group = CategoryGroup(category.category_group).label
+        number_of_records = Record.objects.filter(category=category).count()
+
+        result[category_group].append(category)
+
+    return dict(result)

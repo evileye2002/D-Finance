@@ -25,7 +25,7 @@ function DeleteDirectoryDialog(e) {
 
 function DeleteCategoryDialog(e) {
   var result = confirm(
-    "Xác nhận xóa Danh Mục này?\nThao tác này sẽ xóa TẤT CẢ bản ghi liên quan."
+    "Xác nhận xóa Hạng Mục này?\nThao tác này sẽ xóa TẤT CẢ bản ghi liên quan."
   );
   if (!result) {
     e.preventDefault();
