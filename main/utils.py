@@ -7,6 +7,7 @@ from django.shortcuts import redirect, render
 from django.db.models import Sum
 from .models import PeopleDirectory, Loan
 from django.db import models
+from django.contrib import messages
 
 import plotly.graph_objects as go
 import random
@@ -109,6 +110,8 @@ def changeForm(req, url_name, form_class, instance, render_file):
         form = form_class(req.POST, instance=instance)
         if form.is_valid():
             form.save()
+            messages.success(req, "Sửa thành công")
+
             return redirect(url_name)
 
     ctx = {"form": form, "instance": instance}
@@ -183,6 +186,7 @@ def renderLoanDetail(req, id, loanForm, type):
         )
         if form.is_valid():
             form.save()
+            messages.success(req, "Thêm thành công")
             return redirect(redirect_to, id)
 
     ctx = {

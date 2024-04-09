@@ -30,4 +30,22 @@
 {% block script %}
 <script src="{% static "js/delete.js" %}"></script>
 <script src="{% static "js/loan.js" %}"></script>
+<script>
+    $('#id_wallet').select2({
+        theme: 'bootstrap-5',
+        language: {
+            noResults: function (params) {
+                return "Không có kết quả";
+            }
+        }
+    });
+    $('#id_lender_borrower').select2({
+        theme: 'bootstrap-5',
+        language: {
+            noResults: function (params) {
+                return "Không có kết quả";
+            }
+        }
+    });
+</script>
 {% endblock  %}

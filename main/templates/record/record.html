@@ -10,10 +10,6 @@
 {% endif %}
 {% endblock  %}
 
-{% block stylesheet %}
-<link rel="stylesheet" href="{% static "css/record.css" %}">
-{% endblock %}
-
 {% block content %}
 <div class="container my-3">
     <div type="button" class="position-fixed" style="bottom: 30px;right: 30px;" title="Thêm">
@@ -81,5 +77,26 @@
 {% endblock %}
 
 {% block script %}
+
+<script>
+    $('#id_wallet').select2({
+        theme: 'bootstrap-5',
+        dropdownParent: $("#postIncomeForm"),
+        language: {
+            noResults: function (params) {
+                return "Không có kết quả";
+            }
+        }
+    });
+    $('#id_category').select2({
+        theme: 'bootstrap-5',
+        dropdownParent: $("#postIncomeForm"),
+        language: {
+            noResults: function (params) {
+                return "Không có kết quả";
+            }
+        }
+    });
+</script>
 
 {% endblock  %}

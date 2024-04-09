@@ -2,15 +2,7 @@ from django import forms
 from django.forms import widgets
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import (
-    Record,
-    Wallet,
-    Category,
-    Loan,
-    PeopleDirectory,
-    CategoryGroup,
-    UserProfile,
-)
+from .models import *
 from django.db import models
 from django.utils import timezone
 from .utils import datetime_local_format
@@ -21,31 +13,22 @@ class SignUpForm(UserCreationForm):
         min_length=6,
         max_length=150,
         required=True,
-        widget=widgets.TextInput(
-            attrs={"id": "username", "placeholder": "Tên đăng nhập"}
-        ),
+        widget=forms.TextInput(attrs={"placeholder": "Nhập tên tài khoản"}),
     )
-
     email = forms.EmailField(
         max_length=100,
         required=True,
-        widget=widgets.EmailInput(attrs={"id": "email", "placeholder": "Email"}),
+        widget=forms.EmailInput(attrs={"placeholder": "Nhập địa chỉ email"}),
     )
-
     password1 = forms.CharField(
         min_length=8,
         required=True,
-        widget=widgets.PasswordInput(
-            attrs={"id": "password1", "placeholder": "Mật khẩu"}
-        ),
+        widget=forms.PasswordInput(attrs={"placeholder": "Nhập mật khẩu"}),
     )
-
     password2 = forms.CharField(
         min_length=8,
         required=True,
-        widget=widgets.PasswordInput(
-            attrs={"id": "password2", "placeholder": "Nhập lại mật khẩu"}
-        ),
+        widget=forms.PasswordInput(attrs={"placeholder": "Xác nhận mật khẩu"}),
     )
 
     class Meta:
@@ -54,67 +37,34 @@ class SignUpForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super(SignUpForm, self).__init__(*args, **kwargs)
+
         for visible in self.visible_fields():
             visible.field.widget.attrs["class"] = "form-control"
-
-        username = self.__getitem__("username")
-        email = self.__getitem__("email")
-        # password1 = self.__getitem__('password1')
-        password2 = self.__getitem__("password2")
-
-        errors = ""
-        if username.errors:
-            errors += "username;"
-        if email.errors:
-            errors += "email;"
-        if password2.errors:
-            errors += "password1;password2;"
-
-        for visible in self.visible_fields():
-            if visible.field.widget.attrs["id"] in errors:
-                visible.field.widget.attrs["class"] = "form-control is-invalid"
-            else:
-                visible.field.widget.attrs["class"] = "form-control"
 
 
 class SignInForm(AuthenticationForm):
     username = forms.CharField(
         max_length=150,
         required=True,
-        widget=widgets.TextInput(
-            attrs={
-                "id": "username",
-                "class": "form-control",
-                "placeholder": "Tên đăng nhập",
-            }
-        ),
+        widget=widgets.TextInput(attrs={"placeholder": "Tên tài khoản"}),
     )
 
     password = forms.CharField(
         required=True,
-        widget=widgets.PasswordInput(
-            attrs={
-                "id": "password",
-                "class": "form-control",
-                "placeholder": "Mật khẩu",
-            }
-        ),
+        widget=widgets.PasswordInput(attrs={"placeholder": "Mật khẩu"}),
     )
 
     remember = forms.BooleanField(
         required=False,
-        widget=widgets.CheckboxInput(
-            attrs={"id": "remember", "class": "form-check-input"}
-        ),
+        widget=widgets.CheckboxInput(attrs={"class": "form-check-input"}),
     )
 
     def __init__(self, *args, **kwargs):
         super(SignInForm, self).__init__(*args, **kwargs)
 
-        if self.errors:
-            for visible in self.visible_fields():
-                if visible.field.widget.attrs["id"] != "remember":
-                    visible.field.widget.attrs["class"] = "form-control is-invalid"
+        for visible in self.visible_fields():
+            if visible.name != "remember":
+                visible.field.widget.attrs["class"] = "form-control"
 
 
 class RecordForm(forms.ModelForm):
