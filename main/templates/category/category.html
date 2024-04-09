@@ -19,6 +19,7 @@
     <div class="rounded-3">
         {% if category_groups %}
         {% for group_label, categories in category_groups.items %}
+        {% if not group_label == "Vay nợ" %}
         <div class="rounded-3 p-3 bg-white mb-3">
             <div class="d-flex align-items-center fw-bold mb-3">
                 {% if group_label == "Thu tiền" %}
@@ -47,11 +48,15 @@
                             <div class="fw-bold">{{ category.name }}</div>
                         </div>
                         <div class="ms-4">{{category.description|truncatechars:20}}</div>
+                        <div class="ms-auto me-2">
+                            <span class="badge rounded-circle bg-primary">{{category.category.count}}</span>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
+        {% endif %}
         {% endfor %}
         {% else %}
         <div class="bg-white p-3 rounded-3 text-center text-danger">Không có bản ghi nào</div>
