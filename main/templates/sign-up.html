@@ -18,15 +18,12 @@
             <form id="signUpForm" class="p-4 mb-0 w-100" method="post" autocomplete="off" action="{% url "sign-up" %}">
                 {% csrf_token %}
 
-                {% comment %} <div class="mb-2">
+                <div class="mb-2">
                     <div class="input-group has-validation">
                         <div class="input-group-text text-primary">
                             <i class="fa-solid fa-user"></i>
                         </div>
-                        {{form.username|crispy}}
-                        <div class="invalid-feedback">
-                            {{ signUpForm.username.errors }}
-                        </div>
+                        {{form.username}}
                     </div>
                 </div>
                 <div class="mb-2">
@@ -34,10 +31,7 @@
                         <div class="input-group-text text-primary">
                             <i class="fa-solid fa-envelope"></i>
                         </div>
-                        {{signUpForm.email}}
-                        <div class="invalid-feedback">
-                            {{ signUpForm.email.errors }}
-                        </div>
+                        {{form.email}}
                     </div>
                 </div>
                 <div class="mb-2">
@@ -45,7 +39,7 @@
                         <div class="input-group-text text-primary">
                             <i class="fa-solid fa-lock"></i>
                         </div>
-                        {{signUpForm.password1}}
+                        {{form.password1}}
                     </div>
                 </div>
                 <div class="mb-2">
@@ -53,14 +47,18 @@
                         <div class="input-group-text text-primary">
                             <i class="fa-solid fa-lock"></i>
                         </div>
-                        {{signUpForm.password2}}
-                        <div class="invalid-feedback">
-                            {{ signUpForm.password2.errors }}
-                        </div>
+                        {{form.password2}}
                     </div>
-                </div> {% endcomment %}
+                </div>
 
-                {{ form|crispy }}
+                <!-- Errors -->
+                {% if form.errors %}
+                <div class="text-danger">
+                    {% for field, error in form.errors.items %}
+                    {{error}}
+                    {% endfor %}
+                </div>
+                {% endif %}
 
                 <div class="d-flex justify-content-center mt-3">
                     <button class="btn btn-primary w-100 py-2 fw-bold" type="submit">Đăng Ký</button>

@@ -40,6 +40,9 @@
 
 
 <body class="bg-primary-subtle">
+    <!-- Messages -->
+    {% include "base/flash-message.html" %}
+
     <!-- Side Bar -->
     {% if user.is_authenticated %}
     {% include "base/navbar.html" %}
@@ -58,6 +61,8 @@
 
 
     {% endblock  %}
+
+
 </body>
 
 </html>

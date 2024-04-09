@@ -12,73 +12,59 @@ class SignUpForm(UserCreationForm):
     username = forms.CharField(
         min_length=6,
         max_length=150,
-        label="Tài khoản",
         required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Nhập tên tài khoản"}),
     )
-
     email = forms.EmailField(
         max_length=100,
         required=True,
-        widget=widgets.EmailInput(),
+        widget=forms.EmailInput(attrs={"placeholder": "Nhập địa chỉ email"}),
     )
-
     password1 = forms.CharField(
         min_length=8,
-        label="Mật khẩu",
         required=True,
-        widget=widgets.PasswordInput(),
+        widget=forms.PasswordInput(attrs={"placeholder": "Nhập mật khẩu"}),
     )
-
     password2 = forms.CharField(
         min_length=8,
-        label="Xác nhận mật khẩu",
         required=True,
-        widget=widgets.PasswordInput(),
+        widget=forms.PasswordInput(attrs={"placeholder": "Xác nhận mật khẩu"}),
     )
 
     class Meta:
         model = User
         fields = ["username", "email", "password1", "password2"]
 
+    def __init__(self, *args, **kwargs):
+        super(SignUpForm, self).__init__(*args, **kwargs)
+
+        for visible in self.visible_fields():
+            visible.field.widget.attrs["class"] = "form-control"
+
 
 class SignInForm(AuthenticationForm):
     username = forms.CharField(
         max_length=150,
         required=True,
-        widget=widgets.TextInput(
-            attrs={
-                "id": "username",
-                "class": "form-control",
-                "placeholder": "Tên đăng nhập",
-            }
-        ),
+        widget=widgets.TextInput(attrs={"placeholder": "Tên tài khoản"}),
     )
 
     password = forms.CharField(
         required=True,
-        widget=widgets.PasswordInput(
-            attrs={
-                "id": "password",
-                "class": "form-control",
-                "placeholder": "Mật khẩu",
-            }
-        ),
+        widget=widgets.PasswordInput(attrs={"placeholder": "Mật khẩu"}),
     )
 
     remember = forms.BooleanField(
         required=False,
-        widget=widgets.CheckboxInput(
-            attrs={"id": "remember", "class": "form-check-input"}
-        ),
+        widget=widgets.CheckboxInput(attrs={"class": "form-check-input"}),
     )
 
     def __init__(self, *args, **kwargs):
         super(SignInForm, self).__init__(*args, **kwargs)
 
-        if self.errors:
-            for visible in self.visible_fields():
-                if visible.field.widget.attrs["id"] != "remember":
-                    visible.field.widget.attrs["class"] = "form-control is-invalid"
+        for visible in self.visible_fields():
+            if visible.name != "remember":
+                visible.field.widget.attrs["class"] = "form-control"
 
 
 class RecordForm(forms.ModelForm):

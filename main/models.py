@@ -146,7 +146,7 @@ class UserProfile(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50, null=True, blank=True)
-    phone = models.CharField(max_length=12, null=True, blank=True, unique=True)
+    phone = models.CharField(max_length=20, null=True, blank=True, unique=True)
     address = models.CharField(max_length=100, null=True, blank=True)
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)

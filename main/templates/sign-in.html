@@ -5,10 +5,6 @@
 <title>Đăng Nhâp</title>
 {% endblock  %}
 
-{% block stylesheet %}
-<link rel="stylesheet" href="{% static "css/style.css" %}">
-{% endblock %}
-
 {% block content %}
 <div class="container">
     <div class="d-flex justify-content-center align-items-center" style="height: 100dvh;">
@@ -17,7 +13,7 @@
                 <span class="fw-bold fs-3">Đăng Nhập</span>
             </div>
 
-            <form id="signInForm" class="p-4 mb-0 w-100" method="post" autocomplete="off" action="{% url "sign-in" %}">
+            <form id="form" class="p-4 mb-0 w-100" method="post" autocomplete="off" action="{% url "sign-in" %}">
                 {% csrf_token %}
 
                 <div class="mb-2">
@@ -25,10 +21,7 @@
                         <div class="input-group-text text-primary">
                             <i class="fa-solid fa-user"></i>
                         </div>
-                        {{signInForm.username}}
-                        <div class="invalid-feedback">
-                            {{ signInForm.username.errors }}
-                        </div>
+                        {{form.username}}
                     </div>
                 </div>
                 <div class="mb-2">
@@ -36,16 +29,22 @@
                         <div class="input-group-text text-primary">
                             <i class="fa-solid fa-lock"></i>
                         </div>
-                        {{signInForm.password}}
-                        <div class="invalid-feedback">
-                            {{ errors }}
-                        </div>
+                        {{form.password}}
                     </div>
                 </div>
                 <div class="mb-3 form-check">
-                    {{signInForm.remember}}
+                    {{form.remember}}
                     <label class="form-check-label" for="remember">Lưu phiên đăng nhập</label>
                 </div>
+
+                <!-- Errors -->
+                {% if form.errors %}
+                <div class="text-danger">
+                    {% for field, error in form.errors.items %}
+                    {{error}}
+                    {% endfor %}
+                </div>
+                {% endif %}
 
                 <div class="d-flex justify-content-center">
                     <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Đăng Nhập</button>
@@ -62,7 +61,3 @@
     </div>
 </div>
 {% endblock %}
-
-{% block script %}
-<script src="{% static "js/sign-in.js" %} "></script>
-{% endblock  %}
