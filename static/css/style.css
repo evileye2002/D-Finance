@@ -15,3 +15,7 @@ ul.navbar-nav li.nav-item a:hover {
 #offcanvasExample {
   transition: ease 0.4s;
 }
+
+.record:hover {
+  border-color: var(--bs-primary) !important;
+}

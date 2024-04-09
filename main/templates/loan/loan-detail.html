@@ -6,10 +6,6 @@
 <title>Chi Tiết Khoản Vay</title>
 {% endblock  %}
 
-{% block stylesheet %}
-<link rel="stylesheet" href="{% static "css/loan.css" %}">
-{% endblock %}
-
 {% block content %}
 <div class="container mt-3">
     <div type="button" class="position-fixed" style="bottom: 30px;right: 30px;" title="Thêm">
@@ -81,7 +77,7 @@
             </div>
             <div>
                 {% for loan in loans %}
-                <div class="p-2 loan border rounded-3 mb-2">
+                <div class="p-2 record border rounded-3 mb-2">
                     <div class="d-flex align-items-center"
                         onclick="location.href='/loan/{{loan.id}}/change?next={{request.path}}';"
                         style="cursor: pointer;">

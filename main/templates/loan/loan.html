@@ -5,10 +5,6 @@
 <title>Vay nợ</title>
 {% endblock  %}
 
-{% block stylesheet %}
-<link rel="stylesheet" href="{% static "css/loan.css" %}">
-{% endblock %}
-
 {% block content %}
 <div class="container mt-3">
     <div type="button" class="position-fixed" style="bottom: 30px;right: 30px;" title="Thêm">
@@ -66,7 +62,7 @@
                 {% if loans %}
                 {% for loan in loans %}
                 {% if loan.calculate.complete_percent < 100 %}
-                <div class="d-flex align-items-center p-3 border rounded-3 mb-2 loan" style="cursor: pointer;"
+                <div class="d-flex align-items-center p-2 border rounded-3 mb-2 record" style="cursor: pointer;"
                     {% if "lend" in request.path %}onclick="location.href='lend/{{loan.lender_borrower.id}}';"
                     {% else %}onclick="location.href='borrow/{{loan.lender_borrower.id}}';" {% endif %}>
                     <div class="fw-bold">
@@ -99,7 +95,7 @@
                 {% if loans %}
                 {% for loan in loans %}
                 {% if loan.calculate.complete_percent >= 100 %}
-                <div class="d-flex align-items-center p-3 border rounded-3 mb-2 loan" style="cursor: pointer;"
+                <div class="d-flex align-items-center p-3 border rounded-3 mb-2 record" style="cursor: pointer;"
                     {% if "lend" in request.path %}onclick="location.href='lend/{{loan.lender_borrower.id}}';"
                     {% else %}onclick="location.href='borrow/{{loan.lender_borrower.id}}';" {% endif %}>
                     <div class="fw-bold">
@@ -123,4 +119,24 @@
 
 {% block script %}
 <script src="{% static "js/loan.js" %}"></script>
+<script>
+    $('#id_wallet').select2({
+        theme: 'bootstrap-5',
+        dropdownParent: $("#loanForm"),
+        language: {
+            noResults: function (params) {
+                return "Không có kết quả";
+            }
+        }
+    });
+    $('#id_lender_borrower').select2({
+        theme: 'bootstrap-5',
+        dropdownParent: $("#loanForm"),
+        language: {
+            noResults: function (params) {
+                return "Không có kết quả";
+            }
+        }
+    });
+</script>
 {% endblock  %}

@@ -2,15 +2,7 @@ from django import forms
 from django.forms import widgets
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import (
-    Record,
-    Wallet,
-    Category,
-    Loan,
-    PeopleDirectory,
-    CategoryGroup,
-    UserProfile,
-)
+from .models import *
 from django.db import models
 from django.utils import timezone
 from .utils import datetime_local_format
@@ -20,61 +12,33 @@ class SignUpForm(UserCreationForm):
     username = forms.CharField(
         min_length=6,
         max_length=150,
+        label="Tài khoản",
         required=True,
-        widget=widgets.TextInput(
-            attrs={"id": "username", "placeholder": "Tên đăng nhập"}
-        ),
     )
 
     email = forms.EmailField(
         max_length=100,
         required=True,
-        widget=widgets.EmailInput(attrs={"id": "email", "placeholder": "Email"}),
+        widget=widgets.EmailInput(),
     )
 
     password1 = forms.CharField(
         min_length=8,
+        label="Mật khẩu",
         required=True,
-        widget=widgets.PasswordInput(
-            attrs={"id": "password1", "placeholder": "Mật khẩu"}
-        ),
+        widget=widgets.PasswordInput(),
     )
 
     password2 = forms.CharField(
         min_length=8,
+        label="Xác nhận mật khẩu",
         required=True,
-        widget=widgets.PasswordInput(
-            attrs={"id": "password2", "placeholder": "Nhập lại mật khẩu"}
-        ),
+        widget=widgets.PasswordInput(),
     )
 
     class Meta:
         model = User
         fields = ["username", "email", "password1", "password2"]
-
-    def __init__(self, *args, **kwargs):
-        super(SignUpForm, self).__init__(*args, **kwargs)
-        for visible in self.visible_fields():
-            visible.field.widget.attrs["class"] = "form-control"
-
-        username = self.__getitem__("username")
-        email = self.__getitem__("email")
-        # password1 = self.__getitem__('password1')
-        password2 = self.__getitem__("password2")
-
-        errors = ""
-        if username.errors:
-            errors += "username;"
-        if email.errors:
-            errors += "email;"
-        if password2.errors:
-            errors += "password1;password2;"
-
-        for visible in self.visible_fields():
-            if visible.field.widget.attrs["id"] in errors:
-                visible.field.widget.attrs["class"] = "form-control is-invalid"
-            else:
-                visible.field.widget.attrs["class"] = "form-control"
 
 
 class SignInForm(AuthenticationForm):
