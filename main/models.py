@@ -86,7 +86,9 @@ class Wallet(models.Model):
 
 class Record(models.Model):
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(
+        Category, on_delete=models.CASCADE, related_name="category"
+    )
     name = models.CharField(max_length=50, null=True, blank=True)
     money = models.IntegerField()
     timestamp = models.DateTimeField()
