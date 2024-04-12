@@ -337,7 +337,11 @@ def directory_delete(req, directory_id):
 
 @login_required(login_url="sign-in")
 def category(req):
-    query = Category.objects.filter(author=req.user)
+    query = Category.objects.filter(
+        models.Q(category_group=CategoryGroup.INCOME)
+        | models.Q(category_group=CategoryGroup.SPENDING),
+        author=req.user,
+    )
     form = CategoryForm()
 
     page = get_page(query, req)

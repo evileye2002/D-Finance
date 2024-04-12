@@ -25,22 +25,5 @@
 
 {% block script %}
 <script src="{% static "js/delete.js" %}"></script>
-<script>
-    $('#id_wallet').select2({
-        theme: 'bootstrap-5',
-        language: {
-            noResults: function (params) {
-                return "Không có kết quả";
-            }
-        }
-    });
-    $('#id_category').select2({
-        theme: 'bootstrap-5',
-        language: {
-            noResults: function (params) {
-                return "Không có kết quả";
-            }
-        }
-    });
-</script>
+<script src="{% static "js/select2-init.js" %}"></script>
 {% endblock  %}

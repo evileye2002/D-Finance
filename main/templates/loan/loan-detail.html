@@ -88,9 +88,7 @@
                             </small>
                             <div class="fw-bold">{{ loan.category }}</div>
                         </div>
-                        {% if loan.name %}
-                        <div class="ms-4">{{loan.name|truncatechars:20}}</div>
-                        {% endif %}
+
                         <div class="ms-auto">
                             <div
                                 class="fw-bold text-end {% if loan.category.name == "Thu nợ" or loan.category.name == "Đi vay" %}text-success{% else %}text-danger{% endif %}">
@@ -122,4 +120,5 @@
 
 {% block script %}
 <script src="{% static "js/loan.js" %}"></script>
+<script src="{% static "js/select2-init.js" %}"></script>
 {% endblock  %}
