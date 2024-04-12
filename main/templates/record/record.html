@@ -44,9 +44,7 @@
                             </small>
                             <div class="fw-bold">{{ record.category }}</div>
                         </div>
-                        {% if record.name %}
-                        <div class="ms-4">{{record.name|truncatechars:20}}</div>
-                        {% endif %}
+
                         <div class="ms-auto">
                             <div
                                 class="fw-bold text-end {% if "income" in request.path %}text-success{% else %}text-danger{% endif %}">
@@ -77,26 +75,5 @@
 {% endblock %}
 
 {% block script %}
-
-<script>
-    $('#id_wallet').select2({
-        theme: 'bootstrap-5',
-        dropdownParent: $("#postIncomeForm"),
-        language: {
-            noResults: function (params) {
-                return "Không có kết quả";
-            }
-        }
-    });
-    $('#id_category').select2({
-        theme: 'bootstrap-5',
-        dropdownParent: $("#postIncomeForm"),
-        language: {
-            noResults: function (params) {
-                return "Không có kết quả";
-            }
-        }
-    });
-</script>
-
+<script src="{% static "js/select2-init.js" %}"></script>
 {% endblock  %}

@@ -12,7 +12,7 @@
 </div>
 
 <div class="modal-body">
-    <form id="postIncomeForm" class="mb-0 w-100" method="post" autocomplete="off">
+    <form class="mb-0 w-100" method="post" autocomplete="off">
         {% csrf_token %}
         {{ form|crispy }}
 
