@@ -110,7 +110,7 @@ def changeForm(req, url_name, form_class, instance, render_file):
         form = form_class(req.POST, instance=instance)
         if form.is_valid():
             form.save()
-            messages.success(req, "Sửa thành công")
+            messages.success(req, "Sửa thành công.")
 
             return redirect(url_name)
 
@@ -186,7 +186,7 @@ def renderLoanDetail(req, id, loanForm, type):
         )
         if form.is_valid():
             form.save()
-            messages.success(req, "Thêm thành công")
+            messages.success(req, "Thêm Vay Nợ thành công.")
             return redirect(redirect_to, id)
 
     ctx = {
@@ -254,7 +254,7 @@ def total_report(req, type=CategoryGroup.INCOME):
     }
 
 
-def month_report(req, year):
+def get_months_report(req, year):
     incomes = (
         Record.objects.filter(
             wallet__author=req.user,
@@ -324,7 +324,7 @@ def month_report(req, year):
     return fig.to_html(include_plotlyjs=False, full_html=False)
 
 
-def category_report(req):
+def get_pie_chart_report(req):
     today = date.today()
     last_day_of_month = calendar.monthrange(today.year, today.month)[1]
 
@@ -344,16 +344,16 @@ def category_report(req):
     colors = ["#{:06x}".format(random.randint(0, 0xFFFFFF)) for _ in range(50)]
 
     return {
-        "incomes": circle_chart(incomes, "Thu Nhập tháng này", colors).to_html(
+        "incomes": pie_chart(incomes, "Thu Nhập tháng này", colors).to_html(
             include_plotlyjs=False, full_html=False
         ),
-        "spendings": circle_chart(
-            spendings, "Chi Tiêu tháng này", colors[::-1]
-        ).to_html(include_plotlyjs=False, full_html=False),
+        "spendings": pie_chart(spendings, "Chi Tiêu tháng này", colors[::-1]).to_html(
+            include_plotlyjs=False, full_html=False
+        ),
     }
 
 
-def circle_chart(reports, title, colors):
+def pie_chart(reports, title, colors):
     categories = reports.values("category__name").annotate(
         total_money=models.Sum("money")
     )
@@ -365,7 +365,9 @@ def circle_chart(reports, title, colors):
     )
 
     # fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
-    fig.update_layout(title=f"<b>{title}</b>")
+    fig.update_layout(
+        title=f"<b>{title}</b>",
+    )
 
     return fig
 
