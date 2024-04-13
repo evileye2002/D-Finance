@@ -18,14 +18,14 @@ from .utils import *
 @login_required(login_url="sign-in")
 def index(req):
     year = datetime.now().year
-    month_reports = month_report(req, year)
+    months_report = get_months_report(req, year)
     incomes = total_report(req)
     spendings = total_report(req, CategoryGroup.SPENDING)
-    category_reports = category_report(req)
+    pie_chart_reports = get_pie_chart_report(req)
 
     ctx = {
-        "month_reports": month_reports,
-        "category_reports": category_reports,
+        "months_report": months_report,
+        "pie_chart_reports": pie_chart_reports,
         "incomes": incomes,
         "spendings": spendings,
     }
@@ -71,7 +71,7 @@ def sign_up(req):
         form = SignUpForm(req.POST)
         if form.is_valid():
             form.save()
-            messages.success(req, "Đăng ký thành công")
+            messages.success(req, "Đăng ký Tài Khoản thành công.")
             return redirect("sign-in")
 
     # print(form.__getitem__("password2").errors.as_json())
@@ -106,7 +106,7 @@ def income(req):
             income = form.save(commit=False)
             income.author = req.user
             income.save()
-            messages.success(req, "Thêm thành công")
+            messages.success(req, "Thêm Bản ghi thành công.")
             return redirect("income")
 
     ctx = {"form": form, "daily_records": daily_records, "paginator": records}
@@ -125,7 +125,7 @@ def record_change(req, record_id):
         form = RecordForm(req.POST, instance=record, user=req.user, type="change")
         if form.is_valid():
             form.save()
-            messages.success(req, "Sửa thành công")
+            messages.success(req, "Sửa Bản Ghi thành công")
             return redirect(next_url)
 
     ctx = {"form": form, "record": record, "next_url": next_url}
@@ -140,7 +140,7 @@ def record_delete(req, record_id):
         id=record_id, wallet__in=Wallet.objects.filter(author=req.user)
     )
     record.delete()
-    messages.success(req, "Xóa thành công")
+    messages.success(req, "Xóa Bản Ghi thành công.")
     return redirect(next_url)
 
 
@@ -165,7 +165,7 @@ def spending(req):
             spending = form.save(commit=False)
             spending.author = req.user
             spending.save()
-            messages.success(req, "Thêm thành công")
+            messages.success(req, "Thêm Bản Ghi thành công.")
             return redirect("spending")
 
     ctx = {"form": form, "daily_records": daily_records, "paginator": records}
@@ -189,7 +189,7 @@ def lend(req):
         form = LoanForm(req.POST, user=req.user, type="lend")
         if form.is_valid():
             form.save()
-            messages.success(req, "Thêm thành công")
+            messages.success(req, "Thêm Vay Nợ thành công.")
             return redirect("lend")
 
     ctx = {"form": form, "loans": loans, "calculate": calculate}
@@ -213,7 +213,7 @@ def borrow(req):
         form = LoanForm(req.POST, user=req.user, type="borrow")
         if form.is_valid():
             form.save()
-            messages.success(req, "Thêm thành công")
+            messages.success(req, "Thêm Vay Nợ thành công.")
             return redirect("borrow")
 
     ctx = {"form": form, "loans": loans, "calculate": calculate}
@@ -240,7 +240,7 @@ def loan_change(req, loan_id):
         form = LoanForm(req.POST, instance=loan, user=req.user, type="change")
         if form.is_valid():
             form.save()
-            messages.success(req, "Sửa thành công")
+            messages.success(req, "Sửa Vay Nợ thành công")
             return redirect(next_url)
 
     ctx = {"form": form, "loan": loan, "next_url": next_url}
@@ -252,7 +252,7 @@ def loan_delete(req, loan_id):
     next_url = req.GET.get("next")
     loan = Loan.objects.get(id=loan_id, wallet__author=req.user)
     loan.delete()
-    messages.success(req, "Xóa thành công")
+    messages.success(req, "Xóa Vay Nợ thành công.")
 
     return redirect(next_url)
 
@@ -270,7 +270,7 @@ def wallet(req):
             wallet = form.save(commit=False)
             wallet.author = req.user
             wallet.save()
-            messages.success(req, "Thêm thành công")
+            messages.success(req, "Thêm Ví thành công.")
 
             return redirect("wallet")
 
@@ -290,7 +290,7 @@ def wallet_change(req, wallet_id):
 def wallet_delete(req, wallet_id):
     wallet = Wallet.objects.get(id=wallet_id, author=req.user)
     wallet.delete()
-    messages.success(req, "Xóa thành công")
+    messages.success(req, "Xóa Ví thành công.")
 
     return redirect("wallet")
 
@@ -308,7 +308,7 @@ def directory(req):
             directory = form.save(commit=False)
             directory.author = req.user
             directory.save()
-            messages.success(req, "Thêm thành công")
+            messages.success(req, "Thêm Danh Bạ thành công.")
 
             return redirect("directory")
 
@@ -330,7 +330,7 @@ def directory_change(req, directory_id):
 def directory_delete(req, directory_id):
     directory = PeopleDirectory.objects.get(id=directory_id, author=req.user)
     directory.delete()
-    messages.success(req, "Xóa thành công")
+    messages.success(req, "Xóa Danh Bạ thành công.")
 
     return redirect("directory")
 
@@ -354,7 +354,7 @@ def category(req):
             category.author = req.user
             category.is_default = False
             category.save()
-            messages.success(req, "Thêm thành công")
+            messages.success(req, "Thêm Hạng Mục thành công.")
 
             return redirect("category")
 
@@ -383,7 +383,7 @@ def category_delete(req, category_id):
         return render(req, "category/category-is-default.html")
 
     category.delete()
-    messages.success(req, "Xóa thành công")
+    messages.success(req, "Xóa Hạng Mục thành công.")
     return redirect("category")
 
 
@@ -396,7 +396,7 @@ def user_profile(req):
         form = ProfileForm(req.POST, user=req.user, instance=profile)
         if form.is_valid():
             form.save()
-            messages.success(req, "Sửa thành công")
+            messages.success(req, "Sửa Thông Tin Tài Khoản thành công")
             return redirect("profile")
 
     ctx = {"form": form}
@@ -413,7 +413,7 @@ def user_password_change(req):
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(req, user)
-            messages.success(req, "Thay đổi mật khẩu thành công")
+            messages.success(req, "Thay đổi mật khẩu thành công.")
 
             return redirect("index")
 
