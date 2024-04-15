@@ -14,105 +14,101 @@
             <i class="fa-solid fa-plus fs-3"></i>
         </a>
     </div>
-    <div class="rounded-3 bg-white mb-3">
-        <div class="rounded-3 p-3 ">
-            <div class="">
-                <div class="d-flex fw-bold gap-2 mb-2">
-                    {% if "lend" in request.path %} Người vay:
-                    {% else %}
-                    Người cho vay:
-                    {% endif %}
-                    <a href="/directory/{{lender_borrower.id}}/change" class="text-primary text-decoration-none"
-                        style="cursor: pointer;">
-                        {{lender_borrower}}
-                        <i class="ms-1 fa-solid fa-arrow-up-right-from-square"></i>
-                    </a>
 
-                </div>
-                <div class="d-flex fw-bold gap-2 mb-2">
-                    {% if "lend" in request.path %} Cần thu:
-                    {% else %}
-                    Cần trả:
-                    {% endif %}
-                    <div class="text-danger">{{calculate.need_collect_repaid}} đ</div>
-                </div>
-                <div class="d-flex mb-3">
-                    <div class="fw-bold">
-                        {% if "lend" in request.path %} Đã thu
-                        {% else %}
-                        Đã trả
-                        {% endif %}
-                        <div class="text-success">{{calculate.total_collect_repaid}} đ</div>
-                    </div>
-                    <div class="fw-bold ms-auto text-end">
-                        {% if "lend" in request.path %} Tổng cho vay
-                        {% else %}
-                        Tổng đã vay
-                        {% endif %}
-                        <div class="text-primary">{{calculate.total_money}} đ</div>
-                    </div>
-                </div>
+    <div class="border shadow-sm rounded-3 bg-white mb-3">
+        <div class="p-3">
+            <div class="d-flex fw-bold gap-2 mb-2">
+                {% if "lend" in request.path %} Người vay:
+                {% else %}
+                Người cho vay:
+                {% endif %}
+                <a href="/directory/{{lender_borrower.id}}/change" class="text-primary text-decoration-none"
+                    style="cursor: pointer;">
+                    {{lender_borrower}}
+                    <i class="ms-1 fa-solid fa-arrow-up-right-from-square"></i>
+                </a>
 
-                <div class="progress fw-bold" style="height: 10px;">
-                    <div class="progress-bar bg-success" role="progressbar"
-                        style="width: {{calculate.complete_percent}}%" aria-valuenow="{{calculate.complete_percent}}"
-                        aria-valuemin="0" aria-valuemax="100">
-                    </div>
+            </div>
+            <div class="d-flex fw-bold gap-2 mb-2">
+                {% if "lend" in request.path %} Cần thu:
+                {% else %}
+                Cần trả:
+                {% endif %}
+                <div class="text-danger">{{calculate.need_collect_repaid}} đ</div>
+            </div>
+            <div class="d-flex mb-3">
+                <div class="fw-bold">
+                    {% if "lend" in request.path %} Đã thu
+                    {% else %}
+                    Đã trả
+                    {% endif %}
+                    <div class="text-success">{{calculate.total_collect_repaid}} đ</div>
+                </div>
+                <div class="fw-bold ms-auto text-end">
+                    {% if "lend" in request.path %} Tổng cho vay
+                    {% else %}
+                    Tổng đã vay
+                    {% endif %}
+                    <div class="text-primary">{{calculate.total_money}} đ</div>
+                </div>
+            </div>
+
+            <div class="progress fw-bold" style="height: 10px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{calculate.complete_percent}}%"
+                    aria-valuenow="{{calculate.complete_percent}}" aria-valuemin="0" aria-valuemax="100">
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="rounded-3">
-        {% if loan_detail %}
-        {% for date, loans in loan_detail %}
-        <div class="rounded-3 p-3 bg-white mb-3">
-            <div class="d-flex align-items-center fw-bold mb-3">
-                <div class="fw-bold text-primary">
-                    <i class="fa-regular fa-calendar me-1"></i>
-                    {{ date }}
-                </div>
-                <div class="text-primary ms-auto">
-                    {{ loans|sum_money }} đ</div>
+    {% if loan_detail %}
+    {% for date, loans in loan_detail %}
+    <div class="border shadow-sm rounded-3 p-3 bg-white mb-3">
+        <div class="d-flex align-items-center fw-bold mb-3">
+            <div class="fw-bold text-primary">
+                <i class="fa-regular fa-calendar me-1"></i>
+                {{ date }}
             </div>
-            <div>
-                {% for loan in loans %}
-                <div class="p-2 record border rounded-3 mb-2">
-                    <div class="d-flex align-items-center"
-                        onclick="location.href='/loan/{{loan.id}}/change?next={{request.path}}';"
-                        style="cursor: pointer;">
-                        <div class="">
+            <div class="text-primary ms-auto">
+                {{ loans|sum_money }} đ</div>
+        </div>
+        <div>
+            {% for loan in loans %}
+            <div class="p-2 record border rounded-3 mb-2">
+                <div class="d-flex align-items-center"
+                    onclick="location.href='/loan/{{loan.id}}/change?next={{request.path}}';" style="cursor: pointer;">
+                    <div class="">
+                        <small>
+                            <i class="fa-regular fa-clock me-1"></i>
+                            {{ loan.timestamp|time:"H:i" }}
+                        </small>
+                        <div class="fw-bold">{{ loan.category }}</div>
+                    </div>
+
+                    <div class="ms-auto">
+                        <div
+                            class="fw-bold text-end {% if loan.category.name == "Thu nợ" or loan.category.name == "Đi vay" %}text-success{% else %}text-danger{% endif %}">
+                            {{ loan.formatted_money }} đ</div>
+                        <div class="text-end">
                             <small>
-                                <i class="fa-regular fa-clock me-1"></i>
-                                {{ loan.timestamp|time:"H:i" }}
+                                <i class="fa-solid fa-wallet me-1"></i>
+                                {{ loan.wallet }}
                             </small>
-                            <div class="fw-bold">{{ loan.category }}</div>
-                        </div>
-
-                        <div class="ms-auto">
-                            <div
-                                class="fw-bold text-end {% if loan.category.name == "Thu nợ" or loan.category.name == "Đi vay" %}text-success{% else %}text-danger{% endif %}">
-                                {{ loan.formatted_money }} đ</div>
-                            <div class="text-end">
-                                <small>
-                                    <i class="fa-solid fa-wallet me-1"></i>
-                                    {{ loan.wallet }}
-                                </small>
-                            </div>
                         </div>
                     </div>
                 </div>
-                {% endfor %}
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-        {% else %}
-        <div class="bg-white p-3 rounded-3 text-center text-danger">Không có bản ghi nào</div>
-        {% endif %}
     </div>
+    {% endfor %}
+
+    {% else %}
+    <div class="border shadow-sm rounded-3 p-3 bg-white text-center text-danger">Không có bản ghi nào</div>
+
+    {% endif %}
 
     {% include "base/paginator.html" %}
-
 </div>
 
 {% include "loan/loan-modal.html" %}

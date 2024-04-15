@@ -1,6 +1,7 @@
 {% extends "base/main.html" %}
 {% load static %}
 {% load humanize %}
+{% load custom_filters %}
 
 {% block title %}
 <title>Danh bạ</title>
@@ -18,49 +19,56 @@
 
     <div class="rounded-3">
         {% if directories %}
-        {% for directory in directories %}
-        <div class="rounded-3 p-3 bg-white mb-3">
-            <div class="p-2 record border rounded-3 bg-white">
-                <div class="d-flex align-items-center" onclick="location.href='directory/{{ directory.id }}/change';"
-                    style="cursor: pointer;">
-                    <div class="">
-                        <small>
-                            <i class="fa-regular fa-clock me-1"></i>
-                            {{ directory.updatedAt|time:"H:i" }} -
 
-                            <i class="fa-regular fa-calendar me-1"></i>
-                            {{ directory.updatedAt|date:"d/m/Y" }}
-                        </small>
-                        <div class="fw-bold">
-                            <i class="fa-solid fa-user me-1"></i>
-                            {{ directory }}
-                        </div>
+        {% for directory in directories %}
+        <div class="record border shadow-sm rounded-3 p-3 bg-white mb-3"
+            onclick="location.href='directory/{{ directory.id }}/change';" style="cursor: pointer;">
+            <div class="d-flex align-items-center">
+                <div class="">
+                    <small>
+                        {% if directory.updatedAt|is_over_day %}
+
+                        <i class="fa-regular fa-calendar me-1"></i>
+                        {{ directory.updatedAt|date:"d/m/Y" }}
+
+                        {% else %}
+                        <i class="fa-regular fa-clock me-1"></i>
+                        Đã cập nhật
+                        {{directory.updatedAt|naturaltime }}
+
+                        {% endif %}
+                    </small>
+                    <div class="fw-bold">
+                        <i class="fa-solid fa-user me-1"></i>
+                        {{ directory }}
                     </div>
-                    <div class="ms-auto">
-                        <div class="text-end">
-                            <small>
-                                <i class="fa-solid fa-phone me-1"></i>
-                                {{ directory.phone }}
-                            </small>
-                        </div>
-                        <div class="text-end">
-                            <small>
-                                <i class="fa-solid fa-map-location-dot me-1"></i>
-                                {{ directory.address|truncatechars:10 }}
-                            </small>
-                        </div>
+                </div>
+                <div class="ms-auto">
+                    <div class="text-end">
+                        <small>
+                            <i class="fa-solid fa-phone me-1"></i>
+                            {{ directory.phone }}
+                        </small>
+                    </div>
+                    <div class="text-end">
+                        <small>
+                            <i class="fa-solid fa-map-location-dot me-1"></i>
+                            {{ directory.address|truncatechars:10 }}
+                        </small>
                     </div>
                 </div>
             </div>
         </div>
         {% endfor %}
+
         {% else %}
-        <div class="bg-white p-3 rounded-3 text-center text-danger">Không có bản ghi nào</div>
+        <div class="border shadow-sm rounded-3 p-3 bg-white text-center text-danger">Không có bản ghi nào</div>
+
         {% endif %}
+
     </div>
 
     {% include "base/paginator.html" %}
-
 </div>
 
 {% include "directory/directory-modal.html" %}

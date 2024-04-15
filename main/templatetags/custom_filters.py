@@ -1,5 +1,6 @@
 from django import template
 from ..models import CategoryGroup
+from django.contrib.humanize.templatetags.humanize import naturaltime
 
 register = template.Library()
 
@@ -24,3 +25,23 @@ def category_label(input):
             label = choice[1]
             break
     return label
+
+
+@register.filter
+def is_loans_has_completed(loans):
+    result = False
+    for loan in loans:
+        if loan["calculate"]["complete_percent"] >= 100:
+            result = True
+            break
+
+    return result
+
+
+@register.filter
+def is_over_day(value):
+    result = naturaltime(value)
+    if not "trước" in result:
+        return True
+
+    return False
