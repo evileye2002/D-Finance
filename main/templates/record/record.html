@@ -19,56 +19,56 @@
         </a>
     </div>
 
-    <div class="rounded-3">
-        {% if daily_records %}
-        {% for date, records in daily_records %}
-        <div class="rounded-3 p-3 bg-white mb-3">
-            <div class="d-flex align-items-center fw-bold mb-3">
-                <div class="fw-bold text-primary">
-                    <i class="fa-regular fa-calendar me-1"></i>
-                    {{ date }}
-                </div>
-                <div class="text-primary ms-auto">
-                    {{ records|sum_money }} đ</div>
-            </div>
-            <div>
-                {% for record in records %}
-                <div class="p-2 record border rounded-3 mb-2">
-                    <div class="d-flex align-items-center"
-                        onclick="location.href='record/{{record.id}}/change?next={{request.path}}';"
-                        style="cursor: pointer;">
-                        <div class="">
-                            <small>
-                                <i class="fa-regular fa-clock me-1"></i>
-                                {{ record.timestamp|time:"H:i" }}
-                            </small>
-                            <div class="fw-bold">{{ record.category }}</div>
-                        </div>
+    {% if daily_records %}
 
-                        <div class="ms-auto">
-                            <div
-                                class="fw-bold text-end {% if "income" in request.path %}text-success{% else %}text-danger{% endif %}">
-                                {{ record.formatted_money }} đ</div>
-                            <div class="text-end">
-                                <small>
-                                    <i class="fa-solid fa-wallet me-1"></i>
-                                    {{ record.wallet }}
-                                </small>
-                            </div>
+    {% for date, records in daily_records %}
+    <div class="border shadow-sm rounded-3 p-3 bg-white mb-3">
+        <div class="d-flex align-items-center fw-bold mb-3">
+            <div class="fw-bold text-primary">
+                <i class="fa-regular fa-calendar me-1"></i>
+                {{ date }}
+            </div>
+            <div class="text-primary ms-auto">
+                {{ records|sum_money }} đ</div>
+        </div>
+        <div>
+            {% for record in records %}
+            <div class="p-2 record border rounded-3 mb-2">
+                <div class="d-flex align-items-center"
+                    onclick="location.href='record/{{record.id}}/change?next={{request.path}}';"
+                    style="cursor: pointer;">
+                    <div class="">
+                        <small>
+                            <i class="fa-regular fa-clock me-1"></i>
+                            {{ record.timestamp|time:"H:i" }}
+                        </small>
+                        <div class="fw-bold">{{ record.category }}</div>
+                    </div>
+
+                    <div class="ms-auto">
+                        <div
+                            class="fw-bold text-end {% if "income" in request.path %}text-success{% else %}text-danger{% endif %}">
+                            {{ record.formatted_money }} đ</div>
+                        <div class="text-end">
+                            <small>
+                                <i class="fa-solid fa-wallet me-1"></i>
+                                {{ record.wallet }}
+                            </small>
                         </div>
                     </div>
                 </div>
-                {% endfor %}
             </div>
+            {% endfor %}
         </div>
-        {% endfor %}
-        {% else %}
-        <div class="bg-white p-3 rounded-3 text-center text-danger">Không có bản ghi nào</div>
-        {% endif %}
     </div>
+    {% endfor %}
+
+    {% else %}
+    <div class="border shadow-sm rounded-3 p-3 bg-white text-center text-danger">Không có bản ghi nào</div>
+
+    {% endif %}
 
     {% include "base/paginator.html" %}
-
 </div>
 
 {% include "record/record-modal.html" %}
