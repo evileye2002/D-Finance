@@ -25,7 +25,7 @@
             onclick="location.href='directory/{{ directory.id }}/change';" style="cursor: pointer;">
             <div class="d-flex align-items-center">
                 <div class="">
-                    <small>
+                    <small class="text-primary">
                         {% if directory.updatedAt|is_over_day %}
 
                         <i class="fa-regular fa-calendar me-1"></i>
@@ -38,7 +38,7 @@
 
                         {% endif %}
                     </small>
-                    <div class="fw-bold">
+                    <div class="fw-bold mt-2">
                         <i class="fa-solid fa-user me-1"></i>
                         {{ directory }}
                     </div>
@@ -50,7 +50,7 @@
                             {{ directory.phone }}
                         </small>
                     </div>
-                    <div class="text-end">
+                    <div class="text-end mt-2">
                         <small>
                             <i class="fa-solid fa-map-location-dot me-1"></i>
                             {{ directory.address|truncatechars:10 }}
