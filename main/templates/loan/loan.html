@@ -72,9 +72,11 @@
                 <div class="text-end fw-bold ms-auto">
                     <div class="text-danger">
                         {{loan.calculate.need_collect_repaid}} đ</div>
-                    <small class="text-success">
-                        {{loan.calculate.total_collect_repaid}} đ
-                    </small>
+                    <div class="text-success mt-2">
+                        <small>
+                            {{loan.calculate.total_collect_repaid}} đ
+                        </small>
+                    </div>
                 </div>
             </div>
             {% endif %}

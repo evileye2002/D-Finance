@@ -380,5 +380,6 @@ def get_categories(query):
         number_of_records = Record.objects.filter(category=category).count()
 
         result[category_group].append(category)
+        # print(category.updatedAt)
 
     return dict(result)

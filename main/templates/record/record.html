@@ -29,7 +29,8 @@
                 {{ date }}
             </div>
             <div class="text-primary ms-auto">
-                {{ records|sum_money }} đ</div>
+                {{ records|sum_money }} đ
+            </div>
         </div>
         <div>
             {% for record in records %}
@@ -42,14 +43,14 @@
                             <i class="fa-regular fa-clock me-1"></i>
                             {{ record.timestamp|time:"H:i" }}
                         </small>
-                        <div class="fw-bold">{{ record.category }}</div>
+                        <div class="fw-bold mt-2">{{ record.category }}</div>
                     </div>
 
                     <div class="ms-auto">
                         <div
                             class="fw-bold text-end {% if "income" in request.path %}text-success{% else %}text-danger{% endif %}">
                             {{ record.formatted_money }} đ</div>
-                        <div class="text-end">
+                        <div class="text-end mt-2">
                             <small>
                                 <i class="fa-solid fa-wallet me-1"></i>
                                 {{ record.wallet }}
