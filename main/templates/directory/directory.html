@@ -21,7 +21,7 @@
         {% if directories %}
 
         {% for directory in directories %}
-        <div class="record border shadow-sm rounded-3 p-3 bg-white mb-3"
+        <div class="record border rounded-3 p-3 bg-white mb-3"
             onclick="location.href='directory/{{ directory.id }}/change';" style="cursor: pointer;">
             <div class="d-flex align-items-center">
                 <div class="">
@@ -53,7 +53,7 @@
         {% endfor %}
 
         {% else %}
-        <div class="border shadow-sm rounded-3 p-3 bg-white text-center text-danger">Không có bản ghi nào</div>
+        <div class="border rounded-3 p-3 bg-white text-center text-danger">Không có bản ghi nào</div>
 
         {% endif %}
 

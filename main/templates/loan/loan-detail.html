@@ -15,7 +15,7 @@
         </a>
     </div>
 
-    <div class="border shadow-sm rounded-3 bg-white mb-3">
+    <div class="border rounded-3 bg-white mb-3">
         <div class="p-3">
             <div class="d-flex fw-bold gap-2 mb-2">
                 {% if "lend" in request.path %} Người vay:
@@ -63,7 +63,7 @@
 
     {% if loan_detail %}
     {% for date, loans in loan_detail %}
-    <div class="border shadow-sm rounded-3 p-3 bg-white mb-3">
+    <div class="border rounded-3 p-3 bg-white mb-3">
         <div class="d-flex align-items-center fw-bold mb-3">
             <div class="fw-bold text-primary">
                 <i class="fa-regular fa-calendar me-1"></i>
@@ -104,7 +104,7 @@
     {% endfor %}
 
     {% else %}
-    <div class="border shadow-sm rounded-3 p-3 bg-white text-center text-danger">Không có bản ghi nào</div>
+    <div class="border rounded-3 p-3 bg-white text-center text-danger">Không có bản ghi nào</div>
 
     {% endif %}
 

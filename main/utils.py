@@ -364,9 +364,9 @@ def pie_chart(reports, title, colors):
         data=[go.Pie(labels=labels, values=values, marker=dict(colors=colors))]
     )
 
-    # fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
+    fig.update_traces(textposition="inside")
     fig.update_layout(
-        title=f"<b>{title}</b>",
+        title=f"<b>{title}</b>", uniformtext_minsize=12, uniformtext_mode="hide"
     )
 
     return fig
