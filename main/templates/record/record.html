@@ -22,7 +22,7 @@
     {% if daily_records %}
 
     {% for date, records in daily_records %}
-    <div class="border shadow-sm rounded-3 p-3 bg-white mb-3">
+    <div class="border rounded-3 p-3 bg-white mb-3">
         <div class="d-flex align-items-center fw-bold mb-3">
             <div class="fw-bold text-primary">
                 <i class="fa-regular fa-calendar me-1"></i>
@@ -65,7 +65,7 @@
     {% endfor %}
 
     {% else %}
-    <div class="border shadow-sm rounded-3 p-3 bg-white text-center text-danger">Không có bản ghi nào</div>
+    <div class="border rounded-3 p-3 bg-white text-center text-danger">Không có bản ghi nào</div>
 
     {% endif %}
 
