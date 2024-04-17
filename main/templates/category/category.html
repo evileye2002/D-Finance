@@ -39,20 +39,9 @@
                 <div class="d-flex align-items-center" onclick="location.href='category/{{ category.id }}/change';"
                     style="cursor: pointer;">
                     <div class="">
-                        <small class="text-primary">
-                            {% if category.updatedAt|is_over_day %}
-                            {% comment %} <i class="fa-regular fa-clock me-1"></i>
-                            {{ category.updatedAt|time:"H:i" }} - {% endcomment %}
-
-                            <i class="fa-regular fa-calendar me-1"></i>
-                            {{ category.updatedAt|date:"d/m/Y" }}
-
-                            {% else %}
+                        <small>
                             <i class="fa-regular fa-clock me-1"></i>
-                            Đã cập nhật
-                            {{category.updatedAt|naturaltime }}
-
-                            {% endif %}
+                            {{category.updatedAt|natural_time }}
                         </small>
                         <div class="fw-bold mt-2">{{ category.name }}</div>
                     </div>
