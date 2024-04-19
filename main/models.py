@@ -100,7 +100,10 @@ class Record(models.Model):
         ordering = ["-timestamp"]
 
     def __str__(self):
-        return self.name
+        if self.name:
+            return self.name
+        else:
+            return f"{self.wallet.author}-{self.category} ({self.id}) "
 
     def formatted_money(self):
         return "{:,}".format(self.money)
@@ -138,7 +141,10 @@ class Loan(models.Model):
         ordering = ["-timestamp"]
 
     def __str__(self):
-        return self.name
+        if self.name:
+            return self.name
+        else:
+            return f"{self.wallet.author}-{self.category} ({self.id}) "
 
     def formatted_money(self):
         return "{:,}".format(self.money)
