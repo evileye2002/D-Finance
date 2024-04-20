@@ -35,7 +35,7 @@
                     </div>
 
                     <div class="ms-auto me-2">
-                        <span class="badge rounded-circle bg-primary">{{category.category.count}}</span>
+                        <span class="badge bg-primary">{{category.category.count}}</span>
                     </div>
                 </div>
             </div>
@@ -50,9 +50,10 @@
         {% endif %}
     </div>
 
-    {% include "base/floating-button.html" %}
     {% include "base/paginator-2.html" %}
 </div>
 
-{% include "category/category-modal.html" %}
+{% include "base/floating-button.html" %}
+{% include "base/modal-2.html" %}
+
 {% endblock %}

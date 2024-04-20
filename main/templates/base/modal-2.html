@@ -1,0 +1,43 @@
+{% load crispy_forms_tags %}
+
+
+<div class="modal fade" id="{{modal.id}}" tabindex="-1" aria-labelledby="{{modal.title}}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">{{modal.title}}</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <form id="{{modal.form.id}}" data-dj-url="{{modal.form.url}}" class="mb-0 w-100" method="post"
+                    autocomplete="off">
+                    {% csrf_token %}
+                    {{ modal.form.content|crispy }}
+
+                    {% if modal.form.btn|length == 1 %}
+                    <div class=" d-flex justify-content-center">
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+                            {{modal.form.btn.0.label}}
+                        </button>
+                    </div>
+
+                    {% else %}
+                    <div class="d-flex justify-content-center gap-3">
+                        <button type="submit" class="btn btn-primary py-2 fw-bold">
+                            {{modal.form.btn.0.label}}
+                        </button>
+
+                        <a href="{{modal.form.btn.1.url}}" class="btn btn-danger py-2 fw-bold"
+                            onclick="{{modal.form.btn.1.onclick}}">
+                            {{modal.form.btn.1.label}}
+                        </a>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

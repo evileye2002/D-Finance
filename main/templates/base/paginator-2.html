@@ -5,7 +5,7 @@
     {% if paginator.paginator.num_pages > 1 %}
     <div class="me-auto">
         {{ paginator.start_index }} - {{ paginator.end_index }} trên
-        {{ paginator.paginator.count }} ({{page_title}})
+        {{ paginator.paginator.count }} ({{page_info.item_name}})
     </div>
 
     <nav aria-label="navigation">
@@ -80,7 +80,6 @@
     </nav>
 
     {% else %}
-    <p>1 – {{ paginator.paginator.count }}</p>
-
+    <div>1 – {{ paginator.paginator.count }} ({{page_info.item_name}})</div>
     {% endif %}
 </div>

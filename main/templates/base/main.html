@@ -9,11 +9,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Title -->
-    {% if page_title %}
-    <title>{{page_title}}</title>
+    {% if page_info.title %}
+    <title>{{page_info.title}}</title>
     {% else %}
     {% block title %} {% endblock %}
-
     {% endif %}
 
 
