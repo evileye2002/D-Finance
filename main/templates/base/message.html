@@ -10,7 +10,7 @@
             <i class="fa-solid fa-circle-check text-success me-3"></i>
             <div class="">
                 <div>
-                    <small class="fw-bold">Thông báo</small>
+                    <small class="fw-bold text-success">Thông báo</small>
                 </div>
                 {{message}}
             </div>
@@ -22,6 +22,26 @@
 
         <div class="alert-progress position-absolute start-0 bottom-0 bg-success rounded-bottom"></div>
     </div>
+
+    {% elif message.tags == 'error' %}
+    <div class="alert bg-white border shadow-sm fade show py-2" role="alert">
+        <div class="d-flex align-items-center">
+            <i class="fa-regular fa-circle-xmark text-danger me-3"></i>
+            <div class="">
+                <div>
+                    <small class="fw-bold text-danger">Thông báo</small>
+                </div>
+                {{message}}
+            </div>
+
+            <div type="button" class="btn ms-3 p-0" data-bs-dismiss="alert" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </div>
+        </div>
+
+        <div class="alert-progress position-absolute start-0 bottom-0 bg-danger rounded-bottom"></div>
+    </div>
+
     {% endif %}
 
     {% endfor %}

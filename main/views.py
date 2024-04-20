@@ -510,7 +510,8 @@ def category_change(req, category_id):
     category = Category.objects.get(id=category_id, author=req.user)
 
     if category.is_default:
-        return render(req, "category/category-is-default.html")
+        messages.error(req, "Không thể xóa hay sửa đổi Hạng Mục mặc định.")
+        return redirect("category")
 
     return changeForm(
         req, "category", CategoryForm, category, "category/category-change.html"
