@@ -337,7 +337,8 @@ def directory_delete(req, directory_id):
 
 @login_required(login_url="sign-in")
 def category(req):
-    # print(req.GET)
+    page_title = "Hạng mục"
+    fbtn = {"title": "Thêm", "modal_tagert": "#mainModal"}
 
     query = Category.objects.filter(
         models.Q(category_group=CategoryGroup.INCOME)
@@ -360,7 +361,13 @@ def category(req):
 
             return redirect("category")
 
-    ctx = {"form": form, "category_groups": category_groups, "paginator": page}
+    ctx = {
+        "form": form,
+        "category_groups": category_groups,
+        "paginator": page,
+        "page_title": page_title,
+        "fbtn": fbtn,
+    }
 
     return render(req, "category/category.html", ctx)
 
