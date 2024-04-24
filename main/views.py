@@ -481,7 +481,6 @@ def category(req):
 
     page = get_page(query, req)
     category_groups = get_categories(page)
-    print(category_groups)
 
     if req.method == "POST":
         form = CategoryForm(req.POST)
