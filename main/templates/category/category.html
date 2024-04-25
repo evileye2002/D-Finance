@@ -1,21 +1,9 @@
 {% extends "base/main.html" %}
-{% load static %}
-{% load humanize %}
 {% load custom_filters %}
 
-{% block title %}
-<title>Hạng Mục</title>
-{% endblock  %}
 
 {% block content %}
 <div class="container mt-3">
-
-    <div type="button" class="position-fixed" style="bottom: 30px;right: 30px;" title="Thêm">
-        <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-circle fw-bold"
-            data-bs-toggle="modal" data-bs-target="#mainModal" style="width: 60px;height: 60px;">
-            <i class="fa-solid fa-plus fs-3"></i>
-        </a>
-    </div>
 
     <div class="rounded-3">
         {% if category_groups %}
@@ -47,7 +35,7 @@
                     </div>
 
                     <div class="ms-auto me-2">
-                        <span class="badge rounded-circle bg-primary">{{category.category.count}}</span>
+                        <span class="badge bg-primary">{{category.category.count}}</span>
                     </div>
                 </div>
             </div>
@@ -62,9 +50,10 @@
         {% endif %}
     </div>
 
-    {% include "base/paginator.html" %}
-
+    {% include "base/paginator-2.html" %}
 </div>
 
-{% include "category/category-modal.html" %}
+{% include "base/floating-button.html" %}
+{% include "base/modal-2.html" %}
+
 {% endblock %}

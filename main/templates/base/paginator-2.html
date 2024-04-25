@@ -1,0 +1,85 @@
+{% load custom_filters %}
+
+<div class="d-flex align-items-center mb-3">
+
+    {% if paginator.paginator.num_pages > 1 %}
+    <div class="me-auto">
+        {{ paginator.start_index }} - {{ paginator.end_index }} trên
+        {{ paginator.paginator.count }} ({{page_info.item_name}})
+    </div>
+
+    <nav aria-label="navigation">
+        <ul class="pagination mb-0">
+            <li class="page-item pagination_prev">
+                {% if paginator.has_previous %}
+                <a href="?page={{ paginator.previous_page_number }}" class="page-link">
+                    <i class="fa fa-angle-left" aria-hidden="true"></i>
+                    Previous
+                </a>
+
+                {% else %}
+                <a href="#" class="page-link disabled">
+                    <i class="fa fa-angle-left" aria-hidden="true"></i>
+                    Previous
+                </a>
+                {% endif %}
+            </li>
+
+            {% for page_num in paginator.paginator.page_range %}
+
+            {% if page_num == 1 or page_num == paginator.paginator.page_range|last %}
+            {% if page_num == paginator.number %}
+            <li class="page-item">
+                <a href="?page={{ page_num }}" class="page-link disabled">{{ page_num }}</a>
+            </li>
+
+            {% else %}
+            <li class="page-item">
+                <a href="?page={{ page_num }}" class="page-link">{{ page_num }}</a>
+            </li>
+            {% endif %}
+
+            {% elif page_num|is_link:paginator == 0 %}
+            <li class="page-item">
+                <a href="#" class="page-link disabled">...</a>
+            </li>
+            {% endif %}
+
+            {% if page_num|is_link:paginator %}
+
+            {% if page_num == paginator.number %}
+            <li class="page-item pagination_current">
+                <a href="#" class="page-link disabled">{{ page_num }}</a>
+            </li>
+
+            {% else %}
+            <li>
+                <a href="?page={{ page_num }}" class="page-link">{{ page_num }}</a>
+            </li>
+            {% endif %}
+
+            {% endif %}
+
+            {% endfor %}
+
+            <li class="page-item pagination_next">
+                {% if paginator.has_next %}
+                <a href="?page={{ paginator.next_page_number }}" class="page-link">
+                    Next
+                    <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+
+                {% else %}
+                <a href="#" class="page-link disabled">
+                    Next
+                    <i class="fa fa-angle-right" aria-hidden="true"></i>
+                </a>
+                {% endif %}
+            </li>
+        </ul>
+    </nav>
+
+    {% else %}
+    <div>1 – {{ paginator.paginator.count }} ({{page_info.item_name}})</div>
+    {% endif %}
+</div>

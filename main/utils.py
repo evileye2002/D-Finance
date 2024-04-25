@@ -333,11 +333,13 @@ def get_pie_chart_report(req):
 
     incomes = Record.objects.filter(
         wallet__author=req.user,
+        wallet__is_calculate=True,
         category__category_group=CategoryGroup.INCOME,
         timestamp__range=(start_of_month, end_of_month),
     )
     spendings = Record.objects.filter(
         wallet__author=req.user,
+        wallet__is_calculate=True,
         category__category_group=CategoryGroup.SPENDING,
         timestamp__range=(start_of_month, end_of_month),
     )

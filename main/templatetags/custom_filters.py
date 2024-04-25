@@ -71,3 +71,15 @@ def natural_time(value):
         result = result.replace(old_str, new_str)
 
     return result
+
+
+@register.filter
+def is_link(page, paginator):
+    if page == 1 or page == paginator.paginator.page_range[-1]:
+        return False
+
+    if page == paginator.number - 3 or page == paginator.number + 3:
+        return 0
+
+    if page >= paginator.number - 2 and page <= paginator.number + 2:
+        return True

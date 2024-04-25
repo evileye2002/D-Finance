@@ -87,8 +87,24 @@ def sign_out(req):
 
 @login_required(login_url="sign-in")
 def income(req):
+    form = RecordForm(type=CategoryGroup.INCOME, user=req.user)
+    page_info = {
+        "title": "Thu Nhập",
+        "item_name": "Khoản thu",
+    }
+    modal = {
+        "id": "modal-add",
+        "title": "Thêm Khoản Thu",
+        "form": {
+            "id": "form-add",
+            "content": form,
+            "url": "/url/2",
+            "btn": [{"label": "Thêm"}],
+        },
+    }
+
     query = Record.objects.filter(
-        wallet__in=Wallet.objects.filter(author=req.user),
+        wallet__author=req.user,
         category__in=Category.objects.filter(
             models.Q(is_default=True) | models.Q(author=req.user),
             category_group=CategoryGroup.INCOME,
@@ -96,9 +112,7 @@ def income(req):
     )
 
     records = get_page(query, req)
-
     daily_records = getDailyRecord(records)
-    form = RecordForm(type=CategoryGroup.INCOME, user=req.user)
 
     if req.method == "POST":
         form = RecordForm(req.POST, user=req.user, type=CategoryGroup.INCOME)
@@ -109,7 +123,13 @@ def income(req):
             messages.success(req, "Thêm Bản ghi thành công.")
             return redirect("income")
 
-    ctx = {"form": form, "daily_records": daily_records, "paginator": records}
+    ctx = {
+        "form": form,
+        "daily_records": daily_records,
+        "paginator": records,
+        "page_info": page_info,
+        "modal": modal,
+    }
 
     return render(req, "record/record.html", ctx)
 
@@ -146,6 +166,22 @@ def record_delete(req, record_id):
 
 @login_required(login_url="sign-in")
 def spending(req):
+    form = RecordForm(type=CategoryGroup.SPENDING, user=req.user)
+    page_info = {
+        "title": "Chi Tiêu",
+        "item_name": "Khoản chi",
+    }
+    modal = {
+        "id": "modal-add",
+        "title": "Thêm Khoản Chi",
+        "form": {
+            "id": "form-add",
+            "content": form,
+            "url": "/url/2",
+            "btn": [{"label": "Thêm"}],
+        },
+    }
+
     query = Record.objects.filter(
         wallet__author=req.user,
         category__in=Category.objects.filter(
@@ -155,9 +191,7 @@ def spending(req):
     )
 
     records = get_page(query, req)
-
     daily_records = getDailyRecord(records)
-    form = RecordForm(type=CategoryGroup.SPENDING, user=req.user)
 
     if req.method == "POST":
         form = RecordForm(req.POST, user=req.user, type=CategoryGroup.SPENDING)
@@ -168,13 +202,34 @@ def spending(req):
             messages.success(req, "Thêm Bản Ghi thành công.")
             return redirect("spending")
 
-    ctx = {"form": form, "daily_records": daily_records, "paginator": records}
+    ctx = {
+        "form": form,
+        "daily_records": daily_records,
+        "paginator": records,
+        "page_info": page_info,
+        "modal": modal,
+    }
 
     return render(req, "record/record.html", ctx)
 
 
 @login_required(login_url="sign-in")
 def lend(req):
+    form = LoanForm(user=req.user, type="lend")
+    page_info = {
+        "title": "Vay Nợ - Cho Vay",
+        "item_name": "",
+    }
+    modal = {
+        "id": "modal-add",
+        "title": "Thêm Khoản Vay",
+        "form": {
+            "id": "form-add",
+            "content": form,
+            "url": "/url/2",
+            "btn": [{"label": "Thêm"}],
+        },
+    }
     lends = Loan.objects.filter(
         wallet__in=Wallet.objects.filter(author=req.user), category__name="Cho vay"
     )
@@ -183,7 +238,6 @@ def lend(req):
     )
     loans = getLoan(lends, collects)
     calculate = getLoanTotal(lends, collects)
-    form = LoanForm(user=req.user, type="lend")
 
     if req.method == "POST":
         form = LoanForm(req.POST, user=req.user, type="lend")
@@ -192,13 +246,34 @@ def lend(req):
             messages.success(req, "Thêm Vay Nợ thành công.")
             return redirect("lend")
 
-    ctx = {"form": form, "loans": loans, "calculate": calculate}
+    ctx = {
+        "form": form,
+        "loans": loans,
+        "calculate": calculate,
+        "page_info": page_info,
+        "modal": modal,
+    }
 
     return render(req, "loan/loan.html", ctx)
 
 
 @login_required(login_url="sign-in")
 def borrow(req):
+    form = LoanForm(user=req.user, type="borrow")
+    page_info = {
+        "title": "Vay Nợ - Đi Vay",
+        "item_name": "",
+    }
+    modal = {
+        "id": "modal-add",
+        "title": "Thêm Khoản Vay",
+        "form": {
+            "id": "form-add",
+            "content": form,
+            "url": "/url/2",
+            "btn": [{"label": "Thêm"}],
+        },
+    }
     borrows = Loan.objects.filter(
         wallet__in=Wallet.objects.filter(author=req.user), category__name="Đi vay"
     )
@@ -207,7 +282,6 @@ def borrow(req):
     )
     loans = getLoan(borrows, repaids)
     calculate = getLoanTotal(borrows, repaids)
-    form = LoanForm(user=req.user, type="borrow")
 
     if req.method == "POST":
         form = LoanForm(req.POST, user=req.user, type="borrow")
@@ -216,7 +290,13 @@ def borrow(req):
             messages.success(req, "Thêm Vay Nợ thành công.")
             return redirect("borrow")
 
-    ctx = {"form": form, "loans": loans, "calculate": calculate}
+    ctx = {
+        "form": form,
+        "loans": loans,
+        "calculate": calculate,
+        "page_info": page_info,
+        "modal": modal,
+    }
     return render(req, "loan/loan.html", ctx)
 
 
@@ -259,8 +339,22 @@ def loan_delete(req, loan_id):
 
 @login_required(login_url="sign-in")
 def wallet(req):
-    query = Wallet.objects.filter(author=req.user)
     form = WalletForm()
+    page_info = {
+        "title": "Ví Của Bạn",
+        "item_name": "Ví",
+    }
+    modal = {
+        "id": "modal-add",
+        "title": "Thêm Ví",
+        "form": {
+            "id": "form-add",
+            "content": form,
+            "url": "/url/2",
+            "btn": [{"label": "Thêm"}],
+        },
+    }
+    query = Wallet.objects.filter(author=req.user)
 
     wallets = get_page(query, req)
 
@@ -274,7 +368,13 @@ def wallet(req):
 
             return redirect("wallet")
 
-    ctx = {"form": form, "wallets": wallets, "paginator": wallets}
+    ctx = {
+        "form": form,
+        "wallets": wallets,
+        "paginator": wallets,
+        "page_info": page_info,
+        "modal": modal,
+    }
 
     return render(req, "wallet/wallet.html", ctx)
 
@@ -297,8 +397,22 @@ def wallet_delete(req, wallet_id):
 
 @login_required(login_url="sign-in")
 def directory(req):
-    query = PeopleDirectory.objects.filter(author=req.user)
     form = DirectoryForm()
+    page_info = {
+        "title": "Danh Bạ",
+        "item_name": "Danh bạ",
+    }
+    modal = {
+        "id": "modal-add",
+        "title": "Thêm Danh Bạ",
+        "form": {
+            "id": "form-add",
+            "content": form,
+            "url": "/url/2",
+            "btn": [{"label": "Thêm"}],
+        },
+    }
+    query = PeopleDirectory.objects.filter(author=req.user)
 
     directories = get_page(query, req)
 
@@ -312,7 +426,13 @@ def directory(req):
 
             return redirect("directory")
 
-    ctx = {"form": form, "directories": directories, "paginator": directories}
+    ctx = {
+        "form": form,
+        "directories": directories,
+        "paginator": directories,
+        "page_info": page_info,
+        "modal": modal,
+    }
 
     return render(req, "directory/directory.html", ctx)
 
@@ -337,14 +457,27 @@ def directory_delete(req, directory_id):
 
 @login_required(login_url="sign-in")
 def category(req):
-    # print(req.GET)
+    form = CategoryForm()
+    page_info = {
+        "title": "Danh Bạ",
+        "item_name": "Danh bạ",
+    }
+    modal = {
+        "id": "modal-add",
+        "title": "Thêm Hạng Mục",
+        "form": {
+            "id": "form-add",
+            "content": form,
+            "url": "/url/2",
+            "btn": [{"label": "Thêm"}],
+        },
+    }
 
     query = Category.objects.filter(
         models.Q(category_group=CategoryGroup.INCOME)
         | models.Q(category_group=CategoryGroup.SPENDING),
         author=req.user,
     )
-    form = CategoryForm()
 
     page = get_page(query, req)
     category_groups = get_categories(page)
@@ -360,7 +493,13 @@ def category(req):
 
             return redirect("category")
 
-    ctx = {"form": form, "category_groups": category_groups, "paginator": page}
+    ctx = {
+        "form": form,
+        "category_groups": category_groups,
+        "paginator": page,
+        "page_info": page_info,
+        "modal": modal,
+    }
 
     return render(req, "category/category.html", ctx)
 
@@ -370,7 +509,8 @@ def category_change(req, category_id):
     category = Category.objects.get(id=category_id, author=req.user)
 
     if category.is_default:
-        return render(req, "category/category-is-default.html")
+        messages.error(req, "Không thể xóa hay sửa đổi Hạng Mục mặc định.")
+        return redirect("category")
 
     return changeForm(
         req, "category", CategoryForm, category, "category/category-change.html"

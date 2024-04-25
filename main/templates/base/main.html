@@ -9,10 +9,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Title -->
-    {% block title %}
+    {% if page_info.title %}
+    <title>{{page_info.title}}</title>
+    {% else %}
+    {% block title %} {% endblock %}
+    {% endif %}
 
-
-    {% endblock  %}
 
     <!-- Styles -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">

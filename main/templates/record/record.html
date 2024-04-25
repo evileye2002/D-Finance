@@ -12,12 +12,6 @@
 
 {% block content %}
 <div class="container my-3">
-    <div type="button" class="position-fixed" style="bottom: 30px;right: 30px;" title="Thêm">
-        <a class="btn btn-primary d-flex justify-content-center align-items-center rounded-circle fw-bold"
-            data-bs-toggle="modal" data-bs-target="#mainModal" style="width: 60px;height: 60px;">
-            <i class="fa-solid fa-plus fs-3"></i>
-        </a>
-    </div>
 
     {% if daily_records %}
 
@@ -69,10 +63,11 @@
 
     {% endif %}
 
-    {% include "base/paginator.html" %}
+    {% include "base/paginator-2.html" %}
 </div>
 
-{% include "record/record-modal.html" %}
+{% include "base/floating-button.html" %}
+{% include "base/modal-2.html" %}
 {% endblock %}
 
 {% block script %}
