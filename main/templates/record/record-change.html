@@ -9,7 +9,7 @@
 {% block content %}
 <div class="container my-3">
     <div class="bg-white rounded-3">
-        <form method="post" class="p-3">
+        <form method="post" class="p-3 with-select2">
             {% csrf_token %}
             {{ form|crispy }}
 

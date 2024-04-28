@@ -11,6 +11,7 @@ from django.contrib.auth import update_session_auth_hash
 
 from .models import *
 from .forms import *
+from .utils_form import TimestampFilterForm
 from .utils import *
 
 
@@ -111,6 +112,10 @@ def income(req):
         ),
     )
 
+    f = get_filter(req, query)
+    query = f["query"]
+    filter_form = f["form"]
+
     records = get_page(query, req)
     daily_records = getDailyRecord(records)
 
@@ -125,6 +130,7 @@ def income(req):
 
     ctx = {
         "form": form,
+        "filter_form": filter_form,
         "daily_records": daily_records,
         "paginator": records,
         "page_info": page_info,
@@ -190,6 +196,10 @@ def spending(req):
         ),
     )
 
+    f = get_filter(req, query, CategoryGroup.SPENDING)
+    query = f["query"]
+    filter_form = f["form"]
+
     records = get_page(query, req)
     daily_records = getDailyRecord(records)
 
@@ -204,6 +214,7 @@ def spending(req):
 
     ctx = {
         "form": form,
+        "filter_form": filter_form,
         "daily_records": daily_records,
         "paginator": records,
         "page_info": page_info,

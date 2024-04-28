@@ -16,6 +16,9 @@ from django.db.models.functions import TruncMonth
 from .models import Record, Category, CategoryGroup
 from django.core.paginator import Paginator
 
+from .utils_form import TimestampFilterForm
+
+
 datetime_local_format = "%Y-%m-%dT%H:%M"
 date_format = "%d/%m/%Y"
 item_per_page = 10
@@ -385,3 +388,24 @@ def get_categories(query):
         # print(category.updatedAt)
 
     return dict(result)
+
+
+def get_filter(req, query, group=CategoryGroup.INCOME):
+    filter_form = TimestampFilterForm(user=req.user, c_group=group)
+    f_start = req.GET.get("f")
+    f_end = req.GET.get("t")
+    f_categories = req.GET.getlist("c")
+    initial = {}
+
+    if f_start and f_end:
+        query = query.filter(timestamp__range=(f_start, f_end))
+        initial.update({"f": f_start, "t": f_end})
+
+    if f_categories:
+        query = query.filter(category__id__in=f_categories)
+        initial.update({"c": f_categories})
+
+    if initial:
+        filter_form = TimestampFilterForm(user=req.user, initial=initial, c_group=group)
+
+    return {"query": query, "form": filter_form}
