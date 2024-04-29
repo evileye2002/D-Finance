@@ -9,12 +9,16 @@ from .models import PeopleDirectory, Loan
 from django.db import models
 from django.contrib import messages
 
+import plotly.colors as pc
 import plotly.graph_objects as go
 import random
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth
 from .models import Record, Category, CategoryGroup
 from django.core.paginator import Paginator
+
+from .utils_form import TimestampFilterForm
+
 
 datetime_local_format = "%Y-%m-%dT%H:%M"
 date_format = "%d/%m/%Y"
@@ -147,6 +151,10 @@ def renderLoanDetail(req, id, loanForm, type):
     category1 = "Cho vay"
     category2 = "Thu nợ"
     redirect_to = "lend_detail"
+    page_info = {
+        "title": "Chi Tiết Khoản Vay",
+        "item_name": "Bản ghi",
+    }
 
     lender_borrower = PeopleDirectory.objects.get(id=id)
 
@@ -195,6 +203,7 @@ def renderLoanDetail(req, id, loanForm, type):
         "calculate": calculate,
         "lender_borrower": lender_borrower,
         "paginator": loans,
+        "page_info": page_info,
     }
     return render(req, "loan/loan-detail.html", ctx)
 
@@ -363,7 +372,14 @@ def pie_chart(reports, title, colors):
     values = [category["total_money"] for category in categories]
 
     fig = go.Figure(
-        data=[go.Pie(labels=labels, values=values, marker=dict(colors=colors))]
+        data=[
+            go.Pie(
+                labels=labels,
+                values=values,
+                marker_colors=colors,
+                # marker_colors=pc.sequential.Inferno_r,
+            )
+        ]
     )
 
     fig.update_traces(textposition="inside")
@@ -385,3 +401,24 @@ def get_categories(query):
         # print(category.updatedAt)
 
     return dict(result)
+
+
+def get_filter(req, query, group=CategoryGroup.INCOME):
+    filter_form = TimestampFilterForm(user=req.user, c_group=group)
+    f_start = req.GET.get("f")
+    f_end = req.GET.get("t")
+    f_categories = req.GET.getlist("c")
+    initial = {}
+
+    if f_start and f_end:
+        query = query.filter(timestamp__range=(f_start, f_end))
+        initial.update({"f": f_start, "t": f_end})
+
+    if f_categories:
+        query = query.filter(category__id__in=f_categories)
+        initial.update({"c": f_categories})
+
+    if initial:
+        filter_form = TimestampFilterForm(user=req.user, initial=initial, c_group=group)
+
+    return {"query": query, "form": filter_form}

@@ -11,8 +11,8 @@
             </div>
 
             <div class="modal-body">
-                <form id="{{modal.form.id}}" data-dj-url="{{modal.form.url}}" class="mb-0 w-100" method="post"
-                    autocomplete="off">
+                <form id="{{modal.form.id}}" data-dj-url="{{modal.form.url}}" class="mb-0 w-100 with-select2"
+                    method="post" autocomplete="off">
                     {% csrf_token %}
                     {{ modal.form.content|crispy }}
 

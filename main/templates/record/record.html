@@ -1,6 +1,8 @@
 {% extends "base/main.html" %}
 {% load static %}
 {% load custom_filters %}
+{% load crispy_forms_tags %}
+
 
 {% block title %}
 {% if "income" in request.path %}
@@ -12,9 +14,9 @@
 
 {% block content %}
 <div class="container my-3">
+    {% include "base/record-filter.html" %}
 
     {% if daily_records %}
-
     {% for date, records in daily_records %}
     <div class="border rounded-3 p-3 bg-white mb-3">
         <div class="d-flex align-items-center fw-bold mb-3">
@@ -28,10 +30,9 @@
         </div>
         <div>
             {% for record in records %}
-            <div class="p-2 record border rounded-3 mb-2">
-                <div class="d-flex align-items-center"
-                    onclick="location.href='record/{{record.id}}/change?next={{request.path}}';"
-                    style="cursor: pointer;">
+            <div class="p-2 record border rounded-3 mb-2"
+                onclick="location.href='record/{{record.id}}/change?next={{request.path}}';" style="cursor: pointer;">
+                <div class="d-flex align-items-center">
                     <div class="">
                         <small>
                             <i class="fa-regular fa-clock me-1"></i>

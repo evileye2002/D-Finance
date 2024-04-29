@@ -61,6 +61,8 @@
         </div>
     </div>
 
+    {% include "base/record-filter.html" %}
+
     {% if loan_detail %}
     {% for date, loans in loan_detail %}
     <div class="border rounded-3 p-3 bg-white mb-3">
