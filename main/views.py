@@ -18,11 +18,21 @@ from .utils import *
 # Create your views here.
 @login_required(login_url="sign-in")
 def index(req):
-    year = datetime.now().year
-    months_report = get_months_report(req, year)
     incomes = total_report(req)
     spendings = total_report(req, CategoryGroup.SPENDING)
-    pie_chart_reports = get_pie_chart_report(req)
+    pie_chart_reports = None
+
+    p = req.GET.get("p")
+    if p is not None:
+        pie_chart_reports = get_pie_chart_report(req, p)
+        if p == "d":
+            months_report = get_bar_chart_day_report(req)
+        else:
+            months_report = get_months_report(req)
+
+    else:
+        pie_chart_reports = get_pie_chart_report(req)
+        months_report = get_months_report(req)
 
     ctx = {
         "months_report": months_report,

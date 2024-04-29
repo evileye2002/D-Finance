@@ -77,6 +77,18 @@
     </div>
 
     <div id="pie_chart_reports" class="row g-3 mb-3">
+        <div class="col-12">
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    Thống kê theo
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="?p=d">Ngày</a></li>
+                    <li><a class="dropdown-item" href="?p=m">Tháng</a></li>
+                </ul>
+            </div>
+        </div>
+
         <div class="col-lg-6 col-md-12">
             {{pie_chart_reports.incomes|safe}}
         </div>

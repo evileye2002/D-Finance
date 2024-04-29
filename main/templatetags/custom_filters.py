@@ -1,6 +1,8 @@
 from django import template
-from ..models import CategoryGroup
 from django.contrib.humanize.templatetags.humanize import naturaltime
+from urllib.parse import urlencode
+
+from ..models import CategoryGroup
 
 register = template.Library()
 
@@ -83,3 +85,14 @@ def is_link(page, paginator):
 
     if page >= paginator.number - 2 and page <= paginator.number + 2:
         return True
+
+
+@register.filter
+def get_query_url(req_get, page_num=None):
+    copy = dict(req_get.lists())
+
+    if page_num is not None:
+        copy["page"] = page_num
+
+    result = urlencode(copy, doseq=True)
+    return f"?{result}"
