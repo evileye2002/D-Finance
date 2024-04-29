@@ -374,10 +374,10 @@ def get_bar_chart_day_report(req):
         .order_by("day")
     )
 
-    days_incomes = [f"Ng {data['day'].strftime('%d')}" for data in incomes]
+    days_incomes = [f"{data['day'].strftime('%d')}" for data in incomes]
     total_incomes = [data["total_money"] for data in incomes]
 
-    days_spendings = [f"Ng {data['day'].strftime('%d')}" for data in spendings]
+    days_spendings = [f"{data['day'].strftime('%d')}" for data in spendings]
     total_spendings = [data["total_money"] for data in spendings]
 
     fig = go.Figure()
