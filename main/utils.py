@@ -217,6 +217,11 @@ def total_report(req, type=CategoryGroup.INCOME):
     start_of_year = datetime(today.year, 1, 1)
     end_of_year = datetime(today.year, 12, 31)
 
+    start_of_month = start_of_month.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_month = end_of_month.replace(
+        hour=23, minute=59, second=59, microsecond=999999
+    )
+
     total_today = (
         Record.objects.filter(
             timestamp__date=today,
@@ -342,6 +347,11 @@ def get_bar_chart_day_report(req):
     last_day_of_month = calendar.monthrange(today.year, today.month)[1]
     start_of_month = datetime(today.year, today.month, 1)
     end_of_month = datetime(today.year, today.month, last_day_of_month)
+
+    start_of_month = start_of_month.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_month = end_of_month.replace(
+        hour=23, minute=59, second=59, microsecond=999999
+    )
 
     incomes = (
         Record.objects.filter(
@@ -504,12 +514,17 @@ def get_categories(query):
 
 def get_filter(req, query, group=CategoryGroup.INCOME):
     filter_form = TimestampFilterForm(user=req.user, c_group=group)
+    initial = {}
     f_start = req.GET.get("f")
     f_end = req.GET.get("t")
     f_categories = req.GET.getlist("c")
-    initial = {}
 
     if f_start and f_end:
+        f_start = datetime.fromisoformat(f_start)
+        f_end = datetime.fromisoformat(f_end)
+        f_start = f_start.replace(hour=0, minute=0, second=0, microsecond=0)
+        f_end = f_end.replace(hour=23, minute=59, second=59, microsecond=999999)
+
         query = query.filter(timestamp__range=(f_start, f_end))
         initial.update({"f": f_start, "t": f_end})
 
