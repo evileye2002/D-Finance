@@ -5,7 +5,7 @@
     <ul class="pagination">
         <li class="page-item pagination_prev">
             {% if paginator.has_previous %}
-            <a href="?page={{ paginator.previous_page_number }}" class="page-link">
+            <a href="{{request.GET|get_query_url:paginator.previous_page_number}}" class="page-link">
                 <i class="fa fa-angle-left" aria-hidden="true"></i>
                 Trước
             </a>
@@ -23,12 +23,12 @@
         {% if page_num == 1 or page_num == paginator.paginator.page_range|last %}
         {% if page_num == paginator.number %}
         <li class="page-item">
-            <a href="?page={{ page_num }}" class="page-link disabled">{{ page_num }}</a>
+            <a href="#" class="page-link disabled">{{ page_num }}</a>
         </li>
 
         {% else %}
         <li class="page-item">
-            <a href="?page={{ page_num }}" class="page-link">{{ page_num }}</a>
+            <a href="{{request.GET|get_query_url:page_num}}" class="page-link">{{ page_num }}</a>
         </li>
         {% endif %}
 
@@ -47,7 +47,7 @@
 
         {% else %}
         <li>
-            <a href="?page={{ page_num }}" class="page-link">{{ page_num }}</a>
+            <a href="{{request.GET|get_query_url:page_num}}" class="page-link">{{ page_num }}</a>
         </li>
         {% endif %}
 
@@ -57,7 +57,7 @@
 
         <li class="page-item pagination_next">
             {% if paginator.has_next %}
-            <a href="?page={{ paginator.next_page_number }}" class="page-link">
+            <a href="{{request.GET|get_query_url:paginator.next_page_number}}" class="page-link">
                 Sau
                 <i class="fa fa-angle-right" aria-hidden="true"></i>
             </a>
