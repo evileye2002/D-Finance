@@ -9,6 +9,7 @@ from .models import PeopleDirectory, Loan
 from django.db import models
 from django.contrib import messages
 
+import plotly.colors as pc
 import plotly.graph_objects as go
 import random
 from django.db.models import Sum
@@ -150,6 +151,10 @@ def renderLoanDetail(req, id, loanForm, type):
     category1 = "Cho vay"
     category2 = "Thu nợ"
     redirect_to = "lend_detail"
+    page_info = {
+        "title": "Chi Tiết Khoản Vay",
+        "item_name": "Bản ghi",
+    }
 
     lender_borrower = PeopleDirectory.objects.get(id=id)
 
@@ -198,6 +203,7 @@ def renderLoanDetail(req, id, loanForm, type):
         "calculate": calculate,
         "lender_borrower": lender_borrower,
         "paginator": loans,
+        "page_info": page_info,
     }
     return render(req, "loan/loan-detail.html", ctx)
 
@@ -366,7 +372,14 @@ def pie_chart(reports, title, colors):
     values = [category["total_money"] for category in categories]
 
     fig = go.Figure(
-        data=[go.Pie(labels=labels, values=values, marker=dict(colors=colors))]
+        data=[
+            go.Pie(
+                labels=labels,
+                values=values,
+                marker_colors=colors,
+                # marker_colors=pc.sequential.Inferno_r,
+            )
+        ]
     )
 
     fig.update_traces(textposition="inside")

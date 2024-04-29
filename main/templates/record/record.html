@@ -14,35 +14,7 @@
 
 {% block content %}
 <div class="container my-3">
-    <div class="">
-        <button class="btn btn-primary mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample">
-            <i class="fa-solid fa-filter"></i>
-            Lọc
-        </button>
-        <div class="collapse bg-white rounded-3 mb-3" id="collapseExample">
-            {% crispy filter_form %}
-        </div>
-
-        {% if request.GET %}
-        {% if "income" in request.path %}
-        <script>
-            $(document).ready(function () {
-                $('#reset-btn').click(function () {
-                    location.href = '/income'
-                });
-            });
-        </script>
-        {% else %}
-        <script>
-            $(document).ready(function () {
-                $('#reset-btn').click(function () {
-                    location.href = '/spending'
-                });
-            });
-        </script>
-        {% endif %}
-        {% endif %}
-    </div>
+    {% include "base/record-filter.html" %}
 
     {% if daily_records %}
     {% for date, records in daily_records %}
