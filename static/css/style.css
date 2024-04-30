@@ -19,3 +19,7 @@ ul.navbar-nav li.nav-item a:hover {
 .record:hover {
   border-color: var(--bs-primary) !important;
 }
+
+input.form-check-input {
+  border-color: var(--bs-primary);
+}
