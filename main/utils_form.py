@@ -65,7 +65,7 @@ class RecordFilterForm(forms.Form):
             self.fields["c"].choices = choices
 
 
-class IndexFilterForm(forms.Form):
+class ReportFilterForm(forms.Form):
     CAL_CHOICES = [
         (1, "Thống kê theo Ngày"),
         (2, "Thống kê theo Tháng"),
@@ -81,7 +81,7 @@ class IndexFilterForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
-        super(IndexFilterForm, self).__init__(*args, **kwargs)
+        super(ReportFilterForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper()
         self.helper.form_id = "form-filter"

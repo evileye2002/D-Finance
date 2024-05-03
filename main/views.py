@@ -11,7 +11,7 @@ from django.contrib.auth import update_session_auth_hash
 
 from .models import *
 from .forms import *
-from .utils_form import RecordFilterForm, IndexFilterForm
+from .utils_form import RecordFilterForm, ReportFilterForm
 from .utils import *
 
 
@@ -21,7 +21,7 @@ def index(req):
     incomes = total_report(req)
     spendings = total_report(req, CategoryGroup.SPENDING)
 
-    f = filter_index(req)
+    f = filter_report(req)
     form = f["form"]
     bar_chart_report = f["bar_chart_report"]
     pie_chart_reports = f["pie_chart_reports"]

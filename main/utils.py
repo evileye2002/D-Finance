@@ -17,7 +17,7 @@ from django.db.models.functions import TruncMonth, TruncDay
 from .models import Record, Category, CategoryGroup
 from django.core.paginator import Paginator
 
-from .utils_form import RecordFilterForm, IndexFilterForm
+from .utils_form import RecordFilterForm, ReportFilterForm
 
 
 datetime_local_format = "%Y-%m-%dT%H:%M"
@@ -268,7 +268,7 @@ def total_report(req, type=CategoryGroup.INCOME):
     }
 
 
-def get_months_report(req, p=IndexFilterForm.CAL_CHOICES[1][0]):
+def get_months_report(req, p=ReportFilterForm.CAL_CHOICES[1][0]):
     year = datetime.now().year
     incomes = None
     spendings = None
@@ -405,15 +405,15 @@ def filter_record(req, query, group=CategoryGroup.INCOME):
     return {"query": query, "form": filter_form}
 
 
-def filter_index(req):
-    filter_form = IndexFilterForm()
+def filter_report(req):
+    filter_form = ReportFilterForm()
     p_type = req.GET.get("p") or "2"
     q_date = req.GET.get("q")
 
     initial = {}
     initial.update({"p": p_type})
     initial.update({"q": q_date})
-    filter_form = IndexFilterForm(initial=initial)
+    filter_form = ReportFilterForm(initial=initial)
 
     pie_chart_reports = cal_pie_chart(
         req,
