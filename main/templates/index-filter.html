@@ -1,0 +1,14 @@
+{% load crispy_forms_tags %}
+
+{%crispy form%}
+
+<script>
+    $(document).ready(function () {
+        $('#id_p').change(function () {
+            $('#form-filter').submit();
+        });
+        $('#id_q').change(function () {
+            $('#form-filter').submit();
+        });
+    });
+</script>

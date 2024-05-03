@@ -32,10 +32,10 @@
         </li>
         {% endif %}
 
-        {% elif page_num|is_link:paginator == 0 %}
+        {% comment %} {% elif page_num|is_link:paginator == 0 %}
         <li class="page-item">
             <a href="#" class="page-link disabled">...</a>
-        </li>
+        </li> {% endcomment %}
         {% endif %}
 
         {% if page_num|is_link:paginator %}

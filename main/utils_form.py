@@ -1,29 +1,18 @@
+from datetime import date
 from django import forms
+from django.db.models.functions import ExtractMonth, ExtractYear
+from django.db.models import DateTimeField
+
+from collections import OrderedDict
 
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Div, HTML, Button
 from crispy_forms.bootstrap import InlineField, InlineCheckboxes
 
-from .models import Category
+from .models import Category, Record
 
 
-class SearchForm(forms.Form):
-    q = forms.CharField(max_length=100, required=False)
-    t = forms.ChoiceField(required=False)
-
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop("user", None)
-        super(SearchForm, self).__init__(*args, **kwargs)
-
-        if user:
-            categories = Category.objects.filter()
-            choices = [("all", "All")]
-            choices.extend([(category.id, category.name) for category in categories])
-
-            self.fields["t"].choices = choices
-
-
-class TimestampFilterForm(forms.Form):
+class RecordFilterForm(forms.Form):
     f = forms.DateField(
         label="Từ ngày",
         required=False,
@@ -46,7 +35,7 @@ class TimestampFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user", None)
         c_group = kwargs.pop("c_group", None)
-        super(TimestampFilterForm, self).__init__(*args, **kwargs)
+        super(RecordFilterForm, self).__init__(*args, **kwargs)
 
         self.helper = FormHelper()
         self.helper.form_id = "form-filter"
@@ -74,3 +63,34 @@ class TimestampFilterForm(forms.Form):
             categories = Category.objects.filter(author=user, category_group=c_group)
             choices = [(category.id, category.name) for category in categories]
             self.fields["c"].choices = choices
+
+
+class ReportFilterForm(forms.Form):
+    CAL_CHOICES = [
+        (1, "Thống kê theo Ngày"),
+        (2, "Thống kê theo Tháng"),
+    ]
+
+    p = forms.ChoiceField(required=False, choices=CAL_CHOICES, initial=2)
+    q = forms.DateField(
+        required=False,
+        widget=forms.DateInput(
+            attrs={"type": "date"},
+        ),
+    )
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user", None)
+        super(ReportFilterForm, self).__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_id = "form-filter"
+        self.helper.form_class = "mb-0"
+        self.helper.form_method = "get"
+        self.helper.layout = Layout(
+            Div(
+                InlineField("p", css_class="form-select"),
+                InlineField("q", css_class="disabled"),
+                css_class="d-flex gap-3",
+            )
+        )
