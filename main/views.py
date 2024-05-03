@@ -11,7 +11,7 @@ from django.contrib.auth import update_session_auth_hash
 
 from .models import *
 from .forms import *
-from .utils_form import TimestampFilterForm
+from .utils_form import RecordFilterForm, IndexFilterForm
 from .utils import *
 
 
@@ -20,25 +20,18 @@ from .utils import *
 def index(req):
     incomes = total_report(req)
     spendings = total_report(req, CategoryGroup.SPENDING)
-    pie_chart_reports = None
 
-    p = req.GET.get("p")
-    if p is not None:
-        pie_chart_reports = get_pie_chart_report(req, p)
-        if p == "d":
-            months_report = get_bar_chart_day_report(req)
-        else:
-            months_report = get_months_report(req)
-
-    else:
-        pie_chart_reports = get_pie_chart_report(req)
-        months_report = get_months_report(req)
+    f = filter_index(req)
+    form = f["form"]
+    bar_chart_report = f["bar_chart_report"]
+    pie_chart_reports = f["pie_chart_reports"]
 
     ctx = {
-        "months_report": months_report,
+        "bar_chart_report": bar_chart_report,
         "pie_chart_reports": pie_chart_reports,
         "incomes": incomes,
         "spendings": spendings,
+        "form": form,
     }
     return render(req, "index.html", ctx)
 
@@ -122,7 +115,7 @@ def income(req):
         ),
     )
 
-    f = get_filter(req, query)
+    f = filter_record(req, query)
     query = f["query"]
     filter_form = f["form"]
 
@@ -206,7 +199,7 @@ def spending(req):
         ),
     )
 
-    f = get_filter(req, query, CategoryGroup.SPENDING)
+    f = filter_record(req, query, CategoryGroup.SPENDING)
     query = f["query"]
     filter_form = f["form"]
 

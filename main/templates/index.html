@@ -78,7 +78,7 @@
 
     <div id="pie_chart_reports" class="row g-3 mb-3">
         <div class="col-12">
-            <div class="dropdown">
+            {% comment %} <div class="dropdown">
                 <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                     Thống kê theo
                 </button>
@@ -86,7 +86,9 @@
                     <li><a class="dropdown-item" href="?p=d">Ngày</a></li>
                     <li><a class="dropdown-item" href="?p=m">Tháng</a></li>
                 </ul>
-            </div>
+            </div> {% endcomment %}
+
+            {% include "index-filter.html" %}
         </div>
 
         <div class="col-lg-6 col-md-12">
@@ -98,7 +100,7 @@
         </div>
 
         <div class="col-lg-12 col-md-12">
-            {{months_report|safe}}
+            {{bar_chart_report|safe}}
         </div>
 
         <script>

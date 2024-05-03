@@ -17,7 +17,7 @@ from django.db.models.functions import TruncMonth, TruncDay
 from .models import Record, Category, CategoryGroup
 from django.core.paginator import Paginator
 
-from .utils_form import TimestampFilterForm
+from .utils_form import RecordFilterForm, IndexFilterForm
 
 
 datetime_local_format = "%Y-%m-%dT%H:%M"
@@ -268,7 +268,7 @@ def total_report(req, type=CategoryGroup.INCOME):
     }
 
 
-def get_months_report(req, p="m"):
+def get_months_report(req, p=IndexFilterForm.CAL_CHOICES[1][0]):
     year = datetime.now().year
     incomes = None
     spendings = None
@@ -304,12 +304,10 @@ def get_months_report(req, p="m"):
         .order_by("month_year")
     )
 
-    months_incomes = [f"Thg {data['month_year'].strftime('%m')}" for data in incomes]
+    months_incomes = [f"{data['month_year'].strftime('%m')}" for data in incomes]
     total_incomes = [data["total_money"] for data in incomes]
 
-    months_spendings = [
-        f"Thg {data['month_year'].strftime('%m')}" for data in spendings
-    ]
+    months_spendings = [f"{data['month_year'].strftime('%m')}" for data in spendings]
     total_spendings = [data["total_money"] for data in spendings]
 
     fig = go.Figure()
@@ -340,137 +338,6 @@ def get_months_report(req, p="m"):
     )
 
     return fig.to_html(include_plotlyjs=False, full_html=False)
-
-
-def get_bar_chart_day_report(req):
-    today = date.today()
-    last_day_of_month = calendar.monthrange(today.year, today.month)[1]
-    start_of_month = datetime(today.year, today.month, 1)
-    end_of_month = datetime(today.year, today.month, last_day_of_month)
-
-    start_of_month = start_of_month.replace(hour=0, minute=0, second=0, microsecond=0)
-    end_of_month = end_of_month.replace(
-        hour=23, minute=59, second=59, microsecond=999999
-    )
-
-    incomes = (
-        Record.objects.filter(
-            wallet__author=req.user,
-            wallet__is_calculate=True,
-            timestamp__range=(start_of_month, end_of_month),
-            category__in=Category.objects.filter(
-                models.Q(is_default=True) | models.Q(author=req.user),
-                category_group=CategoryGroup.INCOME,
-            ),
-        )
-        .annotate(day=TruncDay("timestamp"))
-        .values("day")
-        .annotate(total_money=Sum("money"))
-        .order_by("day")
-    )
-    spendings = (
-        Record.objects.filter(
-            wallet__author=req.user,
-            wallet__is_calculate=True,
-            timestamp__range=(start_of_month, end_of_month),
-            category__in=Category.objects.filter(
-                models.Q(is_default=True) | models.Q(author=req.user),
-                category_group=CategoryGroup.SPENDING,
-            ),
-        )
-        .annotate(day=TruncDay("timestamp"))
-        .values("day")
-        .annotate(total_money=Sum("money"))
-        .order_by("day")
-    )
-
-    days_incomes = [f"{data['day'].strftime('%d')}" for data in incomes]
-    total_incomes = [data["total_money"] for data in incomes]
-
-    days_spendings = [f"{data['day'].strftime('%d')}" for data in spendings]
-    total_spendings = [data["total_money"] for data in spendings]
-
-    fig = go.Figure()
-    fig.add_trace(
-        go.Bar(
-            x=days_incomes,
-            y=total_incomes,
-            name="Thu Nhập",
-            marker=dict(color="rgb(25, 135, 84)"),
-        )
-    )
-    fig.add_trace(
-        go.Bar(
-            x=days_spendings,
-            y=total_spendings,
-            name="Chi Tiêu",
-            marker=dict(color="rgb(220, 53, 69)"),
-        )
-    )
-
-    fig.update_layout(
-        barmode="group",
-        title=f"<b>Tình hình Thu Chi tháng {today.month}/{today.year}</b>",
-        xaxis_title="<b>Ngày</b>",
-        title_x=0.5,
-        plot_bgcolor="white",
-    )
-
-    return fig.to_html(include_plotlyjs=False, full_html=False)
-
-
-def get_pie_chart_report(req, p="m"):
-    incomes = None
-    spendings = None
-    p_label = "tháng này"
-    today = date.today()
-    if p == "m":
-        last_day_of_month = calendar.monthrange(today.year, today.month)[1]
-        start_of_month = datetime(today.year, today.month, 1)
-        end_of_month = datetime(today.year, today.month, last_day_of_month)
-
-        incomes = Record.objects.filter(
-            wallet__author=req.user,
-            wallet__is_calculate=True,
-            category__category_group=CategoryGroup.INCOME,
-            timestamp__range=(start_of_month, end_of_month),
-        )
-        spendings = Record.objects.filter(
-            wallet__author=req.user,
-            wallet__is_calculate=True,
-            category__category_group=CategoryGroup.SPENDING,
-            timestamp__range=(start_of_month, end_of_month),
-        )
-    else:
-        start_of_day = datetime.combine(today, datetime.min.time())
-        end_of_day = datetime.combine(today, datetime.max.time())
-        today_range = (start_of_day, end_of_day)
-        p_label = "hôm nay"
-
-        incomes = Record.objects.filter(
-            wallet__author=req.user,
-            wallet__is_calculate=True,
-            category__category_group=CategoryGroup.INCOME,
-            timestamp__range=today_range,
-        )
-        spendings = Record.objects.filter(
-            wallet__author=req.user,
-            wallet__is_calculate=True,
-            category__category_group=CategoryGroup.SPENDING,
-            timestamp__range=today_range,
-        )
-
-    print(spendings)
-    colors = ["#{:06x}".format(random.randint(0, 0xFFFFFF)) for _ in range(50)]
-
-    return {
-        "incomes": pie_chart(incomes, f"Thu Nhập {p_label}", colors).to_html(
-            include_plotlyjs=False, full_html=False
-        ),
-        "spendings": pie_chart(spendings, f"Chi Tiêu {p_label}", colors[::-1]).to_html(
-            include_plotlyjs=False, full_html=False
-        ),
-    }
 
 
 def pie_chart(reports, title, colors):
@@ -512,8 +379,8 @@ def get_categories(query):
     return dict(result)
 
 
-def get_filter(req, query, group=CategoryGroup.INCOME):
-    filter_form = TimestampFilterForm(user=req.user, c_group=group)
+def filter_record(req, query, group=CategoryGroup.INCOME):
+    filter_form = RecordFilterForm(user=req.user, c_group=group)
     initial = {}
     f_start = req.GET.get("f")
     f_end = req.GET.get("t")
@@ -533,6 +400,224 @@ def get_filter(req, query, group=CategoryGroup.INCOME):
         initial.update({"c": f_categories})
 
     if initial:
-        filter_form = TimestampFilterForm(user=req.user, initial=initial, c_group=group)
+        filter_form = RecordFilterForm(user=req.user, initial=initial, c_group=group)
 
     return {"query": query, "form": filter_form}
+
+
+def filter_index(req):
+    filter_form = IndexFilterForm()
+    p_type = req.GET.get("p") or "2"
+    q_date = req.GET.get("q")
+
+    initial = {}
+    initial.update({"p": p_type})
+    initial.update({"q": q_date})
+    filter_form = IndexFilterForm(initial=initial)
+
+    pie_chart_reports = cal_pie_chart(
+        req,
+        mode=p_type,
+        q_date=q_date,
+    )
+
+    bar_chart_report = cal_bar_chart(
+        req,
+        mode=p_type,
+        q_date=q_date,
+    )
+
+    return {
+        "form": filter_form,
+        "bar_chart_report": bar_chart_report,
+        "pie_chart_reports": pie_chart_reports,
+    }
+
+
+def cal_pie_chart(req, mode="2", q_date=None):
+    incomes = None
+    spendings = None
+    colors = ["#{:06x}".format(random.randint(0, 0xFFFFFF)) for _ in range(50)]
+    date_obj = datetime.fromisoformat(q_date) if q_date else date.today()
+
+    if mode == "1":
+        # Day Report
+        label = (
+            "Hôm nay"
+            if date_obj.day == date.today().day
+            and date_obj.month == date.today().month
+            and date_obj.year == date.today().year
+            else f"Ngày {date_obj.day}/{date_obj.month}/{date_obj.year}"
+        )
+
+        start = datetime.combine(date_obj, datetime.min.time())
+        end = datetime.combine(date_obj, datetime.max.time())
+
+    else:
+        # Month Report
+        label = (
+            # "Tháng này"
+            # if date.today().month == date_obj.month
+            # and date.today().year == date_obj.year
+            # else f"Tháng {date_obj.month}/{date_obj.year}"
+            f"Tháng {date_obj.month}/{date_obj.year}"
+        )
+
+        last_day_of_month = calendar.monthrange(date_obj.year, date_obj.month)[1]
+        start = datetime(date_obj.year, date_obj.month, 1)
+        end = datetime(date_obj.year, date_obj.month, last_day_of_month)
+        end = end.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+    filter_range = (start, end)
+
+    incomes = Record.objects.filter(
+        wallet__author=req.user,
+        wallet__is_calculate=True,
+        category__category_group=CategoryGroup.INCOME,
+        timestamp__range=filter_range,
+    )
+    spendings = Record.objects.filter(
+        wallet__author=req.user,
+        wallet__is_calculate=True,
+        category__category_group=CategoryGroup.SPENDING,
+        timestamp__range=filter_range,
+    )
+
+    return {
+        "incomes": pie_chart(incomes, f"Thu nhập {label}", colors).to_html(
+            include_plotlyjs=False, full_html=False
+        ),
+        "spendings": pie_chart(spendings, f"Chi tiêu {label}", colors[::-1]).to_html(
+            include_plotlyjs=False, full_html=False
+        ),
+    }
+
+
+def cal_bar_chart(req, mode="2", q_date=None):
+    incomes = None
+    spendings = None
+    date_obj = datetime.fromisoformat(q_date) if q_date else date.today()
+
+    if mode == "1":
+        # Month Report
+        label = f"tháng {date_obj.month}/{date_obj.year}"
+        x_title = "Ngày"
+
+        last_day_of_month = calendar.monthrange(date_obj.year, date_obj.month)[1]
+        start = datetime(date_obj.year, date_obj.month, 1)
+        end = datetime(date_obj.year, date_obj.month, last_day_of_month)
+        end = end.replace(hour=23, minute=59, second=59, microsecond=999999)
+
+        # x_label = [f"{day}" for day in range(1, last_day_of_month + 1)]
+
+        filter_range = (start, end)
+
+        incomes = (
+            Record.objects.filter(
+                wallet__author=req.user,
+                wallet__is_calculate=True,
+                timestamp__range=filter_range,
+                category__in=Category.objects.filter(
+                    models.Q(is_default=True) | models.Q(author=req.user),
+                    category_group=CategoryGroup.INCOME,
+                ),
+            )
+            .annotate(day=TruncDay("timestamp"))
+            .values("day")
+            .annotate(total_money=Sum("money"))
+            .order_by("day")
+        )
+        spendings = (
+            Record.objects.filter(
+                wallet__author=req.user,
+                wallet__is_calculate=True,
+                timestamp__range=filter_range,
+                category__in=Category.objects.filter(
+                    models.Q(is_default=True) | models.Q(author=req.user),
+                    category_group=CategoryGroup.SPENDING,
+                ),
+            )
+            .annotate(day=TruncDay("timestamp"))
+            .values("day")
+            .annotate(total_money=Sum("money"))
+            .order_by("day")
+        )
+
+        x_label_incomes = [f"{data['day'].strftime('%d')}" for data in incomes]
+        x_label_spendings = [f"{data['day'].strftime('%d')}" for data in spendings]
+
+    else:
+        # Year Report
+        label = f"năm {date_obj.year}"
+        x_title = "Tháng"
+
+        filter = date_obj.year
+        # x_label = [f"{month}" for month in range(1, 13)]
+
+        incomes = (
+            Record.objects.filter(
+                wallet__author=req.user,
+                wallet__is_calculate=True,
+                timestamp__year=filter,
+                category__in=Category.objects.filter(
+                    models.Q(is_default=True) | models.Q(author=req.user),
+                    category_group=CategoryGroup.INCOME,
+                ),
+            )
+            .annotate(month_year=TruncMonth("timestamp"))
+            .values("month_year")
+            .annotate(total_money=Sum("money"))
+            .order_by("month_year")
+        )
+        spendings = (
+            Record.objects.filter(
+                wallet__author=req.user,
+                wallet__is_calculate=True,
+                timestamp__year=filter,
+                category__in=Category.objects.filter(
+                    models.Q(is_default=True) | models.Q(author=req.user),
+                    category_group=CategoryGroup.SPENDING,
+                ),
+            )
+            .annotate(month_year=TruncMonth("timestamp"))
+            .values("month_year")
+            .annotate(total_money=Sum("money"))
+            .order_by("month_year")
+        )
+
+        x_label_incomes = [f"{data['month_year'].strftime('%m')}" for data in incomes]
+        x_label_spendings = [
+            f"{data['month_year'].strftime('%m')}" for data in spendings
+        ]
+
+    # Bar chart
+    total_incomes = [data["total_money"] for data in incomes]
+    total_spendings = [data["total_money"] for data in spendings]
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Bar(
+            x=x_label_incomes,
+            y=total_incomes,
+            name="Thu Nhập",
+            marker=dict(color="rgb(25, 135, 84)"),
+        )
+    )
+    fig.add_trace(
+        go.Bar(
+            x=x_label_spendings,
+            y=total_spendings,
+            name="Chi Tiêu",
+            marker=dict(color="rgb(220, 53, 69)"),
+        )
+    )
+
+    fig.update_layout(
+        barmode="group",
+        title=f"<b>Tình hình Thu Chi {label}</b>",
+        xaxis_title=f"<b>{x_title}</b>",
+        title_x=0.5,
+        plot_bgcolor="white",
+    )
+
+    return fig.to_html(include_plotlyjs=False, full_html=False)
