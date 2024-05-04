@@ -142,6 +142,10 @@ def append_log(sender, instance, created, type):
 
 
 def get_page(query, req):
+    if query.count() < item_per_page:
+        # print(query.count())
+        return query
+
     p = Paginator(query, item_per_page)
     page = req.GET.get("page")
     return p.get_page(page)
@@ -353,7 +357,6 @@ def pie_chart(reports, title, colors):
                 labels=labels,
                 values=values,
                 marker_colors=colors,
-                # marker_colors=pc.sequential.Inferno_r,
             )
         ]
     )
@@ -507,9 +510,6 @@ def cal_bar_chart(req, mode="2", q_date=None):
         start = datetime(date_obj.year, date_obj.month, 1)
         end = datetime(date_obj.year, date_obj.month, last_day_of_month)
         end = end.replace(hour=23, minute=59, second=59, microsecond=999999)
-
-        # x_label = [f"{day}" for day in range(1, last_day_of_month + 1)]
-
         filter_range = (start, end)
 
         incomes = (
@@ -543,16 +543,16 @@ def cal_bar_chart(req, mode="2", q_date=None):
             .order_by("day")
         )
 
-        x_label_incomes = [f"{data['day'].strftime('%d')}" for data in incomes]
-        x_label_spendings = [f"{data['day'].strftime('%d')}" for data in spendings]
+        data_income, x_label_incomes = process_data(incomes, mode, last_day_of_month)
+        data_spending, x_label_spendings = process_data(
+            spendings, mode, last_day_of_month
+        )
 
     else:
         # Year Report
         label = f"năm {date_obj.year}"
         x_title = "Tháng"
-
         filter = date_obj.year
-        # x_label = [f"{month}" for month in range(1, 13)]
 
         incomes = (
             Record.objects.filter(
@@ -585,14 +585,12 @@ def cal_bar_chart(req, mode="2", q_date=None):
             .order_by("month_year")
         )
 
-        x_label_incomes = [f"{data['month_year'].strftime('%m')}" for data in incomes]
-        x_label_spendings = [
-            f"{data['month_year'].strftime('%m')}" for data in spendings
-        ]
+        data_income, x_label_incomes = process_data(incomes)
+        data_spending, x_label_spendings = process_data(spendings)
 
     # Bar chart
-    total_incomes = [data["total_money"] for data in incomes]
-    total_spendings = [data["total_money"] for data in spendings]
+    total_incomes = [data["total"] for data in data_income]
+    total_spendings = [data["total"] for data in data_spending]
 
     fig = go.Figure()
     fig.add_trace(
@@ -611,7 +609,6 @@ def cal_bar_chart(req, mode="2", q_date=None):
             marker=dict(color="rgb(220, 53, 69)"),
         )
     )
-
     fig.update_layout(
         barmode="group",
         title=f"<b>Tình hình Thu Chi {label}</b>",
@@ -621,3 +618,31 @@ def cal_bar_chart(req, mode="2", q_date=None):
     )
 
     return fig.to_html(include_plotlyjs=False, full_html=False)
+
+
+def process_data(data_annotate, mode="2", last_day_of_month=None):
+    if mode == "1":
+        processed_data = [
+            {"day": data["day"].strftime("%d"), "total": data["total_money"]}
+            for data in data_annotate
+        ]
+        for day in range(1, last_day_of_month + 1):
+            if str(day).zfill(2) not in [data["day"] for data in processed_data]:
+                processed_data.append({"day": str(day).zfill(2), "total": 0})
+
+        sorted_data = sorted(processed_data, key=lambda x: x["day"])
+        x_labels = [data["day"] for data in sorted_data]
+    else:
+        processed_data = [
+            {"month": data["month_year"].strftime("%m"), "total": data["total_money"]}
+            for data in data_annotate
+        ]
+
+        for day in range(1, 13):
+            if str(day).zfill(2) not in [data["month"] for data in processed_data]:
+                processed_data.append({"month": str(day).zfill(2), "total": 0})
+
+        sorted_data = sorted(processed_data, key=lambda x: x["month"])
+        x_labels = [data["month"] for data in sorted_data]
+
+    return sorted_data, x_labels
