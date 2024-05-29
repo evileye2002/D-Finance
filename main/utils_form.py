@@ -1,5 +1,6 @@
 from datetime import date
 from django import forms
+from django.db import models
 from django.db.models.functions import ExtractMonth, ExtractYear
 from django.db.models import DateTimeField
 
@@ -60,7 +61,10 @@ class RecordFilterForm(forms.Form):
         )
 
         if user:
-            categories = Category.objects.filter(author=user, category_group=c_group)
+            categories = Category.objects.filter(
+                models.Q(is_default=True) | models.Q(author=user),
+                category_group=c_group,
+            )
             choices = [(category.id, category.name) for category in categories]
             self.fields["c"].choices = choices
 
