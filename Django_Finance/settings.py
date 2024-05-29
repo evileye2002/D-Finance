@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     "pwa",
     "crispy_forms",
     "crispy_bootstrap5",
-    # "whitenoise.runserver_nostatic",
 ]
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
